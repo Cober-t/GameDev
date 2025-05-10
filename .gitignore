@@ -1,1 +1,5 @@
+# Normalize EOL for all files that Git considers text files.
+* text=auto eol=lf
+
 builds/
+2025-10-05*FirstGame/.godot
