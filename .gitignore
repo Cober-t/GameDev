@@ -2,4 +2,4 @@
 * text=auto eol=lf
 
 builds/
-/.godot
+**/.godot
