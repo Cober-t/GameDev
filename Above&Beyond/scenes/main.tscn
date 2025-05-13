@@ -1,4 +1,4 @@
-[gd_scene load_steps=7 format=4 uid="uid://db5jp2okfmn1"]
+[gd_scene load_steps=8 format=4 uid="uid://db5jp2okfmn1"]
 
 [ext_resource type="Texture2D" uid="uid://d0q2g65ahgok" path="res://assets/sprites/world_tileset.png" id="1_o5qli"]
 [ext_resource type="PackedScene" uid="uid://bdnn4a75cvdhs" path="res://scenes/player.tscn" id="2_0wfyh"]
@@ -147,6 +147,12 @@ physics_layer_0/collision_layer = 1
 physics_layer_0/collision_mask = 2
 sources/0 = SubResource("TileSetAtlasSource_0wfyh")
 
+[sub_resource type="Curve" id="Curve_sugp2"]
+_data = [Vector2(0, 0.5), 0.0, 1.4, 0, 0, Vector2(1, 1), 0.0, 0.0, 0, 0]
+point_count = 2
+metadata/_snap_enabled = true
+metadata/_snap_count = 2
+
 [sub_resource type="WorldBoundaryShape2D" id="WorldBoundaryShape2D_sugp2"]
 
 [node name="Node2D" type="Node2D"]
@@ -161,12 +167,24 @@ tile_set = SubResource("TileSet_sugp2")
 
 [node name="CharacterBody2D" parent="." instance=ExtResource("2_0wfyh")]
 position = Vector2(31, 16)
+next_jumps_force = -300.0
+fall_speed_multiplier = 1.4
+fall_speed_on_wall = 45
+dash_speed = 400.0
+dash_max_distance = 40.0
+dash_cooldown = 0.35
+dash_inertia = 0.3
+dash_curve = SubResource("Curve_sugp2")
 
 [node name="Camera2D" type="Camera2D" parent="CharacterBody2D"]
 position = Vector2(0, -17)
 zoom = Vector2(3, 3)
 limit_bottom = 120
 position_smoothing_enabled = true
+drag_horizontal_enabled = true
+drag_vertical_enabled = true
+drag_horizontal_offset = -0.26
+drag_vertical_offset = -0.6
 
 [node name="Killzone" parent="." instance=ExtResource("3_sugp2")]
 position = Vector2(473, 141)
