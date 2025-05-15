@@ -7,3 +7,5 @@ builds/
 *.tmp
 *.uid
 *.import
+*.exe
+*.cfg

@@ -20,6 +20,7 @@ config/icon="res://icon.svg"
 window/size/viewport_width=1920
 window/size/viewport_height=1080
 window/stretch/mode="viewport"
+window/default_gravity=9.8
 
 [input]
 
@@ -58,6 +59,10 @@ dash={
 , Object(InputEventJoypadMotion,"resource_local_to_scene":false,"resource_name":"","device":-1,"axis":5,"axis_value":1.0,"script":null)
 ]
 }
+
+[physics]
+
+3d/default_gravity=9.8
 
 [rendering]
 
