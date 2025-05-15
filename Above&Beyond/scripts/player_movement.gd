@@ -35,7 +35,6 @@ var sprite_offset: Vector2 = Vector2.ZERO
 var last_direction_pressed: int = 1
 
 @onready var animated_sprite = $AnimatedSprite2D
-@onready var camera_2d: Camera2D = $Camera2D
 
 
 # ---------------------------------------------------------------------
@@ -61,12 +60,13 @@ func fix_movement_jittering():
 		animated_sprite.global_position = render_position
 	
 	# Optionally update camera position if it's a child of this node
-	if has_node("Camera2D"):
-		camera_2d.global_position = render_position
+	#if has_node("Camera2D"):
+		#camera_2d.global_position = render_position
 
 # ---------------------------------------------------------------------
 
 func _process(delta: float) -> void:
+	pass
 	fix_movement_jittering()
 	
 # ---------------------------------------------------------------------
