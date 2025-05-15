@@ -5,4 +5,5 @@ builds/
 **/.godot
 
 *.tmp
-*.gd.uid
+*.uid
+*.import
