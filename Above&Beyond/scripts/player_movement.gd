@@ -1,31 +1,31 @@
 extends CharacterBody2D
 
-@export var base_speed = 130.0
-@export var run_speed = 250.0
-@export_range(0, 1) var deceleration = 0.1
-@export_range(0, 1) var aceleration  = 0.1
+@export var base_speed :float = 130.0
+@export var run_speed :float = 250.0
+@export_range(0, 1) var deceleration :float = 0.1
+@export_range(0, 1) var aceleration  :float = 0.1
 
-@export var max_jumps = 2
-@export var jump_force = -300.0
-@export var next_jumps_force = -100.0
-@export var fall_speed_multiplier = 0.5
-@export var fall_speed_on_wall = 50
-@export var jump_recoil_on_wall = 100.0
-@export_range(0, 1) var deceleration_on_jump_release = 0.5
+@export var max_jumps :int = 2
+@export var jump_force :float = -300.0
+@export var next_jumps_force :float = -100.0
+@export var fall_speed_multiplier :float = 0.5
+@export var fall_speed_on_wall :float = 50.0
+@export var jump_recoil_on_wall :float = 100.0
+@export_range(0, 1) var deceleration_on_jump_release :float = 0.5
 
-var jumps_count = 0
+var jumps_count :int = 0
 
-@export var dash_speed = 1000.0
-@export var dash_max_distance = 300.0
-@export var dash_cooldown = 1.0
-@export var dash_inertia = 0.5
+@export var dash_speed :float = 1000.0
+@export var dash_max_time :float = 0.5
+@export var dash_cooldown :float = 1.0
+@export var dash_inertia :float = 0.5
 @export var dash_curve : Curve
 
-var dash_enable = true # To allow recharge the dash only when on floor or on wall
-var is_dashing = false
-var dash_start_position = 0
-var dash_direction = 0
-var dash_timer = 0
+var dash_enable :bool = true # To allow recharge the dash only when on floor or on wall
+var is_dashing :bool = false
+var dash_start_time :float = 0.0
+var dash_direction :int = 0
+var dash_cooldown_timer :float = 0.0
 
 # Get the gravity from the project settings to be synced with RigidBody nodes.
 var gravity = ProjectSettings.get_setting("physics/2d/default_gravity")
@@ -112,22 +112,22 @@ func _physics_process(delta):
 		velocity.y *= deceleration_on_jump_release
 
 	# Handle DASH
-	if Input.is_action_just_pressed("dash") and not is_dashing and dash_timer <= 0 and dash_enable:
+	if Input.is_action_just_pressed("dash") and not is_dashing and dash_cooldown_timer <= 0 and dash_enable:
 		is_dashing = true
 		dash_enable = false
-		dash_start_position = position.x
-		dash_direction = last_direction_pressed
-		dash_timer = dash_cooldown
+		dash_start_time = Time.get_ticks_msec()
+		dash_direction = last_direction_pressed * -1 if is_on_wall() else last_direction_pressed
+		dash_cooldown_timer = dash_cooldown
 	if is_dashing:
-		var current_distance = abs(position.x - dash_start_position)
-		if current_distance >= dash_max_distance or is_on_wall():
+		var current_time = abs(Time.get_ticks_msec() - dash_start_time) / 1000
+		if current_time >= dash_max_time:
 			is_dashing = false
 			velocity.x *= dash_inertia
 		else:
-			velocity.x = dash_direction * dash_speed * dash_curve.sample(current_distance / dash_max_distance)
+			velocity.x = dash_direction * dash_speed * dash_curve.sample(current_time / dash_max_time)
 			velocity.y = 0
-	if dash_timer > 0:
-		dash_timer -= delta
+	if dash_cooldown_timer > 0:
+		dash_cooldown_timer -= delta
 	
 	# Flip the Sprite
 	if direction > 0:
