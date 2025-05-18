@@ -9,7 +9,7 @@ extends CharacterBody2D
 @export var jump_force :float = -300.0
 @export var next_jumps_force :float = -100.0
 @export var fall_speed_multiplier :float = 0.5
-@export var fall_speed_on_wall :float = 50.0
+@export var fall_speed_on_wall :float = 45.0
 @export var jump_recoil_on_wall :float = 100.0
 @export_range(0, 1) var deceleration_on_jump_release :float = 0.5
 
@@ -58,14 +58,10 @@ func fix_movement_jittering():
 	
 	if animated_sprite:
 		animated_sprite.global_position = render_position
-	
-	# Optionally update camera position if it's a child of this node
-	#if has_node("Camera2D"):
-		#camera_2d.global_position = render_position
 
 # ---------------------------------------------------------------------
 
-func _process(delta: float) -> void:
+func _process(_delta: float) -> void:
 	fix_movement_jittering()
 	
 # ---------------------------------------------------------------------
@@ -74,49 +70,59 @@ func _physics_process(delta):
 	
 	previous_position = global_position
 	
-	# Handle MOVEMENT
-	var speed
-	if Input.is_action_pressed("run"):
-		speed = run_speed
-	else:
-		speed = base_speed
-			
-	# Get the input direction: -1, 0, 1
 	var direction = Input.get_axis("move_left", "move_right")
-	# Apply movement
-	if direction:
-		last_direction_pressed = direction
-		velocity.x = move_toward(velocity.x, direction * speed, speed * aceleration)
+	handle_dash(delta)
+	handle_jump(delta)
+	handle_movement(direction)
+	play_animations(direction)
+	
+	move_and_slide()
+	
+# ---------------------------------------------------------------------
+
+func handle_movement(dir: float) ->void:
+	var speed = run_speed if Input.is_action_pressed("run") else base_speed
+	
+	# Get the input direction: -1, 0, 1
+	if dir and not is_dashing:
+		last_direction_pressed = dir
+		velocity.x = move_toward(velocity.x, dir * speed, speed * aceleration)
 	else:
 		velocity.x = move_toward(velocity.x, 0, speed * deceleration)
-	
-	# Handle JUMP.
+
+# ---------------------------------------------------------------------
+
+func handle_jump(delta: float) ->void:
 	# Add the gravity.
 	if not is_on_floor():
 		velocity.y += gravity * delta
-	if is_on_floor() or is_on_wall():
-		dash_enable = true
 	if Input.is_action_just_pressed("jump") and is_on_floor():
 		velocity.y = jump_force
-		jumps_count = max_jumps
-	if jumps_count == max_jumps and Input.is_action_just_pressed("jump") and not is_on_floor(): # Second jump
+		jumps_count = max_jumps - 1
+	if jumps_count > 0 and Input.is_action_just_pressed("jump") and not is_on_floor(): # Second jump
 		velocity.y = next_jumps_force
 		jumps_count -= 1
 	if Input.is_action_just_pressed("jump") and is_on_wall():
 		velocity.y = jump_force
-		jumps_count = 2 # Recharge double-jump on wall
+		jumps_count = max_jumps - 1 # Recharge double-jump on wall
 		velocity.x += last_direction_pressed * -1 * jump_recoil_on_wall
 	if not Input.is_action_just_pressed("jump") and (Input.is_action_pressed("move_left") or Input.is_action_pressed("move_right")) and is_on_wall() and not is_on_floor():
 		velocity.y *= fall_speed_on_wall * delta
 	if Input.is_action_just_released("jump") and velocity.y < 0:
 		velocity.y *= deceleration_on_jump_release
 
-	# Handle DASH
+# ---------------------------------------------------------------------
+
+func handle_dash(delta: float) ->void:
+	if is_on_floor() or is_on_wall():
+		dash_enable = true
 	if Input.is_action_just_pressed("dash") and not is_dashing and dash_cooldown_timer <= 0 and dash_enable:
 		is_dashing = true
 		dash_enable = false
 		dash_start_time = Time.get_ticks_msec()
-		dash_direction = last_direction_pressed * -1 if is_on_wall() else last_direction_pressed
+		if is_on_wall():
+			last_direction_pressed *= -1
+		dash_direction = last_direction_pressed
 		dash_cooldown_timer = dash_cooldown
 	if is_dashing:
 		var current_time = abs(Time.get_ticks_msec() - dash_start_time) / 1000
@@ -128,20 +134,22 @@ func _physics_process(delta):
 			velocity.y = 0
 	if dash_cooldown_timer > 0:
 		dash_cooldown_timer -= delta
-	
+
+# ---------------------------------------------------------------------
+
+func play_animations(dir: float) ->void:
 	# Flip the Sprite
-	if direction > 0:
+	if last_direction_pressed > 0:
 		animated_sprite.flip_h = false
-	elif direction < 0:
+	elif last_direction_pressed < 0:
 		animated_sprite.flip_h = true
 	
-	# Play animations
 	if is_on_floor():
-		if direction == 0:
+		if dir == 0:
 			animated_sprite.play("idle")
 		else:
 			animated_sprite.play("run")
 	else:
 		animated_sprite.play("jump")
-	
-	move_and_slide()
+
+# ---------------------------------------------------------------------

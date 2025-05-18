@@ -176,8 +176,10 @@ height = 18.0
 collision_layer = 2
 script = ExtResource("1_g2els")
 base_speed = 150.0
-fall_speed_on_wall = 0.0
+fall_speed_multiplier = 0.0
+fall_speed_on_wall = 30.0
 dash_max_time = 0.15
+dash_cooldown = 4.0
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 position = Vector2(0, -12)
