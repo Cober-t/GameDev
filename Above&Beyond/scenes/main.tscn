@@ -22,7 +22,8 @@ script = ExtResource("1_jyhfs")
 
 [node name="SettingsMenu" parent="." instance=ExtResource("2_jyhfs")]
 visible = false
-layout_mode = 1
+layout_mode = 2
+anchors_preset = 0
 size_flags_horizontal = 1
 size_flags_vertical = 1
 
@@ -35,6 +36,7 @@ offset_top = -4.0
 offset_right = 478.0
 offset_bottom = 268.0
 scale = Vector2(4, 4)
+mouse_filter = 2
 
 [node name="SubViewport" type="SubViewport" parent="SubViewportContainer"]
 handle_input_locally = false

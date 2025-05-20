@@ -70,7 +70,7 @@ func _physics_process(delta):
 	
 	previous_position = global_position
 	
-	var direction = Input.get_axis("move_left", "move_right")
+	var direction = Global.moving_direction()
 	handle_dash(delta)
 	handle_jump(delta)
 	handle_movement(direction)
@@ -81,7 +81,7 @@ func _physics_process(delta):
 # ---------------------------------------------------------------------
 
 func handle_movement(dir: float) ->void:
-	var speed = run_speed if Input.is_action_pressed("run") else base_speed
+	var speed = run_speed if Global.is_running() else base_speed
 	
 	# Get the input direction: -1, 0, 1
 	if dir and not is_dashing:
@@ -96,19 +96,19 @@ func handle_jump(delta: float) ->void:
 	# Add the gravity.
 	if not is_on_floor():
 		velocity.y += gravity * delta
-	if Input.is_action_just_pressed("jump") and is_on_floor():
+	if Global.is_jumping() and is_on_floor():
 		velocity.y = jump_force
 		jumps_count = max_jumps - 1
-	if jumps_count > 0 and Input.is_action_just_pressed("jump") and not is_on_floor(): # Second jump
+	if jumps_count > 0 and Global.is_jumping() and not is_on_floor(): # Second jump
 		velocity.y = next_jumps_force
 		jumps_count -= 1
-	if Input.is_action_just_pressed("jump") and is_on_wall():
+	if Global.is_jumping() and is_on_wall():
 		velocity.y = jump_force
 		jumps_count = max_jumps - 1 # Recharge double-jump on wall
 		velocity.x += last_direction_pressed * -1 * jump_recoil_on_wall
-	if not Input.is_action_just_pressed("jump") and (Input.is_action_pressed("move_left") or Input.is_action_pressed("move_right")) and is_on_wall() and not is_on_floor():
+	if not Global.is_jumping() and (Global.is_moving_left() or Global.is_moving_right()) and is_on_wall() and not is_on_floor():
 		velocity.y *= fall_speed_on_wall * delta
-	if Input.is_action_just_released("jump") and velocity.y < 0:
+	if Global.is_jumping_released() and velocity.y < 0:
 		velocity.y *= deceleration_on_jump_release
 
 # ---------------------------------------------------------------------
@@ -116,7 +116,7 @@ func handle_jump(delta: float) ->void:
 func handle_dash(delta: float) ->void:
 	if is_on_floor() or is_on_wall():
 		dash_enable = true
-	if Input.is_action_just_pressed("dash") and not is_dashing and dash_cooldown_timer <= 0 and dash_enable:
+	if Global.is_dashing() and not is_dashing and dash_cooldown_timer <= 0 and dash_enable:
 		is_dashing = true
 		dash_enable = false
 		dash_start_time = Time.get_ticks_msec()

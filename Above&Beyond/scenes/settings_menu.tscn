@@ -15,11 +15,12 @@ script = ExtResource("1_05p07")
 
 [node name="ColorRect" type="ColorRect" parent="."]
 z_index = 4095
-layout_mode = 0
-offset_left = -72.0
-offset_top = -37.0
-offset_right = 2005.0
-offset_bottom = 1131.0
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 mouse_filter = 2
 color = Color(1, 0.556863, 0.321569, 1)
 
@@ -90,6 +91,7 @@ text = "GRAPHICS"
 
 [node name="VolumeSettings" type="GridContainer" parent="MarginContainer/SettingsMenu"]
 unique_name_in_owner = true
+visible = false
 layout_mode = 2
 size_flags_horizontal = 4
 size_flags_vertical = 6
@@ -153,25 +155,33 @@ focus_previous = NodePath("../MusicVolSlider")
 max_value = 1.0
 step = 0.001
 
-[node name="ControllerSettings" type="VScrollBar" parent="MarginContainer/SettingsMenu"]
+[node name="ControllerSettings" type="VBoxContainer" parent="MarginContainer/SettingsMenu"]
 unique_name_in_owner = true
-visible = false
 layout_mode = 2
-size_flags_horizontal = 1
 size_flags_vertical = 3
 
 [node name="GridContainer" type="GridContainer" parent="MarginContainer/SettingsMenu/ControllerSettings"]
 layout_mode = 2
-offset_left = 835.0
-offset_top = -221.0
-offset_right = 1020.0
-offset_bottom = -39.0
-grow_horizontal = 2
-grow_vertical = 2
 size_flags_horizontal = 4
 size_flags_vertical = 6
 theme_override_constants/h_separation = 48
 columns = 2
+
+[node name="InputTypeLabel" type="Label" parent="MarginContainer/SettingsMenu/ControllerSettings/GridContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
+text = "INPUT TYPE"
+
+[node name="InputTypeButton" type="OptionButton" parent="MarginContainer/SettingsMenu/ControllerSettings/GridContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
+alignment = 1
+selected = 0
+item_count = 2
+popup/item_0/text = "Keyboard"
+popup/item_0/id = 0
+popup/item_1/text = "Gamepad"
+popup/item_1/id = 1
 
 [node name="JumpKey" type="Label" parent="MarginContainer/SettingsMenu/ControllerSettings/GridContainer"]
 layout_mode = 2
@@ -282,6 +292,7 @@ text = "BACK"
 [connection signal="value_changed" from="MarginContainer/SettingsMenu/VolumeSettings/SFXVolSlider" to="MarginContainer/SettingsMenu" method="_on_sfx_vol_slider_value_changed"]
 [connection signal="value_changed" from="MarginContainer/SettingsMenu/VolumeSettings/MusicVolSlider" to="MarginContainer/SettingsMenu" method="_on_music_vol_slider_value_changed"]
 [connection signal="value_changed" from="MarginContainer/SettingsMenu/VolumeSettings/MainVolSlider" to="MarginContainer/SettingsMenu" method="_on_main_vol_slider_value_changed"]
+[connection signal="item_selected" from="MarginContainer/SettingsMenu/ControllerSettings/GridContainer/InputTypeButton" to="." method="_on_input_type_button_item_selected"]
 [connection signal="toggled" from="MarginContainer/SettingsMenu/GraphicsSettings/fullscreen" to="MarginContainer/SettingsMenu" method="_on_fullscreen_toggled"]
 [connection signal="toggled" from="MarginContainer/SettingsMenu/GraphicsSettings/Vsync" to="MarginContainer/SettingsMenu" method="_on_vsync_toggled"]
 [connection signal="visibility_changed" from="MarginContainer/SettingsMenu/GraphicsSettings/Vsync" to="." method="_on_vsync_visibility_changed"]

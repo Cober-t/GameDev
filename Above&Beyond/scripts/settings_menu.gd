@@ -1,7 +1,7 @@
 extends Control
 
 @onready var graphics_settings :GridContainer = %GraphicsSettings
-@onready var controller_settings: VScrollBar = %ControllerSettings
+@onready var controller_settings: VBoxContainer = %ControllerSettings
 @onready var volume_settings: GridContainer = %VolumeSettings
 @onready var fullscreen: CheckBox = %GraphicsSettings/fullscreen
 @onready var settings_menu: Control = $Control/MarginContainer/SettingsMenu
@@ -85,5 +85,10 @@ func _on_main_vol_slider_value_changed(value: float) -> void:
 
 
 func _on_visibility_changed() -> void:
-	if music_tab:
+	if music_tab and visible:
 		music_tab.grab_focus()
+
+
+func _on_input_type_button_item_selected(index: int) -> void:
+	if index != -1:
+		Util.INPUT_SCHEME = index

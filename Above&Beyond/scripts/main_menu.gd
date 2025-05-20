@@ -14,6 +14,10 @@ var back_button :Button
 
 func _ready() -> void:
 	focus_button()
+	if main_buttons and main_buttons is VBoxContainer:
+		main_buttons.visible = true
+	if title and title is Label:
+		title.visible = true
 
 func focus_button() -> void:
 	if main_buttons:
@@ -40,7 +44,6 @@ func _on_quit_pressed() -> void:
 
 func _on_visibility_changed() -> void:
 	focus_button()
-
 
 func _on_settings_menu_back_or_quit() -> void:
 	back_menu_button()
