@@ -1,6 +1,6 @@
 [gd_scene load_steps=26 format=3 uid="uid://bdnn4a75cvdhs"]
 
-[ext_resource type="Texture2D" uid="uid://bn8l8ibi013bg" path="res://assets/sprites/knight.png" id="1_3vyb7"]
+[ext_resource type="Texture2D" uid="uid://duxphu7hv6oar" path="res://assets/sprites/knight.png" id="1_3vyb7"]
 [ext_resource type="Script" uid="uid://b6xckmdnl8v13" path="res://scripts/player_movement.gd" id="1_g2els"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_g2els"]

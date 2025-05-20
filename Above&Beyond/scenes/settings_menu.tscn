@@ -1,0 +1,289 @@
+[gd_scene load_steps=2 format=3 uid="uid://dfcjmm1pyu7px"]
+
+[ext_resource type="Script" uid="uid://kme2recleh20" path="res://scripts/settings_menu.gd" id="1_05p07"]
+
+[node name="Control" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+script = ExtResource("1_05p07")
+
+[node name="ColorRect" type="ColorRect" parent="."]
+z_index = 4095
+layout_mode = 0
+offset_left = -72.0
+offset_top = -37.0
+offset_right = 2005.0
+offset_bottom = 1131.0
+mouse_filter = 2
+color = Color(1, 0.556863, 0.321569, 1)
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+z_index = 4096
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 32
+theme_override_constants/margin_top = 32
+theme_override_constants/margin_right = 32
+theme_override_constants/margin_bottom = 32
+
+[node name="SettingsMenu" type="VBoxContainer" parent="MarginContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="Tabs" type="HBoxContainer" parent="MarginContainer/SettingsMenu"]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 2
+theme_override_constants/separation = 16
+
+[node name="MUSIC" type="Button" parent="MarginContainer/SettingsMenu/Tabs"]
+custom_minimum_size = Vector2(353, 0)
+layout_mode = 2
+size_flags_horizontal = 8
+size_flags_vertical = 8
+focus_neighbor_left = NodePath("../../CommonOptions/back")
+focus_neighbor_top = NodePath("../../CommonOptions/back")
+focus_neighbor_right = NodePath("../CONTROLLS")
+focus_neighbor_bottom = NodePath("../CONTROLLS")
+focus_next = NodePath("../CONTROLLS")
+focus_previous = NodePath("../../CommonOptions/back")
+theme_override_font_sizes/font_size = 75
+text = "MUSIC"
+
+[node name="CONTROLLS" type="Button" parent="MarginContainer/SettingsMenu/Tabs"]
+custom_minimum_size = Vector2(353, 0)
+layout_mode = 2
+size_flags_horizontal = 8
+size_flags_vertical = 8
+focus_neighbor_left = NodePath("../MUSIC")
+focus_neighbor_top = NodePath("../MUSIC")
+focus_neighbor_right = NodePath("../GRAPHICS")
+focus_neighbor_bottom = NodePath("../GRAPHICS")
+focus_next = NodePath("../GRAPHICS")
+focus_previous = NodePath("../MUSIC")
+theme_override_font_sizes/font_size = 75
+text = "CONTROLLS"
+
+[node name="GRAPHICS" type="Button" parent="MarginContainer/SettingsMenu/Tabs"]
+custom_minimum_size = Vector2(353, 0)
+layout_mode = 2
+size_flags_horizontal = 8
+size_flags_vertical = 8
+focus_neighbor_left = NodePath("../CONTROLLS")
+focus_neighbor_top = NodePath("../CONTROLLS")
+focus_neighbor_right = NodePath("../../CommonOptions/default")
+focus_neighbor_bottom = NodePath("../../CommonOptions/default")
+focus_next = NodePath("../../CommonOptions/default")
+focus_previous = NodePath("../CONTROLLS")
+theme_override_font_sizes/font_size = 75
+text = "GRAPHICS"
+
+[node name="VolumeSettings" type="GridContainer" parent="MarginContainer/SettingsMenu"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 6
+theme_override_constants/h_separation = 32
+columns = 2
+
+[node name="SFXVolume" type="Label" parent="MarginContainer/SettingsMenu/VolumeSettings"]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 0
+theme_override_font_sizes/font_size = 40
+text = "SFX VOLUME"
+horizontal_alignment = 1
+
+[node name="SFXVolSlider" type="HSlider" parent="MarginContainer/SettingsMenu/VolumeSettings"]
+custom_minimum_size = Vector2(250, 80)
+layout_mode = 2
+focus_neighbor_left = NodePath("../MainVolSlider")
+focus_neighbor_top = NodePath("../MainVolSlider")
+focus_neighbor_right = NodePath("../MusicVolSlider")
+focus_neighbor_bottom = NodePath("../MusicVolSlider")
+focus_next = NodePath("../MusicVolSlider")
+focus_previous = NodePath("../MainVolSlider")
+max_value = 1.0
+step = 0.001
+
+[node name="MusicVolume" type="Label" parent="MarginContainer/SettingsMenu/VolumeSettings"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 40
+text = "MUSIC VOLUME"
+horizontal_alignment = 1
+
+[node name="MusicVolSlider" type="HSlider" parent="MarginContainer/SettingsMenu/VolumeSettings"]
+custom_minimum_size = Vector2(0, 80)
+layout_mode = 2
+focus_neighbor_left = NodePath("../SFXVolSlider")
+focus_neighbor_top = NodePath("../SFXVolSlider")
+focus_neighbor_right = NodePath("../MainVolSlider")
+focus_neighbor_bottom = NodePath("../MainVolSlider")
+focus_next = NodePath("../MainVolSlider")
+focus_previous = NodePath("../SFXVolSlider")
+max_value = 1.0
+step = 0.001
+
+[node name="MainVolume" type="Label" parent="MarginContainer/SettingsMenu/VolumeSettings"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 40
+text = "MAIN VOLUME"
+horizontal_alignment = 1
+
+[node name="MainVolSlider" type="HSlider" parent="MarginContainer/SettingsMenu/VolumeSettings"]
+custom_minimum_size = Vector2(0, 80)
+layout_mode = 2
+size_flags_vertical = 8
+focus_neighbor_left = NodePath("../MusicVolSlider")
+focus_neighbor_top = NodePath("../MusicVolSlider")
+focus_neighbor_right = NodePath("../SFXVolSlider")
+focus_neighbor_bottom = NodePath("../SFXVolSlider")
+focus_next = NodePath("../SFXVolSlider")
+focus_previous = NodePath("../MusicVolSlider")
+max_value = 1.0
+step = 0.001
+
+[node name="ControllerSettings" type="VScrollBar" parent="MarginContainer/SettingsMenu"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+size_flags_horizontal = 1
+size_flags_vertical = 3
+
+[node name="GridContainer" type="GridContainer" parent="MarginContainer/SettingsMenu/ControllerSettings"]
+layout_mode = 2
+offset_left = 835.0
+offset_top = -221.0
+offset_right = 1020.0
+offset_bottom = -39.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 4
+size_flags_vertical = 6
+theme_override_constants/h_separation = 48
+columns = 2
+
+[node name="JumpKey" type="Label" parent="MarginContainer/SettingsMenu/ControllerSettings/GridContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 40
+text = "Jump"
+horizontal_alignment = 1
+
+[node name="JumpKeyEnter" type="Button" parent="MarginContainer/SettingsMenu/ControllerSettings/GridContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 36
+text = "A"
+
+[node name="DashKey" type="Label" parent="MarginContainer/SettingsMenu/ControllerSettings/GridContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 40
+text = "Dash"
+horizontal_alignment = 1
+
+[node name="DashKeyEnter" type="Button" parent="MarginContainer/SettingsMenu/ControllerSettings/GridContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 36
+text = "Q"
+
+[node name="RunKey" type="Label" parent="MarginContainer/SettingsMenu/ControllerSettings/GridContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 40
+text = "Run"
+horizontal_alignment = 1
+
+[node name="RunKeyEnter" type="Button" parent="MarginContainer/SettingsMenu/ControllerSettings/GridContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 36
+text = "E"
+
+[node name="GraphicsSettings" type="GridContainer" parent="MarginContainer/SettingsMenu"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 2
+
+[node name="fullscreen" type="CheckBox" parent="MarginContainer/SettingsMenu/GraphicsSettings"]
+layout_direction = 3
+layout_mode = 2
+focus_neighbor_left = NodePath("../Vsync")
+focus_neighbor_top = NodePath("../Vsync")
+focus_neighbor_right = NodePath("../Vsync")
+focus_neighbor_bottom = NodePath("../Vsync")
+focus_next = NodePath("../Vsync")
+focus_previous = NodePath("../Vsync")
+theme_override_constants/h_separation = 75
+theme_override_font_sizes/font_size = 48
+text = "FULLSCREEN"
+
+[node name="Vsync" type="CheckBox" parent="MarginContainer/SettingsMenu/GraphicsSettings"]
+layout_direction = 3
+layout_mode = 2
+focus_neighbor_left = NodePath("../fullscreen")
+focus_neighbor_top = NodePath("../fullscreen")
+focus_neighbor_right = NodePath("../fullscreen")
+focus_neighbor_bottom = NodePath("../fullscreen")
+focus_next = NodePath("../fullscreen")
+focus_previous = NodePath("../fullscreen")
+theme_override_constants/h_separation = 75
+theme_override_font_sizes/font_size = 48
+text = "Vsync"
+
+[node name="CommonOptions" type="HBoxContainer" parent="MarginContainer/SettingsMenu"]
+layout_mode = 2
+size_flags_horizontal = 8
+size_flags_vertical = 10
+theme_override_constants/separation = 16
+
+[node name="default" type="Button" parent="MarginContainer/SettingsMenu/CommonOptions"]
+custom_minimum_size = Vector2(353, 0)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 6
+focus_neighbor_left = NodePath("../../Tabs/GRAPHICS")
+focus_neighbor_top = NodePath("../../Tabs/GRAPHICS")
+focus_neighbor_right = NodePath("../back")
+focus_neighbor_bottom = NodePath("../back")
+focus_next = NodePath("../back")
+focus_previous = NodePath("../../Tabs/GRAPHICS")
+theme_override_font_sizes/font_size = 75
+text = "DEFAULT"
+
+[node name="back" type="Button" parent="MarginContainer/SettingsMenu/CommonOptions"]
+custom_minimum_size = Vector2(353, 0)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 6
+focus_neighbor_left = NodePath("../default")
+focus_neighbor_top = NodePath("../default")
+focus_neighbor_right = NodePath("../../Tabs/MUSIC")
+focus_neighbor_bottom = NodePath("../../Tabs/MUSIC")
+focus_next = NodePath("../../Tabs/MUSIC")
+focus_previous = NodePath("../default")
+theme_override_font_sizes/font_size = 75
+text = "BACK"
+
+[node name="AudioStreamPlayer2D" type="AudioStreamPlayer2D" parent="."]
+
+[connection signal="visibility_changed" from="." to="." method="_on_visibility_changed"]
+[connection signal="pressed" from="MarginContainer/SettingsMenu/Tabs/MUSIC" to="." method="_on_music_settings_pressed"]
+[connection signal="pressed" from="MarginContainer/SettingsMenu/Tabs/CONTROLLS" to="." method="_on_controlls_settings_pressed"]
+[connection signal="pressed" from="MarginContainer/SettingsMenu/Tabs/GRAPHICS" to="." method="_on_graphics_settings_pressed"]
+[connection signal="value_changed" from="MarginContainer/SettingsMenu/VolumeSettings/SFXVolSlider" to="MarginContainer/SettingsMenu" method="_on_sfx_vol_slider_value_changed"]
+[connection signal="value_changed" from="MarginContainer/SettingsMenu/VolumeSettings/MusicVolSlider" to="MarginContainer/SettingsMenu" method="_on_music_vol_slider_value_changed"]
+[connection signal="value_changed" from="MarginContainer/SettingsMenu/VolumeSettings/MainVolSlider" to="MarginContainer/SettingsMenu" method="_on_main_vol_slider_value_changed"]
+[connection signal="toggled" from="MarginContainer/SettingsMenu/GraphicsSettings/fullscreen" to="MarginContainer/SettingsMenu" method="_on_fullscreen_toggled"]
+[connection signal="toggled" from="MarginContainer/SettingsMenu/GraphicsSettings/Vsync" to="MarginContainer/SettingsMenu" method="_on_vsync_toggled"]
+[connection signal="visibility_changed" from="MarginContainer/SettingsMenu/GraphicsSettings/Vsync" to="." method="_on_vsync_visibility_changed"]
+[connection signal="pressed" from="MarginContainer/SettingsMenu/CommonOptions/default" to="MarginContainer/SettingsMenu" method="_on_default_pressed"]
+[connection signal="pressed" from="MarginContainer/SettingsMenu/CommonOptions/back" to="." method="_on_back_pressed"]
