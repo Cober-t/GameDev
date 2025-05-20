@@ -35,18 +35,22 @@ func _on_credits_pressed() -> void:
 	credits_menu.get_node("back").grab_focus()
 
 
-func _on_back_pressed() -> void:
-	main_buttons.visible  = true
-	if settings_menu.visible:
-		settings_menu.visible = false
-		main_buttons.get_node("settings").grab_focus()
-	if credits_menu.visible:
-		credits_menu.visible  = false
-		main_buttons.get_node("credits").grab_focus()
-
-
 func _on_quit_pressed() -> void:
 	get_tree().quit()
 
 func _on_visibility_changed() -> void:
+	focus_button()
+
+
+func _on_settings_menu_back_or_quit() -> void:
+	back_menu_button()
+
+func _on_back_pressed() -> void:
+	back_menu_button()
+
+func back_menu_button() -> void:
+	title.visible = true
+	main_buttons.visible  = true
+	settings_menu.visible = false
+	credits_menu.visible  = false
 	focus_button()

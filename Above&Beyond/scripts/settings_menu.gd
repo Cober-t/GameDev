@@ -18,6 +18,7 @@ extends Control
 @onready var default_button: Button = $CommonOptions/default
 @onready var back_button: Button = $CommonOptions/back
 
+signal back_or_quit()
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
@@ -67,6 +68,7 @@ func _on_back_pressed() -> void:
 	controller_settings.visible = false
 	graphics_settings.visible   = false
 	hide()
+	back_or_quit.emit()
 
 func _on_default_pressed() -> void:
 	pass # Replace with function body.

@@ -130,4 +130,5 @@ text = "BACK"
 [connection signal="pressed" from="Control/MarginContainer/MainButtons/settings" to="." method="_on_settings_pressed"]
 [connection signal="pressed" from="Control/MarginContainer/MainButtons/credits" to="." method="_on_credits_pressed"]
 [connection signal="pressed" from="Control/MarginContainer/MainButtons/quit" to="." method="_on_quit_pressed"]
+[connection signal="back_or_quit" from="Control/MarginContainer/SettingsMenu" to="." method="_on_settings_menu_back_or_quit"]
 [connection signal="pressed" from="Control/MarginContainer/CreditsMenu/back" to="." method="_on_back_pressed"]
