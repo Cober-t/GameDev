@@ -6,7 +6,6 @@ extends Control
 
 @onready var volume_settings: GridContainer = %VolumeSettings
 @onready var fullscreen: CheckBox = %GraphicsSettings/fullscreen
-@onready var settings_menu: Control = $Control/MarginContainer/SettingsMenu
 @onready var music_tab: Button = $MarginContainer/SettingsMenu/Tabs/MUSIC
 
 @onready var main_vol_slider: HSlider = %VolumeSettings/MainVolSlider
@@ -17,8 +16,7 @@ extends Control
 @onready var MUSIC_BUS_ID = AudioServer.get_bus_index("Music")
 @onready var SFX_BUS_ID = AudioServer.get_bus_index("SFX")
 
-@onready var default_button: Button = $CommonOptions/default
-@onready var back_button: Button = $CommonOptions/back
+#@onready var default_button: Button = $CommonOptions/default
 
 @export var action_items: Array[String]
 
@@ -38,7 +36,6 @@ func _on_controlls_settings_pressed() -> void:
 	volume_settings.visible     = false
 	controller_settings.visible = true
 	graphics_settings.visible   = false
-	print(graphics_settings.visible)
 
 
 func _on_graphics_settings_pressed() -> void:
@@ -87,14 +84,13 @@ func _on_visibility_changed() -> void:
 
 func _on_input_type_button_item_selected(index: int) -> void:
 	if index != -1:
-		Util.INPUT_SCHEME = index
+		Util.INPUT_SCHEME = index as Util.INPUT_SCHEMES
 		change_action_remap_items()
 
 func create_action_remap_items() -> void:
 	var previous_item = controller_settings.get_child(0).get_child(-1)
-	var inputs_count = Util.INPUT_SCHEME
-	var start_range = (action_items.size() / Util.INPUT_SCHEMES.size()) * Util.INPUT_SCHEME
-	var end_range = start_range + action_items.size() / Util.INPUT_SCHEMES.size()
+	var start_range = (action_items.size() / floor(Util.INPUT_SCHEMES.size())) * Util.INPUT_SCHEME
+	var end_range = start_range + action_items.size() / floor(Util.INPUT_SCHEMES.size())
 	for index in range(start_range, end_range):
 		var action = action_items[index]
 		var label = Label.new()
@@ -103,28 +99,29 @@ func create_action_remap_items() -> void:
 		
 		var button = RemapButton.new()
 		button.action = action
+		inputs_container.add_child(button)
 		button.focus_neighbor_top = previous_item.get_path()
 		previous_item.focus_neighbor_bottom = button.get_path()
+		previous_item = button
 		#if index == action_items.size() - 1:
 			#print(default_button)
 			#default_button.focus_neighbor_top = button.get_path()
 			#button.focus_neighbor_bottom = default_button.get_path()
-		previous_item = button
-		inputs_container.add_child(button)
 
 func change_action_remap_items() -> void:
-	var previous_item = controller_settings.get_child(0).get_child(-1)
-	var inputs_count = Util.INPUT_SCHEME
-	var index_action = (action_items.size() / Util.INPUT_SCHEMES.size()) * Util.INPUT_SCHEME
-	
 	var index = 2
+	var index_action = (action_items.size() / floor(Util.INPUT_SCHEMES.size())) * Util.INPUT_SCHEME
 	while index < controller_settings.get_child(0).get_children().size():
 		var action = action_items[index_action]
 		var action_text = fix_action_text(action)
-		inputs_container.get_child(index).text = action_text
+		var input_label = inputs_container.get_child(index)
+		if input_label is Label:
+			input_label.text = action_text
 		index += 1
-		inputs_container.get_child(index).action = action
-		inputs_container.get_child(index).update_key_text()
+		var input_remap_button = inputs_container.get_child(index)
+		if input_remap_button is RemapButton:
+			input_remap_button.action = action
+			input_remap_button.update_key_text()
 		index += 1
 		index_action += 1
 

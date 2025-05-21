@@ -5,7 +5,7 @@ extends Control
 func _ready() -> void:
 	settings_menu.find_child("back").text = "QUIT"
 	
-func _process(delta: float) -> void:
+func _process(_delta: float) -> void:
 	if Input.is_action_just_pressed("ui_cancel") or Input.is_action_just_pressed("ui_select"):
 		settings_menu.visible = !settings_menu.visible
 		Engine.time_scale = int(!settings_menu.visible)

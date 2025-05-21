@@ -1,12 +1,9 @@
 extends CanvasLayer
 
 @export var level: PackedScene
-@onready var margin_container: MarginContainer = $Control/MarginContainer
 @onready var main_buttons: VBoxContainer = $Control/MarginContainer/MainButtons
 @onready var credits_menu: VBoxContainer = $Control/MarginContainer/CreditsMenu
-@onready var music_tab_settings: Button = $Control/MarginContainer/SettingsMenu/Tabs/MUSIC
 @onready var title: Label = $Control/MarginContainer/Title
-@onready var menu_root: MarginContainer = $Control/MarginContainer
 @onready var settings_menu: Control = $Control/MarginContainer/SettingsMenu
 
 var default_button :Button

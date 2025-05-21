@@ -11,7 +11,7 @@ func _ready() -> void:
 	set_process_unhandled_input(false)
 	update_key_text()
 	
-func _toggled(toggled_on: bool) -> void:
+func _toggled(_toggled_on: bool) -> void:
 	set_process_unhandled_input(button_pressed)
 	if button_pressed:
 		text = "... Await Input ..."

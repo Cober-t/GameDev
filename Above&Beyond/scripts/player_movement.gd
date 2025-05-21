@@ -85,7 +85,7 @@ func handle_movement(dir: float) ->void:
 	
 	# Get the input direction: -1, 0, 1
 	if dir and not is_dashing:
-		last_direction_pressed = dir
+		last_direction_pressed = int(dir) # TODO: Handle it better for the controller
 		velocity.x = move_toward(velocity.x, dir * speed, speed * aceleration)
 	else:
 		velocity.x = move_toward(velocity.x, 0, speed * deceleration)
