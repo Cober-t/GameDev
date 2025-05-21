@@ -1,6 +1,6 @@
 [gd_scene load_steps=4 format=3 uid="uid://l3q01hl1j20x"]
 
-[ext_resource type="Script" uid="uid://d2lvkgm0pq5q8" path="res://scripts/main_menu.gd" id="1_l6cm7"]
+[ext_resource type="Script" uid="uid://d2lvkgm0pq5q8" path="res://scripts/ui/main_menu.gd" id="1_l6cm7"]
 [ext_resource type="PackedScene" uid="uid://d2mcdacknd8y0" path="res://scenes/main.tscn" id="2_ekxnf"]
 [ext_resource type="PackedScene" uid="uid://dfcjmm1pyu7px" path="res://scenes/settings_menu.tscn" id="3_bqqt6"]
 
@@ -41,7 +41,6 @@ theme_override_constants/margin_right = 32
 theme_override_constants/margin_bottom = 32
 
 [node name="Title" type="Label" parent="Control/MarginContainer"]
-visible = false
 layout_mode = 2
 size_flags_horizontal = 4
 size_flags_vertical = 0
@@ -51,7 +50,6 @@ horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="MainButtons" type="VBoxContainer" parent="Control/MarginContainer"]
-visible = false
 layout_mode = 2
 size_flags_horizontal = 4
 size_flags_vertical = 10
@@ -102,6 +100,7 @@ theme_override_font_sizes/font_size = 75
 text = "QUIT"
 
 [node name="SettingsMenu" parent="Control/MarginContainer" instance=ExtResource("3_bqqt6")]
+visible = false
 layout_mode = 2
 
 [node name="CreditsMenu" type="VBoxContainer" parent="Control/MarginContainer"]
