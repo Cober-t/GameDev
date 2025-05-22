@@ -69,13 +69,16 @@ func _on_default_pressed() -> void:
 	
 	
 func _on_sfx_vol_slider_value_changed(value: float) -> void:
-	AudioServer.set_bus_volume_linear(AudioServer.get_bus_index("SFX"), value)
+	pass
+	#AudioServer.set_bus_volume_linear(AudioServer.get_bus_index("SFX"), value)
 
 func _on_music_vol_slider_value_changed(value: float) -> void:
-	AudioServer.set_bus_volume_linear(AudioServer.get_bus_index("MUSIC"), value)
+	pass
+	#AudioServer.set_bus_volume_linear(AudioServer.get_bus_index("MUSIC"), value)
 
 func _on_main_vol_slider_value_changed(value: float) -> void:
-	AudioServer.set_bus_volume_linear(AudioServer.get_bus_index("Master"), value)
+	pass
+	#AudioServer.set_bus_volume_linear(AudioServer.get_bus_index("Master"), value)
 
 
 func _on_visibility_changed() -> void:
