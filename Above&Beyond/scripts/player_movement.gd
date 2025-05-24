@@ -4,7 +4,8 @@ extends CharacterBody2D
 @export var run_speed :float = 250.0
 @export_range(0, 1) var deceleration :float = 0.1
 @export_range(0, 1) var aceleration  :float = 0.1
-@onready var camera_2d: Camera2D = $"../Camera2D"
+#@onready var camera_2d: Camera2D = $"../Camera2D"
+@onready var camera_2d: Camera2D = $Camera2D
 
 @export var max_jumps :int = 2
 @export var jump_force :float = -300.0
@@ -64,18 +65,19 @@ func fix_movement_jittering():
 
 # ---------------------------------------------------------------------
 
-func _process(delta: float) -> void:
-	pass
-	#fix_movement_jittering()
-		
+func _process(_delta: float) -> void:
+	fix_movement_jittering()
+
+# ---------------------------------------------------------------------
+
 func _physics_process(delta: float) -> void:
 	previous_position = global_position
 	
 	var direction = Global.moving_direction()
-	#handle_dash(delta)
-	#handle_jump(delta)
+	handle_dash(delta)
+	handle_jump(delta)
 	handle_movement(direction)
-	#play_animations(direction)
+	play_animations(direction)
 	
 	move_and_slide()
 	
