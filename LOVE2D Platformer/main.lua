@@ -1,27 +1,45 @@
 _G.love = require("love")
 
 player = {}
+CamZoom = 4
 function love.load()
     love.graphics.setDefaultFilter("nearest", "nearest")
-    love.physics.setMeter(32)
-    world = love.physics.newWorld(0, 0)
+    love.window.setVSync = true
     anim8 = require 'libraries/anim8/anim8' -- Animation utility
     sti = require 'libraries/sti'           -- Level importer from Tiled
     humCamera = require 'libraries/hump/camera'-- Camera utility from HUMP
-    camera = humCamera()
+    wf = require "libraries/windfield"
 
-    gameMap = sti("assets/maps/testLevel.lua", { "box2d" })
-    gameMap:box2d_init(world)
+    gameMap = sti("assets/maps/testLevel.lua")
+
+    world = wf.newWorld(0, 10000)
+    -- Test
+    ground = {}
+    if gameMap.layers["Ground"] then
+        for i, obj in pairs(gameMap.layers["Ground"].objects) do
+            local wall = world:newRectangleCollider(obj.x, obj.y, obj.width, obj.height)
+            wall:setType("static")
+            table.insert(ground, wall)
+        end
+    end
 
     player:initAnimations()
-    -- background = love.graphics.newImage("assets/sprites/world_tileset.png")
+
+    -- Put the player on the floor for this level
+    player.y = gameMap.height * gameMap.tileheight - love.graphics.getHeight()/2 + 150
+    player.collider = world:newRectangleCollider(200, player.y, 8, 12)
+    player.collider:setFixedRotation(true)
+
+    camera = humCamera()
+    camera:zoom(CamZoom)
+    camera:lookAt(player.x, player.y)
 end
 
 function player:initAnimations()
-    self.x = 0
+    self.x = 300
     self.y = 0
     self.direction = 1
-    self.speed = 200.0
+    self.speed = 130.0
     self.spriteSheet = love.graphics.newImage("assets/sprites/knight.png")
     self.grid = anim8.newGrid(32, 32, self.spriteSheet:getWidth(), self.spriteSheet:getHeight())
 
@@ -36,56 +54,64 @@ function player:initAnimations()
 end
 
 
+-- function love.keypressed(key)
+-- end
+
+
 function love.update(dt)
+    local vx = 0
+    local vy = 0
     local state = ""
     if love.keyboard.isDown("left") then
-        player.x = player.x - dt * player.speed
+        vx = player.speed * -1
         player.direction = -1
         state = "walkLeft"
     elseif love.keyboard.isDown("right") then
-        player.x = player.x + dt * player.speed
+        vx = player.speed
         player.direction = 1
         state = "walkRight"
-    -- elseif love.keyboard.isDown("space") then
-    --     player.y = player.y + dt * player.speed
-    --     if player.direction == -1 then state = "jumpLeft" else state = "jumpRight" end
+    elseif love.keyboard.isDown("space") then
+        vy = player.speed * -1
+        player.collider:applyLinearImpulse(0, -50)
+        if player.direction == -1 then state = "jumpLeft" else state = "jumpRight" end
     elseif love.keyboard.isDown("escape") then
         love.event.quit()
     elseif player.direction == -1 then state = "idleLeft" else state = "idleRight" end
 
+    -- Apply Animation
     player.state = state
     player.animation = player.animations[player.state]
     player.animation:update(dt)
 
-    local leftLimit = love.graphics.getWidth()
-    local topLimit = love.graphics.getHeight()
-    local rightLimit = gameMap.width * gameMap.tilewidth
-    local bottomLimit = gameMap.height * gameMap.tileheight
-    -- camera:lookAt(player.x, player.y - bottomLimit - topLimit/2)
-    camera:lookAt(player.x, player.y)
+    camera:lockPosition(player.x, player.y, humCamera.smooth.damped(175 * dt))
+    -- camera.x = math.floor(camera.x)
+    -- camera.y = math.floor(camera.y)
 
-    if camera.x < leftLimit / 2 then
-        camera.x = leftLimit /2
-    end
-    if camera.y < topLimit / 2 then
-        camera.y = topLimit / 2
-    end
-    if camera.x > rightLimit - leftLimit / 2 then
-        camera.x = rightLimit - leftLimit /2
-    end
-    if camera.y > bottomLimit - topLimit / 2 then
-        camera.y = bottomLimit - topLimit /2
-    end
+    -- Apply Physics
+    world:update(dt)
+    player.x = player.collider:getX() - 8
+    player.y = player.collider:getY() - 13
+    player.collider:setLinearVelocity(vx, vy)
+
+    -- Camera limit
+    local leftLimit   = love.graphics.getWidth() / (2 * CamZoom)
+    local topLimit    = love.graphics.getHeight()/ (2 * CamZoom)
+    local rightLimit  = gameMap.width * gameMap.tilewidth
+    local bottomLimit = gameMap.height* gameMap.tileheight
+    if camera.x < leftLimit   then camera.x = leftLimit   end
+    if camera.y < topLimit    then camera.y = topLimit    end
+    if camera.x > rightLimit  then camera.x = rightLimit  end
+    if camera.y > bottomLimit then camera.y = bottomLimit end
 end
 
 function love.draw()
-    local scale = 5
     camera:attach()
         gameMap:drawLayer(gameMap.layers["Background"])
         gameMap:drawLayer(gameMap.layers["World"])
-        player.animation:draw(player.spriteSheet, player.x, player.y, nil, scale, scale, 8, 8)
+        player.animation:draw(player.spriteSheet, player.x, player.y, nil, 1, 1, 8, 8)
+        -- world:draw()
     camera:detach()
 
     -- Draw HUD
-    love.graphics.print(player.state)
+    love.graphics.print("FPS: "..tostring(love.timer.getFPS()).." -- State: "..player.state)
 end
