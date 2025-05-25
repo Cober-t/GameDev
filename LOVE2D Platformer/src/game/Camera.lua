@@ -1,19 +1,27 @@
 Camera = Class:extend()
 
 function Camera:new(level)
-    self.camera = HumCamera()
-    self.camera:zoom(CAM_ZOOM)
+    self.nativeCam = HumCamera()
+    self.nativeCam:zoom(CAM_ZOOM)
     self.currentLevel = level
     self.target = nil
+    self.drawList = nil
+    self.enabled = true
 end
 
 function Camera:setTarget(target)
     if self.target == nil then self.target = target end
-    self.camera:lookAt(target.x, target.y)
+    self.nativeCam:lookAt(target.x, target.y)
 end
 
+-- function Camera:addDrawable(elem, order)
+--     self.drawList.appended(elem, order)
+-- end
+
 function Camera:update(target, dt)
-    self.camera:lockPosition(target.x, target.y, self.camera.smooth.damped(225 * dt))
+    if self.enabled then
+        self.nativeCam:lockPosition(target.x, target.y, self.nativeCam.smooth.damped(225 * dt))
+    end
 
     -- Camera limit
     local leftLimit   = love.graphics.getWidth() / (2 * CAM_ZOOM)
@@ -21,13 +29,13 @@ function Camera:update(target, dt)
     -- If its a tiled map and not a full image
     local rightLimit  = self.currentLevel.tileMap.width  * self.currentLevel.tileMap.tilewidth
     local bottomLimit = self.currentLevel.tileMap.height * self.currentLevel.tileMap.tileheight
-    if self.camera.x < leftLimit   then self.camera.x = leftLimit   end
-    if self.camera.y < topLimit    then self.camera.y = topLimit    end
-    if self.camera.x > rightLimit  then self.camera.x = rightLimit  end
-    if self.camera.y > bottomLimit then self.camera.y = bottomLimit end
+    if self.nativeCam.x < leftLimit   then self.nativeCam.x = leftLimit   end
+    if self.nativeCam.y < topLimit    then self.nativeCam.y = topLimit    end
+    if self.nativeCam.x > rightLimit  then self.nativeCam.x = rightLimit  end
+    if self.nativeCam.y > bottomLimit then self.nativeCam.y = bottomLimit end
 end
 
-function Camera:draw(player)
+function Camera:draw(...)
 
     -- if gameMap.layers["Ground"] then
     --     for i, obj in pairs(gameMap.layers["Ground"].objects) do
@@ -36,9 +44,11 @@ function Camera:draw(player)
     --         table.insert(ground, wall)
     --     end
     -- end
-
-    self.camera:attach()
-        self.currentLevel:draw()
-        player:draw()
-    self.camera:detach()
+    self.nativeCam:attach()
+        for index, sceneElem in ipairs({...}) do
+            if sceneElem.draw and sceneElem.visible then
+                sceneElem:draw()
+            end
+        end
+    self.nativeCam:detach()
 end

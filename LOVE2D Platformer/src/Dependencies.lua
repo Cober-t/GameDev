@@ -26,9 +26,21 @@ LevelMaps = {
 
 -- GAME CODE --
 require "src/constants"
-Level = require "src/level"
 
+Level = require "src/framework/level"
+require "src/framework/entity"
+require "src/framework/baseEntityState"
+require "src/framework/gameStateMachine"
+
+
+require "src/entities/playerStates/playerIdleState"
+require "src/entities/playerStates/playerWalkState"
 require "src/game/player"
 require "src/game/level1"
 require "src/game/camera"
+
+require "src/playStates/startState"
+require "src/playStates/playState"
+require "src/playStates/pauseState"
 require "src/systems/input"
+
