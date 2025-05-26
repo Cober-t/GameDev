@@ -1,23 +1,22 @@
-
-
 require 'src/Dependencies'
-
 
 local player = Player(300, 0)
 local level = Level1(LevelMaps.first)
 local camera = Camera(level)
+local world = ECS.world()
 
+local bumpWorld = Bump.newWorld(CELL_SIZE)
 
 function love.load()
+
+
+
     -- Test
-    -- ground = {}
-    -- if gameMap.layers["Ground"] then
-    --     for i, obj in pairs(gameMap.layers["Ground"].objects) do
-    --         local wall = world:newRectangleCollider(obj.x, obj.y, obj.width, obj.height)
-    --         wall:setType("static")
-    --         table.insert(ground, wall)
-    --     end
-    -- end
+    if level.layers["Ground"] then
+        for i, obj in pairs(level.layers["Ground"].objects) do
+            bumpWorld:add(obj, obj.x, obj.y, obj.width, obj.height)
+        end
+    end
 
     Push:setupScreen(VIRTUAL_WIDTH, VIRTUAL_HEIGHT, WINDOW_WIDTH, WINDOW_HEIGHT, {
         fullscreen = false,
@@ -35,6 +34,7 @@ function love.load()
     -- Put the player on the floor for this level
     local posY =  level.tileMap.height * level.tileMap.tileheight - love.graphics.getHeight()/2 + 150
     player.y = posY
+    bumpWorld:add(player, player.x, player.y, 12, 19)
 
     camera:setTarget(player)
 end
@@ -65,6 +65,15 @@ end
 
 function love.update(dt)
     player:update(dt)
+    player.y = player.y + (GRAVITY * dt)
+
+    -- update player collider to the new pos
+    local actualX, actualY, cols, len = bumpWorld:move(player, player.x, player.y)
+    player.x = actualX
+    player.y = actualY
+    -- check if for collisions
+    -- ....
+
 
     sceneStates.update(dt)
     camera:update(player, dt)

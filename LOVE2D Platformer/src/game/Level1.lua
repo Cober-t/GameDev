@@ -5,8 +5,8 @@ function Level1:new(tileMap)
 end
 
 function Level1:draw()
-    self.tileMap:drawLayer(self.layers[LVL_LAYER_BG].instance)
-    self.tileMap:drawLayer(self.layers[LVL_LAYER_WORLD].instance)
+    self.tileMap:drawLayer(self.layers[LVL_LAYER_BG])
+    self.tileMap:drawLayer(self.layers[LVL_LAYER_WORLD])
 end
 
 -- levels.level1 = Level1()

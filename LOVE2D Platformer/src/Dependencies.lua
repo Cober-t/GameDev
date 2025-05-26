@@ -9,7 +9,7 @@ HumCamera = require 'libraries/hump/camera' -- Camera utility from HUMP
 Bump = require "libraries/bump/bump"
 Push = require "libraries/push/push"
 Class = require "libraries/class/classic"
-ECS = require "libraries/ecs/tiny"
+ECS = require "libraries/concord"
 -- knife = require "libraries/knife"
 
 
@@ -31,6 +31,7 @@ Level = require "src/framework/level"
 require "src/framework/entity"
 require "src/framework/baseEntityState"
 require "src/framework/gameStateMachine"
+require "src/framework/components"
 
 
 require "src/entities/playerStates/playerIdleState"
@@ -43,4 +44,5 @@ require "src/playStates/startState"
 require "src/playStates/playState"
 require "src/playStates/pauseState"
 require "src/systems/input"
+require "src/systems/physics"
 

@@ -5,4 +5,5 @@ function love.conf(t)
     t.window.height     = 720
     t.window.setVSync   = true
     t.window.resizable  = true
+    t.console = true
 end
