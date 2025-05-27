@@ -1,35 +1,3 @@
--- ANSI color codes for terminal output
-local colors = {
-    reset = "\27[0m",
-    -- Text colors
-    black = "\27[30m",
-    red = "\27[31m",
-    green = "\27[32m",
-    yellow = "\27[33m",
-    blue = "\27[34m",
-    magenta = "\27[35m",
-    cyan = "\27[36m",
-    white = "\27[37m",
-    -- Bright colors
-    bright_red = "\27[91m",
-    bright_green = "\27[92m",
-    bright_yellow = "\27[93m",
-    bright_blue = "\27[94m",
-    bright_magenta = "\27[95m",
-    bright_cyan = "\27[96m",
-    bright_white = "\27[97m",
-    -- Background colors
-    bg_red = "\27[41m",
-    bg_green = "\27[42m",
-    bg_yellow = "\27[43m",
-    bg_blue = "\27[44m",
-    -- Text styles
-    bold = "\27[1m",
-    dim = "\27[2m",
-    italic = "\27[3m",
-    underline = "\27[4m"
-}
-
 -- Log levels
 LogLevel = {
     DEBUG = 1,
@@ -44,7 +12,6 @@ Logger = Class:extend()
 
 function Logger:new()
     self.level = LogLevel.INFO  -- Default log level
-    self.enableColors = true    -- Enable colors by default
     self.enableTimestamp = true -- Enable timestamps by default
     self.logToFile = false      -- Log to file
     self.logFile = nil          -- File handle
@@ -54,27 +21,22 @@ function Logger:new()
     self.levelConfig = {
         [LogLevel.DEBUG] = {
             name = "DEBUG",
-            color = colors.cyan,
             prefix = "[DEBUG]"
         },
         [LogLevel.INFO] = {
             name = "INFO",
-            color = colors.green,
             prefix = "[INFO] "
         },
         [LogLevel.WARN] = {
             name = "WARN",
-            color = colors.yellow .. colors.bold,
             prefix = "[WARN] "
         },
         [LogLevel.ERROR] = {
             name = "ERROR",
-            color = colors.red .. colors.bold,
             prefix = "[ERROR]"
         },
         [LogLevel.FATAL] = {
             name = "FATAL",
-            color = colors.bg_red .. colors.bright_white .. colors.bold,
             prefix = "[FATAL]"
         }
     }
@@ -104,10 +66,6 @@ function Logger:disableFileLogging()
     end
 end
 
-function Logger:setColors(enabled)
-    self.enableColors = enabled
-end
-
 function Logger:setTimestamp(enabled)
     self.enableTimestamp = enabled
 end
@@ -135,15 +93,7 @@ function Logger:formatMessage(level, message, ...)
     -- Add message
     table.insert(parts, formattedMessage)
 
-    local logEntry = table.concat(parts, " ")
-
-    -- Add colors for console output
-    local coloredEntry = logEntry
-    if self.enableColors then
-        coloredEntry = config.color .. logEntry .. colors.reset
-    end
-
-    return coloredEntry, logEntry
+    return table.concat(parts, " ")
 end
 
 function Logger:log(level, message, ...)
@@ -152,14 +102,14 @@ function Logger:log(level, message, ...)
         return
     end
 
-    local coloredMessage, plainMessage = self:formatMessage(level, message, ...)
+    local formattedMessage = self:formatMessage(level, message, ...)
 
     -- Print to console
-    print(coloredMessage)
+    print(formattedMessage)
 
     -- Write to file if enabled
     if self.logToFile and self.logFile then
-        self.logFile:write(plainMessage .. "\n")
+        self.logFile:write(formattedMessage .. "\n")
         self.logFile:flush()
     end
 end
@@ -187,8 +137,7 @@ end
 
 -- Special formatting methods
 function Logger:success(message, ...)
-    local coloredMessage = colors.bright_green .. colors.bold .. "[SUCCESS] " .. string.format(message, ...) .. colors.reset
-    print(coloredMessage)
+    print("[SUCCESS] " .. string.format(message, ...))
 
     if self.logToFile and self.logFile then
         local plainMessage = "[SUCCESS] " .. string.format(message, ...)
@@ -198,11 +147,6 @@ function Logger:success(message, ...)
         self.logFile:write(plainMessage .. "\n")
         self.logFile:flush()
     end
-end
-
-function Logger:highlight(message, ...)
-    local coloredMessage = colors.bright_cyan .. colors.bold .. string.format(message, ...) .. colors.reset
-    print(coloredMessage)
 end
 
 -- Pretty print tables (useful for debugging)
@@ -274,7 +218,6 @@ error("Invalid game state: %s", currentState)
 -- Configuration
 logger:setLevel(LogLevel.DEBUG)  -- Show all messages
 logger:enableFileLogging("my_game.log")  -- Log to file
-logger:setColors(false)  -- Disable colors
 
 -- Special formatting
 logger:success("Level completed!")
@@ -285,7 +228,7 @@ logger:table(player, "player")
 logger:table({x = 10, y = 20, items = {"sword", "potion"}}, "inventory")
 
 -- Performance benchmarking
-logger:benchmark("Level loading", function()
+local result = logger:benchmark("Level loading", function()
     -- Your expensive operation here
     love.timer.sleep(0.1)
     return "level_data"
