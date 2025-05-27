@@ -15,6 +15,7 @@ local camera = Camera(levels.level1)
 local currentLevel
 
 function PlayState:new()
+    Log:info("Play State created!")
 end
 
 function PlayState:enter()

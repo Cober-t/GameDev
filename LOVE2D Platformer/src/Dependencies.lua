@@ -29,7 +29,7 @@ require "src/constants"
 
 require "src/framework/level"
 require "src/framework/entity"
-require "src/framework/log"
+require "src/framework/logger"
 require "src/framework/baseEntityState"
 require "src/framework/gameStateMachine"
 require "src/framework/components"

@@ -1,6 +1,7 @@
 StartState = GameStateMachine:extend()
 
 function StartState:new()
+    Log:info("Start State created!")
 end
 
 function StartState:draw()

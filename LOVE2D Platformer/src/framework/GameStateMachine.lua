@@ -17,6 +17,7 @@ function GameStateMachine:change(stateName)
 	self.current:exit()
 	self.current = self.states[stateName]()
 	self.current:enter()
+	Log:info("State changed!")
 end
 
 function GameStateMachine:draw()

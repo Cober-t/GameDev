@@ -1,8 +1,8 @@
 PauseState = GameStateMachine:extend()
 
 function PauseState:new()
+    Log:info("Pause State created!")
 end
-
 
 function PauseState:draw()
 end
