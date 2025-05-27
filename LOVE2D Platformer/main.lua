@@ -5,6 +5,7 @@ require 'src/Dependencies'
 local world = ECS.world()
 BumpWorld = Bump.newWorld(CELL_SIZE)
 Log = Logger()
+EventDispatcher = EventDispatcher()
 
 local currentState
 

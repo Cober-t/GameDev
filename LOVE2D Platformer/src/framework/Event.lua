@@ -32,6 +32,7 @@ end
 EventDispatcher = Class:extend()
 
 function EventDispatcher:new()
+    Log:info("EventDispatcher created!")
     self.inputs = {}        -- All registered inputs
     self.events = {}        -- All registered events
     self.inputLookup = {}   -- Quick lookup for inputs by key

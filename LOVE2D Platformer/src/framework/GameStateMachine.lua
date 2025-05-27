@@ -1,6 +1,7 @@
 GameStateMachine = Class:extend()
 
 function GameStateMachine:new(states)
+	Log:info("GameStateMachine created!")
 	self.empty = {
 		draw   = function()   end,
 		update = function(dt) end,
@@ -39,13 +40,13 @@ end
 
 
 function GameStateMachine:addKeyboardEvent(key, callback)
-    local event = EventDispatcher:addKeyboardEvent(key, callback, self)
+    local event = EventDispatcher:createKeyboardEvent(key, callback, self)
     self.events[#self.events + 1] = event
     return event
 end
 
 function GameStateMachine:addGamepadEvent(button, callback, joystickId)
-    local event = EventDispatcher:addGamepadEvent(button, callback, self, joystickId)
+    local event = EventDispatcher:createGamepadEvent(button, callback, self, joystickId)
     self.events[#self.events + 1] = event
     return event
 end

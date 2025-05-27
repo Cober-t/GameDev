@@ -1,6 +1,6 @@
 local Input = Class:extend()
 
-function Input:new(key, type)
+function Input:new(type, key)
     self.type = type -- 'keyboard', 'gamepad'
     self.key = key   -- the specific key/button
     self.pressed = false
@@ -39,7 +39,7 @@ function KeyboardInput:new(key)
 end
 
 function KeyboardInput:checkPressed()
-    self.isPressed = love.keyboard.isDown(self.inputKey)
+    self.isPressed = love.keyboard.isDown(self.key)
 end
 
 -- Gamepad Input class

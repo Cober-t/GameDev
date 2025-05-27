@@ -2,6 +2,7 @@ PauseState = GameStateMachine:extend()
 
 function PauseState:new()
     Log:info("Pause State created!")
+    self.events = {}
 end
 
 function PauseState:draw()

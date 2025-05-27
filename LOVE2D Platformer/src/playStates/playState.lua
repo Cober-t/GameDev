@@ -16,6 +16,8 @@ local currentLevel
 
 function PlayState:new()
     Log:info("Play State created!")
+    self.events = {}
+    self:setupInputEvents()
 end
 
 function PlayState:enter()
@@ -39,11 +41,26 @@ end
 function PlayState:update(dt)
     player:update(dt)
     camera:update(player, dt)
-end
 
+    EventDispatcher:update()
+end
 
 function PlayState:draw()
     camera:draw(levels.level1, player)
     -- Draw HUD or DebugSystem
     love.graphics.print("FPS: "..tostring(love.timer.getFPS()).." -- State: "..player.state)
+end
+
+
+-- Handle Events for this GameState--
+function PlayState:setupInputEvents()
+    -- Movement events - these use the game state context to access the player
+    self:addKeyboardEvent('a', function(context, input)
+        context:movePlayer()
+    end)
+end
+
+function PlayState:movePlayer()
+    Log:debug("A PRESSED: MOVE PLAYER EVENT TRIGGER")
+    -- self.player:move(love.timer.getDelta())
 end

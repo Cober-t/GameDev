@@ -12,7 +12,7 @@ Logger = Class:extend()
 
 function Logger:new()
     self.level = LogLevel.INFO  -- Default log level
-    self.enableTimestamp = true -- Enable timestamps by default
+    self.enableTimestamp = false -- Enable timestamps by default
     self.logToFile = false      -- Log to file
     self.logFile = nil          -- File handle
     self.logFileName = "game.log"
