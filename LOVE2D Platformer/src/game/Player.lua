@@ -23,6 +23,16 @@ end
 
 function Player:update(dt)
 
+    self.y = self.y + (GRAVITY * dt)
+
+    -- update player collider to the new pos
+    local actualX, actualY, cols, len = BumpWorld:move(self, self.x, self.y)
+    self.x = actualX
+    self.y = actualY
+    -- check if for collisions
+    -- ....
+    -- ....
+
     -- Update the current state in the future -- 
     -- .........................................
     local vx = 0
@@ -56,7 +66,7 @@ function Player:update(dt)
     -- end
     if jumpPressed and love.keyboard.isDown("space") then
         jumpPressed = false
-        print(maxJump * dt * -1 * 5)
+        -- print(maxJump * dt * -1 * 5)
         self.y = self.y - maxJump * dt * -1 * 5
     end
     -- .........................................
