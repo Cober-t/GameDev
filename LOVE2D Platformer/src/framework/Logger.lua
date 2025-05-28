@@ -1,14 +1,6 @@
--- Log levels
-LogLevel = {
-    DEBUG = 1,
-    INFO = 2,
-    WARN = 3,
-    ERROR = 4,
-    FATAL = 5
-}
-
--- Logger class
 Logger = Class:extend()
+
+----------------------------------------------------------------------------------
 
 function Logger:new()
     self.level = LogLevel.INFO  -- Default log level
@@ -42,9 +34,13 @@ function Logger:new()
     }
 end
 
+----------------------------------------------------------------------------------
+
 function Logger:setLevel(level)
     self.level = level
 end
+
+----------------------------------------------------------------------------------
 
 function Logger:enableFileLogging(filename)
     self.logToFile = true
@@ -58,6 +54,8 @@ function Logger:enableFileLogging(filename)
     end
 end
 
+----------------------------------------------------------------------------------
+
 function Logger:disableFileLogging()
     self.logToFile = false
     if self.logFile then
@@ -66,9 +64,13 @@ function Logger:disableFileLogging()
     end
 end
 
+----------------------------------------------------------------------------------
+
 function Logger:setTimestamp(enabled)
     self.enableTimestamp = enabled
 end
+
+----------------------------------------------------------------------------------
 
 function Logger:formatMessage(level, message, ...)
     local config = self.levelConfig[level]
@@ -96,6 +98,8 @@ function Logger:formatMessage(level, message, ...)
     return table.concat(parts, " ")
 end
 
+----------------------------------------------------------------------------------
+
 function Logger:log(level, message, ...)
     -- Check if this level should be logged
     if level < self.level then
@@ -113,6 +117,8 @@ function Logger:log(level, message, ...)
         self.logFile:flush()
     end
 end
+
+----------------------------------------------------------------------------------
 
 -- Convenience methods
 function Logger:debug(message, ...)
@@ -135,6 +141,8 @@ function Logger:fatal(message, ...)
     self:log(LogLevel.FATAL, message, ...)
 end
 
+----------------------------------------------------------------------------------
+
 -- Special formatting methods
 function Logger:success(message, ...)
     print("[SUCCESS] " .. string.format(message, ...))
@@ -148,6 +156,8 @@ function Logger:success(message, ...)
         self.logFile:flush()
     end
 end
+
+----------------------------------------------------------------------------------
 
 -- Pretty print tables (useful for debugging)
 function Logger:table(tbl, name)
@@ -191,6 +201,8 @@ function Logger:table(tbl, name)
     self:debug("%s%s", tableName, tableToString(tbl))
 end
 
+----------------------------------------------------------------------------------
+
 -- Performance logging
 function Logger:benchmark(name, func)
     local startTime = love.timer.getTime()
@@ -202,6 +214,7 @@ function Logger:benchmark(name, func)
     return result
 end
 
+----------------------------------------------------------------------------------
 
 -- Usage examples:
 --[[

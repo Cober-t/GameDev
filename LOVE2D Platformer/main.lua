@@ -1,13 +1,11 @@
 require 'src/Dependencies'
 
--- Abstract to CollisionSystem and ECS System
--- Apply only to the entities with a certain components
-local world = ECS.world()
-BumpWorld = Bump.newWorld(CELL_SIZE)
-Log = Logger()
-EventDispatcher = EventDispatcher()
 
-local currentState
+CurrentState  = GameStateMachine {
+        ['start'] = function() return StartState() end,
+        ['play']  = function() return PlayState()  end,
+        ['pause'] = function() return PauseState() end,
+    }
 
 function love.load()
 
@@ -20,14 +18,14 @@ function love.load()
         canvas = false
     })
 
-    currentState  = GameStateMachine {
-        ['start'] = function() return StartState() end,
-        ['play']  = function() return PlayState()  end,
-        ['pause'] = function() return PauseState() end,
-    }
-    currentState:change('play')
+    CurrentState:change('play')
 end
 
+function love.keypressed(key)
+    if key == "r" then -- Restart the level
+        CurrentState:change('play')
+    end
+end
 
 function love.resize(w, h)
     Push:resize(w, h)
@@ -35,12 +33,13 @@ end
 
 
 function love.update(dt)
-    currentState:update(dt)
+
+    CurrentState:update(dt)
 end
 
 
 function love.draw()
     Push:start()
-        currentState:draw()
+        CurrentState:draw()
     Push:finish()
 end

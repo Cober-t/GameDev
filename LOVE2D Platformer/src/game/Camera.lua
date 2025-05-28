@@ -1,4 +1,6 @@
-Camera = Class:extend()
+local Camera = Class:extend()
+
+----------------------------------------------------------------------------------
 
 function Camera:new(level)
     self.nativeCam = HumCamera()
@@ -9,14 +11,14 @@ function Camera:new(level)
     self.enabled = true
 end
 
+----------------------------------------------------------------------------------
+
 function Camera:setTarget(target)
     if self.target == nil then self.target = target end
     self.nativeCam:lookAt(target.x, target.y)
 end
 
--- function Camera:addDrawable(elem, order)
---     self.drawList.appended(elem, order)
--- end
+----------------------------------------------------------------------------------
 
 function Camera:update(target, dt)
     if self.enabled then
@@ -35,15 +37,9 @@ function Camera:update(target, dt)
     if self.nativeCam.y > bottomLimit then self.nativeCam.y = bottomLimit end
 end
 
-function Camera:draw(...)
+----------------------------------------------------------------------------------
 
-    -- if gameMap.layers["Ground"] then
-    --     for i, obj in pairs(gameMap.layers["Ground"].objects) do
-    --         local wall = world:newRectangleCollider(obj.x, obj.y, obj.width, obj.height)
-    --         wall:setType("static")
-    --         table.insert(ground, wall)
-    --     end
-    -- end
+function Camera:draw(...)
     self.nativeCam:attach()
         for index, sceneElem in ipairs({...}) do
             if sceneElem.draw and sceneElem.visible then
@@ -52,3 +48,7 @@ function Camera:draw(...)
         end
     self.nativeCam:detach()
 end
+
+----------------------------------------------------------------------------------
+return Camera
+----------------------------------------------------------------------------------

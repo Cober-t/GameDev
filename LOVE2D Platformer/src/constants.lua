@@ -14,18 +14,35 @@ LVL_LAYER_BG = "Background"
 LVL_LAYER_COLLISIONS = "Ground"
 
 -- Physics
-GRAVITY = 660
+GRAVITY = 220
 -- Camera
 CAM_ZOOM = 4
 
--- input keys
+-- Log levels
+LogLevel = {
+    DEBUG = 1,
+    INFO = 2,
+    WARN = 3,
+    ERROR = 4,
+    FATAL = 5
+}
+
+-- Poll type constants
+POLL_TYPE = {
+    JUST_PRESSED = "justPressed",
+    JUST_RELEASED = "justReleased",
+    IS_HELD = "isHeld"
+}
+
+-- Input keys
 KEYBOARD = "keyboard"
 GAMEPAD  = "gamepad"
+
 Key = {}
-Key.up       = { bindings= { KEYBOARD="w",      GAMEPAD="dpup"   } }
-Key.down     = { bindings= { KEYBOARD="s",      GAMEPAD="dpdown" } }
-Key.left     = { bindings= { KEYBOARD="a",      GAMEPAD="dpleft" } }
-Key.right    = { bindings= { KEYBOARD="d",      GAMEPAD="dpright"} }
-Key.jump     = { bindings= { KEYBOARD="j",      GAMEPAD="x"      } }
-Key.uiAccept = { bindings= { KEYBOARD="j",      GAMEPAD="a"      } }
-Key.uiCancel = { bindings= { KEYBOARD="escape", GAMEPAD="start"  } }
+Key.up       = { KEYBOARD="w",      GAMEPAD="dpup"   }
+Key.down     = { KEYBOARD="s",      GAMEPAD="dpdown" }
+Key.left     = { KEYBOARD="a",      GAMEPAD="dpleft" }
+Key.right    = { KEYBOARD="d",      GAMEPAD="dpright"}
+Key.jump     = { KEYBOARD="j",      GAMEPAD="x"      }
+Key.uiAccept = { KEYBOARD="j",      GAMEPAD="a"      }
+Key.uiCancel = { KEYBOARD="escape", GAMEPAD="start"  }

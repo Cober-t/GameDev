@@ -25,9 +25,11 @@ LevelMaps = {
 }
 
 -- GAME CODE --
+require "src/framework/logger"
+Log = Logger()
+
 require "src/constants"
 
-require "src/framework/logger"
 require "src/framework/level"
 require "src/framework/entity"
 require "src/framework/baseEntityState"
@@ -44,3 +46,10 @@ require "src/playStates/startState"
 require "src/playStates/playState"
 require "src/playStates/pauseState"
 require "src/systems/physics"
+
+-- GLOBALS --
+-- Abstract to CollisionSystem and ECS System
+-- Apply only to the entities with a certain components
+local world = ECS.world()
+BumpWorld = Bump.newWorld(CELL_SIZE)
+EventDispatcher = EventDispatcher()

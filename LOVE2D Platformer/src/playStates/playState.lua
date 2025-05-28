@@ -1,66 +1,111 @@
 PlayState = GameStateMachine:extend()
 
+----------------------------------------------------------------------------------
+--- Local values
 -- Require only in the game on the future
-require "src/game/player"
-require "src/game/camera"
-require "src/game/level1"
+local Player = require "src/game/player"
+local Camera = require "src/game/camera"
+local Level1 = require "src/game/level1"
 
--- Levels for the PlayState
-local levels = {
-    level1 = Level1()
-}
-
-local player = Player(300, 0)
-local camera = Camera(levels.level1)
-local currentLevel
+----------------------------------------------------------------------------------
 
 function PlayState:new()
-    Log:info("Play State created!")
+    Log:debug("PlayState created!")
     self.events = {}
     self:setupInputEvents()
 end
 
+----------------------------------------------------------------------------------
+
 function PlayState:enter()
+    self:enableEvents()
+
+    Log:debug("PlayState initialize!")
     -- Instantiate level
-    currentLevel = levels.level1
-    currentLevel:init()
+    self.player = Player(300, 0)
+    self.currentLevel = Level1()
+    self.camera = Camera(self.currentLevel)
+    self.currentLevel:init()
+    self.player:init()
 
     -- Create player
     -- Put the player on the floor for this level
-    local posY =  levels.level1.tileMap.height * levels.level1.tileMap.tileheight - love.graphics.getHeight()/2 + 150
-    player.y = posY
-    BumpWorld:add(player, player.x, player.y, 12, 19)
+    local posY =  self.currentLevel.tileMap.height * self.currentLevel.tileMap.tileheight - love.graphics.getHeight()/2 + 150
+    self.player.y = posY
+    BumpWorld:add(self.player, self.player.x, self.player.y, 12, 19)
 
-    camera:setTarget(player)
+    self.camera:setTarget(self.player)
 end
 
+----------------------------------------------------------------------------------
 
 function PlayState:exit()
+    Log:debug("PlayState destroyed!")
+    self.currentLevel:exit()
+    self.player:exit()
+    self:disableEvents()
+
+    BumpWorld:remove(self.player)
 end
+
+----------------------------------------------------------------------------------
 
 function PlayState:update(dt)
-    player:update(dt)
-    camera:update(player, dt)
-
+    self.camera:update(self.player, dt)
     EventDispatcher:update()
+
+    self.player:update(dt)
 end
+
+----------------------------------------------------------------------------------
 
 function PlayState:draw()
-    camera:draw(levels.level1, player)
+    self.camera:draw(self.currentLevel, self.player)
+
     -- Draw HUD or DebugSystem
-    love.graphics.print("FPS: "..tostring(love.timer.getFPS()).." -- State: "..player.state)
+    love.graphics.print("FPS: "..tostring(love.timer.getFPS()).." -- State: "..self.player.state)
 end
 
-
+----------------------------------------------------------------------------------
+--- HANDLE EVENTS ----------------------------------------------------------------
+----------------------------------------------------------------------------------
 -- Handle Events for this GameState--
 function PlayState:setupInputEvents()
+    Log:debug("Setting up events on PlayState")
     -- Movement events - these use the game state context to access the player
-    self:addKeyboardEvent('a', function(context, input)
-        context:movePlayer()
-    end)
+    self.events.left = self:addKeyboardEvent('left', function(context, input)
+            context.player:moveLeft(love.timer.getDelta())
+    end, POLL_TYPE.IS_HELD)
+
+    self.events.right = self:addKeyboardEvent('right', function(context, input)
+            context.player:moveRight(love.timer.getDelta())
+    end, POLL_TYPE.IS_HELD)
+
+    self.events.idleLeft = self:addKeyboardEvent('left', function(context, input)
+            context.player:idle()
+    end, POLL_TYPE.JUST_RELEASED)
+
+    self.events.idleRight = self:addKeyboardEvent('right', function(context, input)
+            context.player:idle()
+    end, POLL_TYPE.JUST_RELEASED)
+
+    self.events.jump = self:addKeyboardEvent('space', function(context, input)
+            context.player:moveJump(love.timer.getDelta())
+    end, POLL_TYPE.JUST_PRESSED)
+
+    self.events.quit = self:addKeyboardEvent('escape', function(context, input)
+            love.event.quit()
+    end, POLL_TYPE.IS_HELD)
+
+    self.events.changeStartState = self:addKeyboardEvent("q", function(context, input)
+        context:changeToPauseState()
+    end, POLL_TYPE.JUST_PRESSED)
 end
 
-function PlayState:movePlayer()
-    Log:debug("A PRESSED: MOVE PLAYER EVENT TRIGGER")
-    -- self.player:move(love.timer.getDelta())
+----------------------------------------------------------------------------------
+
+function PlayState:changeToPauseState()
+    CurrentState:change("pause")
 end
+
+----------------------------------------------------------------------------------
