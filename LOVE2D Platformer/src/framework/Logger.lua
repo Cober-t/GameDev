@@ -2,6 +2,10 @@ Logger = Class:extend()
 
 ----------------------------------------------------------------------------------
 
+LogLevel = { DEBUG = 1, INFO = 2, WARN = 3, ERROR = 4, FATAL = 5 }
+
+----------------------------------------------------------------------------------
+
 function Logger:new()
     self.level = LogLevel.INFO  -- Default log level
     self.enableTimestamp = false -- Enable timestamps by default

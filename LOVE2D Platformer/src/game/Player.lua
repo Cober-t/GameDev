@@ -12,16 +12,16 @@ local grid = Anim8.newGrid(32, 32, spriteSheet:getWidth(), spriteSheet:getHeight
 function Player:new(initX, initY)
     self.x = initX
     self.y = initY
-    -- self.entity = Entity()
     self.visible = true
     self.direction = 1
     self.onFloor = false
     self.speed = 130.0
     self.state = "idleRight"
-    self.stateList = {
-        idleState = PlayerIdleState(),
-        walkState = PlayerWalkState(),
-    }
+    -- self.entity = Entity()
+    -- self.stateList = {
+    --     idleState = PlayerIdleState(),
+    --     walkState = PlayerWalkState(),
+    -- }
 end
 
 ----------------------------------------------------------------------------------
@@ -62,7 +62,7 @@ function Player:update(dt)
 end
 
 ----------------------------------------------------------------------------------
---- HANDLING EVENTS --------------------------------------------------------------
+--- HANDLE EVENTS ----------------------------------------------------------------
 ----------------------------------------------------------------------------------
 -- Update the current state in the future --
 -- On a AnimationSystem in the future with a component
@@ -103,7 +103,7 @@ function Player:idle(dt)
 end
 
 ----------------------------------------------------------------------------------
---- HANDLING ANIMATIONS ----------------------------------------------------------
+--- HANDLE ANIMATIONS ------------------------------------------------------------
 ----------------------------------------------------------------------------------
 
 function Player:initAnimations() -- On a AnimationSystem in the future with a component

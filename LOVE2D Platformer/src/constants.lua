@@ -18,15 +18,6 @@ GRAVITY = 220
 -- Camera
 CAM_ZOOM = 4
 
--- Log levels
-LogLevel = {
-    DEBUG = 1,
-    INFO = 2,
-    WARN = 3,
-    ERROR = 4,
-    FATAL = 5
-}
-
 -- Poll type constants
 POLL_TYPE = {
     JUST_PRESSED = "justPressed",

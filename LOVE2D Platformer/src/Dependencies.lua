@@ -25,10 +25,10 @@ LevelMaps = {
 }
 
 -- GAME CODE --
+require "src/constants"
 require "src/framework/logger"
 Log = Logger()
 
-require "src/constants"
 
 require "src/framework/level"
 require "src/framework/entity"
