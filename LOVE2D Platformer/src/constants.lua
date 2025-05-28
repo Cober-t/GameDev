@@ -14,7 +14,7 @@ LVL_LAYER_BG = "Background"
 LVL_LAYER_COLLISIONS = "Ground"
 
 -- Physics
-GRAVITY = 220
+GRAVITY = -500
 -- Camera
 CAM_ZOOM = 4
 

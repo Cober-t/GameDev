@@ -6,7 +6,6 @@ local maxJump = -math.sqrt(2 * GRAVITY * 3.3 * CELL_SIZE)
 -- local minJump = -math.sqrt(2 * GRAVITY * 0.65 * CELL_SIZE)
 local spriteSheet = SpriteSheets.player
 local grid = Anim8.newGrid(32, 32, spriteSheet:getWidth(), spriteSheet:getHeight())
-
 ----------------------------------------------------------------------------------
 
 function Player:new(initX, initY)
@@ -15,7 +14,9 @@ function Player:new(initX, initY)
     self.visible = true
     self.direction = 1
     self.onFloor = false
-    self.speed = 130.0
+    self.speedX = 130.0
+    self.speedY = 12
+    self.jumpForce = -130
     self.state = "idleRight"
     -- self.entity = Entity()
     -- self.stateList = {
@@ -41,21 +42,18 @@ end
 
 function Player:update(dt)
 
-    self.y = self.y + (GRAVITY * dt)
+    -- Update player collider to the new pos
+    if self.speedY ~= 0 then
+        self.y = self.y + self.speedY * dt
+        self.speedY = self.speedY - GRAVITY * dt
+    end
 
-    -- update player collider to the new pos
-    -- assert(BumpWorld:hasItem(self))
+    -- TODO: Check collision type (On a CollisionSystem in the future with a component)
     if not BumpWorld:hasItem(self) then return end
     local actualX, actualY, cols, len = BumpWorld:move(self, self.x, self.y)
     self.x = actualX
     self.y = actualY
-
-    -- TODO: Check collision type (On a CollisionSystem in the future with a component)
     self.onFloor = len > 0
-    -- if self.onFloor then
-    --     print(self.onFloor)
-    -- end
-    -- ....
 
     -- Apply Animation
     self:updateAnimation(dt)
@@ -65,16 +63,16 @@ end
 --- HANDLE EVENTS ----------------------------------------------------------------
 ----------------------------------------------------------------------------------
 -- Update the current state in the future --
--- On a AnimationSystem in the future with a component
+-- On an AnimationSystem in the future with a component
 -- .........................................
 function Player:moveLeft(dt)
-    self.x = self.x + self.speed * dt * -1
+    self.x = self.x + self.speedX * dt * -1
     self.direction = -1
     self.state = "walkLeft"
 end
 
 function Player:moveRight(dt)
-    self.x = self.x + self.speed * dt
+    self.x = self.x + self.speedX * dt
     self.direction = 1
     self.state = "walkRight"
 end
@@ -83,7 +81,8 @@ end
 
 function Player:moveJump(dt)
     if self.onFloor then
-        self.y = -1
+        self.speedY = self.jumpForce
+        Log:info("X: " .. self.x .. " -- Y: " .. self.y)
         if self.direction == -1 then
             self.state = "jumpLeft"
         else
