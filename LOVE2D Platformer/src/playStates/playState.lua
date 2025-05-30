@@ -12,6 +12,7 @@ local Level1 = require "src/game/level1"
 function PlayState:new()
     Log:debug("PlayState created!")
     self.events = {}
+    self.player = Player()
     self:setupInputEvents()
 end
 
@@ -22,19 +23,16 @@ function PlayState:enter()
 
     Log:debug("PlayState initialize!")
     -- Instantiate level
-    self.player = Player(300, 0)
     self.currentLevel = Level1()
     self.camera = Camera(self.currentLevel)
     self.currentLevel:init()
     self.player:init()
 
-    -- Create player
-    -- Put the player on the floor for this level
+    -- TEST: Put the player on the floor for this level
     local posY =  self.currentLevel.tileMap.height * self.currentLevel.tileMap.tileheight - love.graphics.getHeight()/2 + 150
-    self.player.y = posY
-    BumpWorld:add(self.player, self.player.x, self.player.y, 12, 19)
+    self.player.entity.transform.posY = posY
 
-    self.camera:setTarget(self.player)
+    self.camera:setTarget(self.player.entity)
 end
 
 ----------------------------------------------------------------------------------
@@ -45,7 +43,7 @@ function PlayState:exit()
     self.player:exit()
     self:disableEvents()
 
-    BumpWorld:remove(self.player)
+    -- BumpWorld:remove(self.player) -- Moved to CollisionSystem exit
 end
 
 ----------------------------------------------------------------------------------

@@ -2,23 +2,23 @@ local Player = Class:extend()
 
 ----------------------------------------------------------------------------------
 ---
-local maxJump = -math.sqrt(2 * GRAVITY * 3.3 * CELL_SIZE)
+-- local maxJump = -math.sqrt(2 * GRAVITY * 3.3 * CELL_SIZE)
 -- local minJump = -math.sqrt(2 * GRAVITY * 0.65 * CELL_SIZE)
 local spriteSheet = SpriteSheets.player
 local grid = Anim8.newGrid(32, 32, spriteSheet:getWidth(), spriteSheet:getHeight())
 ----------------------------------------------------------------------------------
 
-function Player:new(initX, initY)
-    self.x = initX
-    self.y = initY
+function Player:new()
+    Log:debug("Player created!")
     self.visible = true
-    self.direction = 1
-    self.onFloor = false
-    self.speedX = 130.0
-    self.speedY = 12
-    self.jumpForce = -130
     self.state = "idleRight"
-    -- self.entity = Entity()
+    self.entity = ECS.entity(World)
+                    :give("transform", 0, 0)
+                    :give("rigidbody", 130.0, 1.13)
+                    :give("collider", 12, 19, false)
+    self.trans = self.entity.transform
+    self.rb = self.entity.rigidbody
+    self.col = self.entity.collider
     -- self.stateList = {
     --     idleState = PlayerIdleState(),
     --     walkState = PlayerWalkState(),
@@ -28,7 +28,8 @@ end
 ----------------------------------------------------------------------------------
 
 function Player:init()
-    Log:debug("Player created!")
+    Log:debug("Player initialized!")
+
     self:initAnimations()
 end
 
@@ -41,20 +42,6 @@ end
 ----------------------------------------------------------------------------------
 
 function Player:update(dt)
-
-    -- Update player collider to the new pos
-    if self.speedY ~= 0 then
-        self.y = self.y + self.speedY * dt
-        self.speedY = self.speedY - GRAVITY * dt
-    end
-
-    -- TODO: Check collision type (On a CollisionSystem in the future with a component)
-    if not BumpWorld:hasItem(self) then return end
-    local actualX, actualY, cols, len = BumpWorld:move(self, self.x, self.y)
-    self.x = actualX
-    self.y = actualY
-    self.onFloor = len > 0
-
     -- Apply Animation
     self:updateAnimation(dt)
 end
@@ -66,23 +53,26 @@ end
 -- On an AnimationSystem in the future with a component
 -- .........................................
 function Player:moveLeft(dt)
-    self.x = self.x + self.speedX * dt * -1
+    self.trans.posX = self.trans.posX + self.rb.speedX * dt * -1
     self.direction = -1
-    self.state = "walkLeft"
+    if self.rb.onFloor then
+        self.state = "walkLeft"
+    end
 end
 
 function Player:moveRight(dt)
-    self.x = self.x + self.speedX * dt
+    self.trans.posX = self.trans.posX + self.rb.speedX * dt
     self.direction = 1
-    self.state = "walkRight"
+    if self.rb.onFloor then
+        self.state = "walkRight"
+    end
 end
 
 ----------------------------------------------------------------------------------
 
 function Player:moveJump(dt)
-    if self.onFloor then
-        self.speedY = self.jumpForce
-        Log:info("X: " .. self.x .. " -- Y: " .. self.y)
+    if self.rb.onFloor then
+        self.rb.speedY = self.rb.jumpForce
         if self.direction == -1 then
             self.state = "jumpLeft"
         else
@@ -127,7 +117,7 @@ end
 ----------------------------------------------------------------------------------
 
 function Player:draw()
-    self.animation:draw(spriteSheet, self.x, self.y, nil, 1, 1, 8, 8)
+    self.animation:draw(spriteSheet, self.entity.transform.posX, self.entity.transform.posY, nil, 1, 1, 8, 8)
 end
 
 ----------------------------------------------------------------------------------

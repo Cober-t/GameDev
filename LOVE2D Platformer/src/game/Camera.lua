@@ -15,14 +15,14 @@ end
 
 function Camera:setTarget(target)
     if self.target == nil then self.target = target end
-    self.nativeCam:lookAt(target.x, target.y)
+    self.nativeCam:lookAt(target.transform.posX, target.transform.posY)
 end
 
 ----------------------------------------------------------------------------------
 
 function Camera:update(target, dt)
     if self.enabled then
-        self.nativeCam:lockPosition(target.x, target.y, self.nativeCam.smooth.damped(225 * dt))
+        self.nativeCam:lockPosition(self.target.transform.posX, self.target.transform.posY, self.nativeCam.smooth.damped(225 * dt))
     end
 
     -- Camera limit

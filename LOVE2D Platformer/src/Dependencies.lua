@@ -24,19 +24,30 @@ LevelMaps = {
     first = Sti("assets/maps/testLevel.lua"),
 }
 
+-- GLOBALS --
+-- Abstract to CollisionSystem and ECS System
+-- Apply only to the entities with a certain components
+BumpWorld = Bump.newWorld(CELL_SIZE)
+-- ECS --
+-- Entity = ECS.entity()
+-- Component = ECS.component()
+World = ECS.world()
+
+-- Components = ECS.components
+
 -- GAME CODE --
-require "src/constants"
 require "src/framework/logger"
 Log = Logger()
 
+require "src/constants"
 
 require "src/framework/level"
-require "src/framework/entity"
 require "src/framework/baseEntityState"
 require "src/framework/gameStateMachine"
 require "src/framework/components"
 require "src/framework/input"
 require "src/framework/event"
+EventDispatcher = EventDispatcher()
 
 
 require "src/entities/playerStates/playerIdleState"
@@ -45,11 +56,7 @@ require "src/entities/playerStates/playerWalkState"
 require "src/playStates/startState"
 require "src/playStates/playState"
 require "src/playStates/pauseState"
-require "src/systems/physics"
+require "src/systems/physicssystem"
+require "src/systems/rendersystem"
+require "src/systems/collisionsystem"
 
--- GLOBALS --
--- Abstract to CollisionSystem and ECS System
--- Apply only to the entities with a certain components
-local world = ECS.world()
-BumpWorld = Bump.newWorld(CELL_SIZE)
-EventDispatcher = EventDispatcher()

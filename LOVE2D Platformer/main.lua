@@ -1,11 +1,12 @@
 require 'src/Dependencies'
 
-
 CurrentState  = GameStateMachine {
         ['start'] = function() return StartState() end,
         ['play']  = function() return PlayState()  end,
         ['pause'] = function() return PauseState() end,
     }
+
+----------------------------------------------------------------------------------
 
 function love.load()
 
@@ -18,8 +19,13 @@ function love.load()
         canvas = false
     })
 
+    World:addSystems( CollisionSystem, PhysicsSystem )
+
     CurrentState:change('play')
+    World:emit("init")
 end
+
+----------------------------------------------------------------------------------
 
 function love.keypressed(key)
     if key == "r" then -- Restart the level
@@ -27,19 +33,28 @@ function love.keypressed(key)
     end
 end
 
+----------------------------------------------------------------------------------
+
 function love.resize(w, h)
     Push:resize(w, h)
 end
 
+----------------------------------------------------------------------------------
 
 function love.update(dt)
+    -- Call systems methods
+    World:emit("update", dt)
+    -- World:emit("draw")
 
     CurrentState:update(dt)
 end
 
+----------------------------------------------------------------------------------
 
 function love.draw()
     Push:start()
         CurrentState:draw()
     Push:finish()
 end
+
+----------------------------------------------------------------------------------
