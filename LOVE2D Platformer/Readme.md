@@ -1,4 +1,4 @@
-[ ] ECS for the player and components
+[X] ECS for the player and components
 [ ] Fix world gravity
 [ ] Simple UI for the main menu
 [ ] Settings UI

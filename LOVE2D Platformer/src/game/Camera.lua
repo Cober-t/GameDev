@@ -40,6 +40,7 @@ end
 ----------------------------------------------------------------------------------
 
 function Camera:draw(...)
+    -- Send to RenderSystem
     self.nativeCam:attach()
         for index, sceneElem in ipairs({...}) do
             if sceneElem.draw and sceneElem.visible then

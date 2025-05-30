@@ -59,4 +59,5 @@ require "src/playStates/pauseState"
 require "src/systems/physicssystem"
 require "src/systems/rendersystem"
 require "src/systems/collisionsystem"
+require "src/systems/debugsystem"
 

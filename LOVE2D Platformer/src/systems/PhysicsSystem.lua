@@ -7,12 +7,13 @@ function PhysicsSystem:update(dt)
 
         if entity.rigidbody.speedY ~= 0 then
             entity.transform.posY = entity.transform.posY + entity.rigidbody.speedY * dt
-            entity.rigidbody.speedY = entity.rigidbody.speedY - GRAVITY * dt
+            entity.rigidbody.speedY = math.max(entity.rigidbody.speedY - GRAVITY * dt, -GRAVITY*dt)
         end
 
-        if entity.rigidbody.onFloor then
-            entity.rigidbody.speedY = 0
+        if entity.collider.onFloor then
+            entity.collider.speedY = 0
         end
+        -- print(entity.rigidbody.speedY)
     end
 end
 

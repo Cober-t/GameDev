@@ -7,6 +7,7 @@ ECS.component("transform", function(e, x, y)
     e.rot = 0
     e.scaleX = 1
     e.scaleY = 1
+    e.toMove = false
 end)
 
 ----------------------------------------------------------------------------------
@@ -16,7 +17,6 @@ ECS.component("rigidbody", function(e, jumpForce, fallSpeed)
     e.speedY = 1
     e.jumpForce = jumpForce * -1
     e.fallSpeed = fallSpeed
-    e.onFloor = false
 end)
 
 ----------------------------------------------------------------------------------
@@ -25,6 +25,7 @@ ECS.component("collider", function(e, w, h, isTrigger)
     e.width = w
     e.height = h
     e.isTrigger = isTrigger
+    e.onFloor = false
 end)
 
 ----------------------------------------------------------------------------------

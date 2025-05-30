@@ -53,17 +53,19 @@ end
 -- On an AnimationSystem in the future with a component
 -- .........................................
 function Player:moveLeft(dt)
+    self.trans.toMove = true
     self.trans.posX = self.trans.posX + self.rb.speedX * dt * -1
     self.direction = -1
-    if self.rb.onFloor then
+    if self.col.onFloor then
         self.state = "walkLeft"
     end
 end
 
 function Player:moveRight(dt)
+    self.trans.toMove = true
     self.trans.posX = self.trans.posX + self.rb.speedX * dt
     self.direction = 1
-    if self.rb.onFloor then
+    if self.col.onFloor then
         self.state = "walkRight"
     end
 end
@@ -71,7 +73,8 @@ end
 ----------------------------------------------------------------------------------
 
 function Player:moveJump(dt)
-    if self.rb.onFloor then
+    self.trans.toMove = true
+    if self.col.onFloor then
         self.rb.speedY = self.rb.jumpForce
         if self.direction == -1 then
             self.state = "jumpLeft"
@@ -118,6 +121,9 @@ end
 
 function Player:draw()
     self.animation:draw(spriteSheet, self.entity.transform.posX, self.entity.transform.posY, nil, 1, 1, 8, 8)
+    -- Move to DebugSystem
+    love.graphics.setColor(1, 1, 1, 1)
+    love.graphics.rectangle("line", self.trans.posX, self.trans.posY, self.col.width, self.col.height)
 end
 
 ----------------------------------------------------------------------------------
