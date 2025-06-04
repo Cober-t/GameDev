@@ -22,7 +22,7 @@ end
 
 function Camera:update(target, dt)
     if self.enabled then
-        self.nativeCam:lockPosition(self.target.transform.posX, self.target.transform.posY, self.nativeCam.smooth.damped(225 * dt))
+        self.nativeCam:lockPosition(self.target.transform.posX, self.target.transform.posY, HumCamera.smooth.damped(3))
     end
 
     -- Camera limit
@@ -30,7 +30,7 @@ function Camera:update(target, dt)
     local topLimit    = love.graphics.getHeight()/ (2 * CAM_ZOOM)
     -- If its a tiled map and not a full image
     local rightLimit  = self.currentLevel.tileMap.width  * self.currentLevel.tileMap.tilewidth
-    local bottomLimit = self.currentLevel.tileMap.height * self.currentLevel.tileMap.tileheight
+    local bottomLimit = self.currentLevel.tileMap.height * self.currentLevel.tileMap.tileheight - 100
     if self.nativeCam.x < leftLimit   then self.nativeCam.x = leftLimit   end
     if self.nativeCam.y < topLimit    then self.nativeCam.y = topLimit    end
     if self.nativeCam.x > rightLimit  then self.nativeCam.x = rightLimit  end
@@ -47,6 +47,8 @@ function Camera:draw(...)
                 sceneElem:draw()
             end
         end
+        
+        if DEBUG then World:emit("draw") end
     self.nativeCam:detach()
 end
 

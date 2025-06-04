@@ -1,11 +1,11 @@
 -- Settings
-DEBUG = false
+DEBUG = true
 
 -- Window
 CELL_SIZE = 16
-WINDOW_WIDTH   = 1200
+WINDOW_WIDTH   = 1280
 WINDOW_HEIGHT  = 720
-VIRTUAL_WIDTH  = 1200
+VIRTUAL_WIDTH  = 1280
 VIRTUAL_HEIGHT = 720
 
 -- Sprites
@@ -14,7 +14,7 @@ LVL_LAYER_BG = "Background"
 LVL_LAYER_COLLISIONS = "Ground"
 
 -- Physics
-GRAVITY = -500
+GRAVITY = 500
 -- Camera
 CAM_ZOOM = 4
 

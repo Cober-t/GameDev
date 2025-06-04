@@ -4,7 +4,7 @@
 [ ] Settings UI
 [ ] Remap Controllers
 [ ] Save game and settings (Serialize system)
-[ ] Debug colliders
+[X] Debug colliders
 [ ] Player smooth movement
    - [ ] Variable fall speed
    - [ ] Variable jump height

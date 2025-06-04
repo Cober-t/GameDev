@@ -13,24 +13,31 @@ function Player:new()
     self.visible = true
     self.state = "idleRight"
     self.entity = ECS.entity(World)
-                    :give("transform", 0, 0)
-                    :give("rigidbody", 130.0, 1.13)
-                    :give("collider", 12, 19, false)
+                    :give("transform", 100, 0)      -- x, y
+                    :give("movement", 230.0)        -- jumpForce
+                    :give("rigidbody", 1.13)        -- fallSpeedMulti
+                    :give("collider", 0, 0, 10, 15, false) -- offX, offY, w, h, trigger
     self.trans = self.entity.transform
-    self.rb = self.entity.rigidbody
-    self.col = self.entity.collider
+    self.rb    = self.entity.rigidbody
+    self.mv    = self.entity.movement
+    self.col   = self.entity.collider
     -- self.stateList = {
     --     idleState = PlayerIdleState(),
     --     walkState = PlayerWalkState(),
     -- }
+    self:initAnimations()
 end
 
 ----------------------------------------------------------------------------------
 
 function Player:init()
     Log:debug("Player initialized!")
-
-    self:initAnimations()
+    if BumpWorld:hasItem(self.entity) then
+        BumpWorld:update(self.entity, self.trans.posX + self.col.offsetX
+                                    , self.trans.posY + self.col.offsetY)
+    end
+    self.rb.speedY = 0
+    self.col.onFloor = false
 end
 
 ----------------------------------------------------------------------------------
@@ -53,17 +60,17 @@ end
 -- On an AnimationSystem in the future with a component
 -- .........................................
 function Player:moveLeft(dt)
-    self.trans.toMove = true
-    self.trans.posX = self.trans.posX + self.rb.speedX * dt * -1
+    self.mv.speedX = 130 * -1
     self.direction = -1
     if self.col.onFloor then
         self.state = "walkLeft"
     end
 end
 
+----------------------------------------------------------------------------------
+
 function Player:moveRight(dt)
-    self.trans.toMove = true
-    self.trans.posX = self.trans.posX + self.rb.speedX * dt
+    self.mv.speedX = 130
     self.direction = 1
     if self.col.onFloor then
         self.state = "walkRight"
@@ -73,9 +80,9 @@ end
 ----------------------------------------------------------------------------------
 
 function Player:moveJump(dt)
-    self.trans.toMove = true
     if self.col.onFloor then
-        self.rb.speedY = self.rb.jumpForce
+        -- self.col.onFloor = false
+        self.mv.speedY = self.mv.jumpForce * -1
         if self.direction == -1 then
             self.state = "jumpLeft"
         else
@@ -87,6 +94,7 @@ end
 ----------------------------------------------------------------------------------
 
 function Player:idle(dt)
+    self.mv.speedX = 0
      if self.direction == -1 then
         self.state = "idleLeft"
     else
@@ -103,7 +111,7 @@ function Player:initAnimations() -- On a AnimationSystem in the future with a co
     self.animations = {}
     self.animations.idleRight = Anim8.newAnimation(grid('1-4', 1), animSpeed * 3)
     self.animations.walkRight = Anim8.newAnimation(grid('1-8', 3), animSpeed)
-    self.animations.jumpRight = Anim8.newAnimation(grid(4, 6),     animSpeed)
+    self.animations.jumpRight = Anim8.newAnimation(grid(3, 6),     animSpeed)
     self.animations.idleLeft = self.animations.idleRight:clone():flipH()
     self.animations.walkLeft = self.animations.walkRight:clone():flipH()
     self.animations.jumpLeft = self.animations.jumpRight:clone():flipH()
@@ -121,9 +129,6 @@ end
 
 function Player:draw()
     self.animation:draw(spriteSheet, self.entity.transform.posX, self.entity.transform.posY, nil, 1, 1, 8, 8)
-    -- Move to DebugSystem
-    love.graphics.setColor(1, 1, 1, 1)
-    love.graphics.rectangle("line", self.trans.posX, self.trans.posY, self.col.width, self.col.height)
 end
 
 ----------------------------------------------------------------------------------

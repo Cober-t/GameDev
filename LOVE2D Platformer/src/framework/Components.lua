@@ -12,16 +12,24 @@ end)
 
 ----------------------------------------------------------------------------------
 
-ECS.component("rigidbody", function(e, jumpForce, fallSpeed)
-    e.speedX = 130
-    e.speedY = 1
-    e.jumpForce = jumpForce * -1
+ECS.component("movement", function(e, jumpForce)
+    e.speedX = 0
+    e.speedY = 0
+    e.jumpForce = jumpForce
+end)
+
+----------------------------------------------------------------------------------
+
+ECS.component("rigidbody", function(e, fallSpeed)
+    e.gravity = 500
     e.fallSpeed = fallSpeed
 end)
 
 ----------------------------------------------------------------------------------
 
-ECS.component("collider", function(e, w, h, isTrigger)
+ECS.component("collider", function(e, offX, offY, w, h, isTrigger)
+    e.offsetX = offX
+    e.offsetY = offY
     e.width = w
     e.height = h
     e.isTrigger = isTrigger

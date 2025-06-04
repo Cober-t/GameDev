@@ -1,4 +1,11 @@
 require 'src/Dependencies'
+-- Require only in the game on the future
+Player = require "src/game/player"
+Camera = require "src/game/camera"
+Level1 = require "src/game/level1"
+Player = Player()
+Level1 = Level1()
+Camera = Camera(Level1)
 
 CurrentState  = GameStateMachine {
         ['start'] = function() return StartState() end,
@@ -19,7 +26,7 @@ function love.load()
         canvas = false
     })
 
-    World:addSystems( CollisionSystem, PhysicsSystem )
+    World:addSystems( PhysicsSystem, CollisionSystem )
 
     CurrentState:change('play')
     World:emit("init")
@@ -42,11 +49,11 @@ end
 ----------------------------------------------------------------------------------
 
 function love.update(dt)
+    CurrentState:update(dt)
+    
     -- Call systems methods
     World:emit("update", dt)
     -- World:emit("draw")
-
-    CurrentState:update(dt)
 end
 
 ----------------------------------------------------------------------------------

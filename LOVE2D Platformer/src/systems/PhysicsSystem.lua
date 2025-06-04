@@ -1,19 +1,35 @@
-PhysicsSystem = ECS.system({ pool = {"transform", "rigidbody"} })
+PhysicsSystem = ECS.system({ pool = {"transform", "rigidbody", "movement", "collider"} })
 
 ----------------------------------------------------------------------------------
 
 function PhysicsSystem:update(dt)
-    for _, entity in ipairs(self.pool) do
+    
+    for _, entity in ipairs(self.pool) do 
+        entity.movement.speedY = entity.movement.speedY + entity.rigidbody.gravity * dt
+        entity.transform.posY = entity.transform.posY + entity.movement.speedY * dt
+        
+        entity.transform.posX = entity.transform.posX + entity.movement.speedX * dt
 
-        if entity.rigidbody.speedY ~= 0 then
-            entity.transform.posY = entity.transform.posY + entity.rigidbody.speedY * dt
-            entity.rigidbody.speedY = math.max(entity.rigidbody.speedY - GRAVITY * dt, -GRAVITY*dt)
-        end
-
+        -- Change velocity by collision normal
         if entity.collider.onFloor then
-            entity.collider.speedY = 0
+            local actualX, actualY, cols, len = BumpWorld:check(entity, entity.transform.posY, entity.transform.posY, self.filter)
+            for i=1, len do
+                local col = cols[i]
+                local bounciness = 0.0
+                local nx = col.normal.x
+                local ny = col.normal.y
+                local vx = entity.movement.speedX
+                local vy = entity.movement.speedY
+                if (nx < 0 and vx > 0) or (nx > 0 and vx < 0) then
+                    vx = -vx * bounciness
+                end
+                if (ny < 0 and vy > 0) or (ny > 0 and vy < 0) then
+                    vy = -vy * bounciness
+                end
+                entity.movement.speedX = vx
+                entity.movement.speedY = vy
+            end
         end
-        -- print(entity.rigidbody.speedY)
     end
 end
 
