@@ -22,7 +22,16 @@ end)
 
 ECS.component("rigidbody", function(e, fallSpeed)
     e.gravity = 500
-    e.fallSpeed = fallSpeed
+    e.velocity = { x=130.0, y=0.0 }
+    --e.fallSpeed = fallSpeed
+    e.maxSpeed = 10.0            -- Maximum movement speed
+    e.maxAcceleration = 52.0     -- How fast to reach max speed
+    e.maxDecceleration = 52.0    -- How fast to stop after letting go
+    e.maxTurnSpeed = 80.0        -- How fast to stop when changing direction
+    e.maxAirAcceleration = 0.0   -- How fast to reach max speed when in mid-air
+    e.maxAirDecceleration = 0.0   -- How fast to stop in mid-air when no direction is used
+    e.maxAirTurnSpeed = 80.0     -- How fast to stop when changing direction when in mid-air
+    e.friction = 0.0             -- Friction to apply against movement on stick
 end)
 
 ----------------------------------------------------------------------------------

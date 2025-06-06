@@ -44,8 +44,8 @@ end
 function PlayState:update(dt)
     Camera:update(Player, dt)
     
-    EventDispatcher:update()
     Player:update(dt)
+    EventDispatcher:update()
 end
 
 ----------------------------------------------------------------------------------

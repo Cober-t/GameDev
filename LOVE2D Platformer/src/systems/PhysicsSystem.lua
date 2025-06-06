@@ -18,7 +18,7 @@ function PhysicsSystem:update(dt)
                 local bounciness = 0.0
                 local nx = col.normal.x
                 local ny = col.normal.y
-                local vx = entity.movement.speedX
+                local vx = entity.rigidbody.velocity.x
                 local vy = entity.movement.speedY
                 if (nx < 0 and vx > 0) or (nx > 0 and vx < 0) then
                     vx = -vx * bounciness
@@ -26,7 +26,7 @@ function PhysicsSystem:update(dt)
                 if (ny < 0 and vy > 0) or (ny > 0 and vy < 0) then
                     vy = -vy * bounciness
                 end
-                entity.movement.speedX = vx
+                entity.rigidbody.velocity.x = vx
                 entity.movement.speedY = vy
             end
         end

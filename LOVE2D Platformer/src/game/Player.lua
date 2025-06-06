@@ -26,6 +26,22 @@ function Player:new()
     --     walkState = PlayerWalkState(),
     -- }
     self:initAnimations()
+
+    -- Aux variable calculations
+    self.desiredVelocity = { x=0.0,  y=0.0 }
+    self.direction = 0
+    self.lastDirection = 1
+    self.velocity = { x=0.0,  y=0.0 }
+    self.maxSpeedChange = 0.0
+    self.acceleration = 0.0
+    self.deceleration = 0.0
+    self.turnSpeed = 0.0
+
+    -- When false, the charcter will skip acceleration and deceleration and instantly move and stop
+    self.useAcceleration = true
+    
+    self.canMove = true
+    self.pressingKey = true
 end
 
 ----------------------------------------------------------------------------------
@@ -49,8 +65,69 @@ end
 ----------------------------------------------------------------------------------
 
 function Player:update(dt)
+    -- Update Movement
+    -- ..
+    self.pressingKey = self.direction ~= 0
+    self.desiredVelocity.x = self.direction * math.max(self.rb.maxSpeed - self.rb.friction, 0.0);
+    self.velocity = self.rb.velocity
+    
+    if self.useAcceleration then
+        self:runWithAcceleration(dt)
+    else
+        if self.col.onFloor then
+            self:runWithoutAcceleration(dt)
+        else
+            self:runWithAcceleration(dt)
+        end
+    end
+    
+
+
+    -- Update Jump
+    -- ..
+    
+
     -- Apply Animation
     self:updateAnimation(dt)
+end
+
+----------------------------------------------------------------------------------
+
+local function signum(number)
+   if number > 0 then
+      return 1
+   elseif number < 0 then
+      return -1
+   else
+      return 0
+   end
+end
+function Player:runWithAcceleration(dt)
+    -- Set our acceleration, deceleration, and turn speed stats, based on whether we're on the ground on in the air
+    self.acceleration = self.col.onFloor and self.rb.maxAcceleration  or self.rb.maxAirAcceleration
+    self.deceleration = self.col.onFloor and self.rb.maxDecceleration or self.rb.maxAirDecceleration
+    self.turnSpeed    = self.col.onFloor and self.rb.maxTurnSpeed     or self.rb.maxAirTurnSpeed 
+
+    if self.pressingKey then
+        -- If the sign (i.e. positive or negative) of our input direction doesn't match our movement, it means we're turning around and so should use the turn speed stat.
+        if signum(self.direction) ~= signum(self.velocity.x) then
+            self.maxSpeedChange = self.turnSpeed * dt
+        else
+            -- If they match, it means we're simply running along and so should use the acceleration stat
+            self.maxSpeedChange = self.acceleration * dt
+        end
+    else
+        -- And if we're not pressing a direction at all, use the deceleration stat
+        self.maxSpeedChange = self.deceleration * dt;
+    end
+end
+
+----------------------------------------------------------------------------------
+
+function Player:runWithoutAcceleration(dt)
+    -- If we're not using acceleration and deceleration, just send our desired velocity (direction * max speed) to the Rigidbody
+    self.velocity.x = self.desiredVelocity.x;
+    self.rb.velocity = self.velocity;
 end
 
 ----------------------------------------------------------------------------------
@@ -62,8 +139,11 @@ end
 function Player:moveLeft(dt)
     self.mv.speedX = 130 * -1
     self.direction = -1
+    self.lastDirection = self.direction
     if self.col.onFloor then
         self.state = "walkLeft"
+    else
+        self.state = "jumpLeft"
     end
 end
 
@@ -72,30 +152,34 @@ end
 function Player:moveRight(dt)
     self.mv.speedX = 130
     self.direction = 1
+    self.lastDirection = self.direction
     if self.col.onFloor then
         self.state = "walkRight"
+    else
+        self.state = "jumpRight"
     end
 end
 
 ----------------------------------------------------------------------------------
 
 function Player:moveJump(dt)
-    if self.col.onFloor then
-        -- self.col.onFloor = false
-        self.mv.speedY = self.mv.jumpForce * -1
-        if self.direction == -1 then
-            self.state = "jumpLeft"
-        else
-            self.state = "jumpRight"
-        end
+    if not self.col.onFloor then return end
+    -- self.col.onFloor = false
+    self.mv.speedY = self.mv.jumpForce * -1
+    if self.lastDirection == -1 then
+        self.state = "jumpLeft"
+    else
+        self.state = "jumpRight"
     end
 end
 
 ----------------------------------------------------------------------------------
 
 function Player:idle(dt)
-    self.mv.speedX = 0
-     if self.direction == -1 then
+    self.direction = 0
+    self.mv.speedX = 0 -- To neutralize inertia on jump
+    if not self.col.onFloor then return end
+    if self.direction == -1 then
         self.state = "idleLeft"
     else
         self.state = "idleRight"
@@ -121,6 +205,14 @@ end
 ----------------------------------------------------------------------------------
 
 function Player:updateAnimation(dt)
+    if self.direction == 0 and self.col.onFloor then
+        --self.mv.speedX = 0
+        if self.lastDirection == -1 then
+            self.state = "idleLeft"
+        else
+            self.state = "idleRight"
+        end
+    end
     self.animation = self.animations[self.state]
     self.animation:update(dt)
 end
