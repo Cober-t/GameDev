@@ -6,12 +6,15 @@ MovementSystem = ECS.system({ pool = {"transform", "rigidbody", "movement", "col
 function MovementSystem:update(dt)
 
     for _, entity in ipairs(self.pool) do
-        local movement = entity.movement
+        if not entity.movement.canMove then
+            ::continue:: 
+        end
         entity.movement.pressingKey = entity.movement.direction ~= 0
         entity.movement.desiredVelocity.x = entity.movement.direction * math.max(entity.rigidbody.maxSpeed - entity.rigidbody.friction, 0.0);
         entity.movement.velocity = entity.rigidbody.velocity
         
-        if movement.useAcceleration then
+        -- Movement
+        if entity.movement.useAcceleration then
             self:runWithAcceleration(entity.movement, entity.rigidbody, entity.collider, dt)
         else
             if self.col.onFloor then
@@ -20,6 +23,8 @@ function MovementSystem:update(dt)
                 self:runWithAcceleration(entity.movement, entity.rigidbody, entity.collider, dt)
             end
         end
+
+        -- Jump
     end
 end
 

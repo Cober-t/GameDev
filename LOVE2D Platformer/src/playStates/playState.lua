@@ -55,9 +55,8 @@ function PlayState:draw()
 
     -- Draw HUD or DebugSystem
     -- love.graphics.print("FPS: "..tostring(love.timer.getFPS()).." -- State: "..Player.state)
-    love.graphics.print("Floor: "..tostring(Player.entity.collider.onFloor)..
-                        " -- SpeedX: "..math.floor(Player.entity.rigidbody.velocity.x,2)..
-                        " -- SpeedY: "..math.floor(Player.entity.rigidbody.velocity.y, 2))
+    love.graphics.print("Floor: "..tostring(Player.entity.collider.onFloor).." -- "..
+                        "Pressing_Jump: "..tostring(Player.entity.movement.pressingJump))
 
 end
 
@@ -87,6 +86,10 @@ function PlayState:setupInputEvents()
     self.events.jump = self:addKeyboardEvent('space', function(context, input)
             Player:moveJump(love.timer.getDelta())
     end, POLL_TYPE.JUST_PRESSED)
+
+    self.events.jump = self:addKeyboardEvent('space', function(context, input)
+            Player:releaseJump()
+    end, POLL_TYPE.JUST_RELEASED)
 
     self.events.quit = self:addKeyboardEvent('escape', function(context, input)
             love.event.quit()

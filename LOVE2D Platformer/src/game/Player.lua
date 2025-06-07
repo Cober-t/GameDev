@@ -80,8 +80,16 @@ function Player:moveJump(dt)
     if not self.col.onFloor then 
         return 
     end
+    self.mv.pressingJump = true
+    self.mv.desiredJump = true
     self.rb.velocity.y = self.mv.jumpForce * -1
     self.state = self.lastDirection == -1 and "jumpLeft" or "jumpRight"
+end
+
+----------------------------------------------------------------------------------
+
+function Player:releaseJump()
+    self.mv.pressingJump = false
 end
 
 ----------------------------------------------------------------------------------
