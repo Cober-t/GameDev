@@ -13,25 +13,37 @@ end)
 ----------------------------------------------------------------------------------
 
 ECS.component("movement", function(e, jumpForce)
-    e.speedX = 0
-    e.speedY = 0
+    -- Movement
+    e.desiredVelocity = { x=0.0,  y=0.0 }
+    e.direction = 0
+    e.lastDirection = 1
+    e.velocity = { x=0.0,  y=0.0 }
+    e.maxSpeedChange = 0.0
+    e.acceleration = 0.0
+    e.deceleration = 0.0
+    e.turnSpeed = 0.0
+    e.pressingKey = true
+    e.direction = 0
+    -- Jump
     e.jumpForce = jumpForce
+    -- Options
+    e.useAcceleration = true
 end)
 
 ----------------------------------------------------------------------------------
 
 ECS.component("rigidbody", function(e, fallSpeed)
     e.gravity = 500
-    e.velocity = { x=130.0, y=0.0 }
+    e.velocity = { x=0.0, y=0.0 }
     --e.fallSpeed = fallSpeed
-    e.maxSpeed = 10.0            -- Maximum movement speed
-    e.maxAcceleration = 52.0     -- How fast to reach max speed
-    e.maxDecceleration = 52.0    -- How fast to stop after letting go
-    e.maxTurnSpeed = 80.0        -- How fast to stop when changing direction
-    e.maxAirAcceleration = 0.0   -- How fast to reach max speed when in mid-air
-    e.maxAirDecceleration = 0.0   -- How fast to stop in mid-air when no direction is used
-    e.maxAirTurnSpeed = 80.0     -- How fast to stop when changing direction when in mid-air
-    e.friction = 0.0             -- Friction to apply against movement on stick
+    e.maxSpeed = 150.0             -- Maximum movement speed
+    e.maxAcceleration = 220.0      -- How fast to reach max speed
+    e.maxDecceleration = 750.0     -- How fast to stop after letting go
+    e.maxTurnSpeed = 500.0         -- How fast to stop when changing direction
+    e.maxAirAcceleration = 500.0   -- How fast to reach max speed when in mid-air
+    e.maxAirDecceleration = 350.0  -- How fast to stop in mid-air when no direction is used
+    e.maxAirTurnSpeed = 500.0      -- How fast to stop when changing direction when in mid-air
+    e.friction = 0.0               -- Friction to apply against movement on stick
 end)
 
 ----------------------------------------------------------------------------------

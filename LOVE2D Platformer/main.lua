@@ -26,7 +26,7 @@ function love.load()
         canvas = false
     })
 
-    World:addSystems( PhysicsSystem, CollisionSystem )
+    World:addSystems( MovementSystem, PhysicsSystem, CollisionSystem )
 
     CurrentState:change('play')
     World:emit("init")

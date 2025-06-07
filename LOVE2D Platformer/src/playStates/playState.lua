@@ -55,7 +55,9 @@ function PlayState:draw()
 
     -- Draw HUD or DebugSystem
     -- love.graphics.print("FPS: "..tostring(love.timer.getFPS()).." -- State: "..Player.state)
-    love.graphics.print("Floor: "..tostring(Player.entity.collider.onFloor).." -- SpeedY: "..Player.entity.movement.speedY)
+    love.graphics.print("Floor: "..tostring(Player.entity.collider.onFloor)..
+                        " -- SpeedX: "..math.floor(Player.entity.rigidbody.velocity.x,2)..
+                        " -- SpeedY: "..math.floor(Player.entity.rigidbody.velocity.y, 2))
 
 end
 

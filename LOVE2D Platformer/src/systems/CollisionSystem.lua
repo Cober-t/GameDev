@@ -1,4 +1,4 @@
-CollisionSystem = ECS.system({ pool = {"transform", "collider"} ,
+CollisionSystem = ECS.system( {pool = {"transform", "collider"} ,
                                secondPool = {"transform", "movement", "collider", }})
 
 ----------------------------------------------------------------------------------

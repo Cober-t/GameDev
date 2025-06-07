@@ -1,14 +1,14 @@
-PhysicsSystem = ECS.system({ pool = {"transform", "rigidbody", "movement", "collider"} })
+PhysicsSystem = ECS.system({ pool = {"transform", "rigidbody", "collider"} })
 
 ----------------------------------------------------------------------------------
 
 function PhysicsSystem:update(dt)
     
     for _, entity in ipairs(self.pool) do 
-        entity.movement.speedY = entity.movement.speedY + entity.rigidbody.gravity * dt
-        entity.transform.posY = entity.transform.posY + entity.movement.speedY * dt
+        entity.rigidbody.velocity.y = entity.rigidbody.velocity.y + entity.rigidbody.gravity * dt
+        entity.transform.posY = entity.transform.posY + entity.rigidbody.velocity.y * dt
         
-        entity.transform.posX = entity.transform.posX + entity.movement.speedX * dt
+        entity.transform.posX = entity.transform.posX + entity.rigidbody.velocity.x * dt
 
         -- Change velocity by collision normal
         if entity.collider.onFloor then
@@ -19,15 +19,15 @@ function PhysicsSystem:update(dt)
                 local nx = col.normal.x
                 local ny = col.normal.y
                 local vx = entity.rigidbody.velocity.x
-                local vy = entity.movement.speedY
-                if (nx < 0 and vx > 0) or (nx > 0 and vx < 0) then
-                    vx = -vx * bounciness
-                end
+                local vy = entity.rigidbody.velocity.y
+                -- if (nx < 0 and vx > 0) or (nx > 0 and vx < 0) then
+                --     vx = -vx * bounciness
+                -- end
                 if (ny < 0 and vy > 0) or (ny > 0 and vy < 0) then
                     vy = -vy * bounciness
                 end
                 entity.rigidbody.velocity.x = vx
-                entity.movement.speedY = vy
+                entity.rigidbody.velocity.y = vy
             end
         end
     end
