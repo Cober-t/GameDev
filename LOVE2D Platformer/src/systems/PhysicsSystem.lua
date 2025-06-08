@@ -14,7 +14,10 @@ end
 function PhysicsSystem:update(dt)
     
     -- Calculate gravity for jumping entities
-    for _, entity in ipairs(self.secondPool) do 
+    for _, entity in ipairs(self.secondPool) do
+
+        entity.rigidbody.gravityScale = (entity.rigidbody.groundGravity / GRAVITY) * entity.rigidbody.gravityMultiplier
+        
         -- Get velocity from RigidbodyComponent
         entity.movement.velocity.y = entity.rigidbody.velocity.y
         -- Keep trying to do a jump, for as long as desiredJump is true
@@ -28,12 +31,13 @@ function PhysicsSystem:update(dt)
             self:calculateGravity(entity.movement, entity.rigidbody, dt)
         end
     end
-
+    
     for _, entity in ipairs(self.pool) do
         -- Apply Movement
         entity.transform.posX = entity.transform.posX + entity.rigidbody.velocity.x * dt
         -- Apply Gravity
-        entity.rigidbody.velocity.y = entity.rigidbody.velocity.y + GRAVITY * dt
+        entity.rigidbody.velocity.y = entity.rigidbody.velocity.y - GRAVITY * dt * entity.rigidbody.gravityScale
+        
         entity.transform.posY = entity.transform.posY + entity.rigidbody.velocity.y
 
         -- Change velocity by collision normal
@@ -70,11 +74,12 @@ function PhysicsSystem:doAJump(mv, rb)
         -- Determine the power of the jump, based on our gravity and stats
         mv.jumpForce = math.sqrt(-2.0 * GRAVITY * (rb.groundGravity / GRAVITY) * mv.jumpHeight)
 
-        -- If Kit is moving up or down when she jumps (such as when doing a double jump), change the jumpForce;
+        -- If the Player is moving up or down when she jumps (such as when doing a double jump), change the jumpForce;
         -- This will ensure the jump is the exact same strength, no matter your velocity.
         if mv.velocity.y < 0.0 then
             mv.jumpForce = math.max(mv.jumpForce + mv.velocity.y, 0.0)
         elseif mv.velocity.y > 0.0 then
+            -- mv.jumpForce = mv.jumpForce - math.abs(rb.velocity.y) Force Down in the future
             mv.jumpForce = mv.jumpForce + math.abs(rb.velocity.y)
         end
 
@@ -106,7 +111,7 @@ function PhysicsSystem:calculateGravity(mv, rb, dt)
             rb.gravityMultiplier = rb.defaultGravityScale;
         else
             -- If we're using variable jump height...)
-            if mv.variablejumpHeight then
+            if mv.variableJumpHeight then
                 -- Apply upward multiplier if player is rising and holding jump
                 if mv.pressingJump and mv.currentlyJumping then
                     rb.gravityMultiplier = rb.upwardMovementMultiplier
