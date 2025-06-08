@@ -1,4 +1,4 @@
-MovementSystem = ECS.system({ pool = {"transform", "rigidbody", "movement", "collider"} })
+MovementSystem = ECS.system({ pool = {"transform", "rigidbody", "movement"} })
 
 
 ----------------------------------------------------------------------------------
@@ -13,18 +13,42 @@ function MovementSystem:update(dt)
         entity.movement.desiredVelocity.x = entity.movement.direction * math.max(entity.rigidbody.maxSpeed - entity.rigidbody.friction, 0.0);
         entity.movement.velocity = entity.rigidbody.velocity
         
-        -- Movement
+        -- Movement ------------------------------------------------------------------------------
         if entity.movement.useAcceleration then
-            self:runWithAcceleration(entity.movement, entity.rigidbody, entity.collider, dt)
+            self:runWithAcceleration(entity.movement, entity.rigidbody, dt)
         else
             if self.col.onFloor then
                 self:runWithoutAcceleration(entity.movement, dt)
             else
-                self:runWithAcceleration(entity.movement, entity.rigidbody, entity.collider, dt)
+                self:runWithAcceleration(entity.movement, entity.rigidbody, dt)
             end
         end
 
-        -- Jump
+        -- Jump ---------------------------------------------------------------------------------
+        -- Jump Buffer allows us to queue up a jump, which will play when we next hit the ground
+        if entity.movement.jumpBuffer > 0 then
+            -- Instead of immediately turning off "desireJump", start counting up...
+            -- All the while, the DoAJump function will repeatedly be fired off
+            if entity.movement.desiredJump then
+
+                entity.movement.jumpBufferCounter = entity.movement.jumpBufferCounter + dt
+
+                if entity.movement.jumpBufferCounter > entity.movement.jumpBuffer then
+                    -- If time exceeds the jump buffer, turn off "desireJump"
+                    entity.movement.desiredJump = false;
+                    entity.movement.jumpBufferCounter = 0;
+                end
+            end
+        end
+
+        -- If we're not on the ground and we're not currently jumping, that means we've stepped off the edge of a platform.
+        -- So, start the coyote time counter...
+        if not entity.movement.currentlyJumping and not entity.movement.onFloor then
+            entity.movement.coyoteTimeCounter = entity.movement.coyoteTimeCounter + dt;
+        else
+            -- Reset it when we touch the ground, or jump
+            entity.movement.coyoteTimeCounter = 0
+        end
     end
 end
 
@@ -34,11 +58,11 @@ local function signum(number)
    return (number > 0 and 1) or (number == 0 and 0) or -1
 end
 
-function MovementSystem:runWithAcceleration(mv, rb, col, dt)
+function MovementSystem:runWithAcceleration(mv, rb, dt)
     -- Set our acceleration, deceleration, and turn speed stats, based on whether we're on the ground on in the air
-    mv.acceleration = col.onFloor and rb.maxAcceleration  or rb.maxAirAcceleration
-    mv.deceleration = col.onFloor and rb.maxDecceleration or rb.maxAirDecceleration
-    mv.turnSpeed    = col.onFloor and rb.maxTurnSpeed     or rb.maxAirTurnSpeed 
+    mv.acceleration = mv.onFloor and rb.maxAcceleration  or rb.maxAirAcceleration
+    mv.deceleration = mv.onFloor and rb.maxDecceleration or rb.maxAirDecceleration
+    mv.turnSpeed    = mv.onFloor and rb.maxTurnSpeed     or rb.maxAirTurnSpeed 
  
     if mv.pressingKey then
         -- If the sign (i.e. positive or negative) of our input direction doesn't match our movement, it means we're turning around and so should use the turn speed stat.

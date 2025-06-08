@@ -27,11 +27,11 @@ function CollisionSystem:update(dt)
         -- Update the current entity position
         entity.transform.posX = actualX
         entity.transform.posY = actualY
-        entity.collider.onFloor = false
+        entity.movement.onFloor = false
         -- Check if is onFloor
         for i=1, len do
             local col = cols[i]
-            if col.normal.y < 0 then entity.collider.onFloor = true end
+            if col.normal.y < 0 then entity.movement.onFloor = true end
         end
     end
 end

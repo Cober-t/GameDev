@@ -38,7 +38,7 @@ function Player:init()
                          self.trans.posY + self.col.offsetY)
     end
     self.rb.velocity.y = 0
-    self.col.onFloor = false
+    self.mv.onFloor = false
 end
 
 ----------------------------------------------------------------------------------
@@ -63,7 +63,7 @@ end
 function Player:moveLeft(dt)
     self.mv.direction = -1
     self.lastDirection = self.mv.direction
-    self.state = self.col.onFloor and "walkLeft" or "jumpLeft"
+    self.state = self.mv.onFloor and "walkLeft" or "jumpLeft"
 end
 
 ----------------------------------------------------------------------------------
@@ -71,19 +71,18 @@ end
 function Player:moveRight(dt)
     self.mv.direction = 1
     self.lastDirection = self.direction
-    self.state = self.col.onFloor and "walkRight" or "jumpRight"
+    self.state = self.mv.onFloor and "walkRight" or "jumpRight"
 end
 
 ----------------------------------------------------------------------------------
 
 function Player:moveJump(dt)
-    if not self.col.onFloor then 
-        return 
-    end
     self.mv.pressingJump = true
     self.mv.desiredJump = true
-    self.rb.velocity.y = self.mv.jumpForce * -1
-    self.state = self.lastDirection == -1 and "jumpLeft" or "jumpRight"
+    -- self.rb.velocity.y = self.mv.jumpForce * -1
+    if self.mv.onFloor then
+        self.state = self.lastDirection == -1 and "jumpLeft" or "jumpRight"
+    end
 end
 
 ----------------------------------------------------------------------------------
@@ -96,7 +95,7 @@ end
 
 function Player:idle(dt)
     self.mv.direction = 0
-    if not self.col.onFloor then return end
+    if not self.mv.onFloor then return end
     self.state = self.mv.direction == -1 and "idleLeft" or "idleRight"
 end
 
@@ -119,7 +118,7 @@ end
 ----------------------------------------------------------------------------------
 
 function Player:updateAnimation(dt)
-    if self.mv.direction == 0 and self.col.onFloor then
+    if self.mv.direction == 0 and self.mv.onFloor then
         self.state = self.lastDirection == -1 and "idleLeft" or "idleRight"
     end
     self.animation = self.animations[self.state]
