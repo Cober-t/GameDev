@@ -68,7 +68,7 @@ ECS.component("rigidbody", function(e, fallSpeed)
     e.defaultGravityScale = 1.0
     e.fallSpeedLimit = 100.0          -- The fastest speed the character can fall
     e.upwardMovementMultiplier = 1.0 -- Gravity multiplier to apply when going up
-    e.downwardMovementMultiplier = 0.85 -- Gravity multiplier to apply when coming down
+    e.downwardMovementMultiplier = 0.75 -- Gravity multiplier to apply when coming down
 end)
 
 ----------------------------------------------------------------------------------

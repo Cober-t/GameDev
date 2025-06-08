@@ -42,7 +42,9 @@ function PhysicsSystem:update(dt)
 
         -- Change velocity by collision normal
         if entity.movement.onFloor then
-            local actualX, actualY, cols, len = BumpWorld:check(entity, entity.transform.posY, entity.transform.posY, self.filter)
+            local newPosX = entity.transform.posX + entity.collider.offsetX
+            local newPosY = entity.transform.posY + entity.collider.offsetY
+            local actualX, actualY, cols, len = BumpWorld:check(entity, newPosX, newPosY, self.filter)
             for i=1, len do
                 local col = cols[i]
                 local nx = col.normal.x

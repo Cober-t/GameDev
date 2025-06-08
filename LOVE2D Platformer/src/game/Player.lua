@@ -16,7 +16,7 @@ function Player:new()
                     :give("transform", 100, 0)      -- x, y
                     :give("movement", 230.0)        -- jumpForce
                     :give("rigidbody", 1.13)        -- fallSpeedMulti
-                    :give("collider", 0, 0, 10, 15, false) -- offX, offY, w, h, trigger
+                    :give("collider", 4, 6, 10, 13, false) -- offX, offY, w, h, trigger
     self.trans = self.entity.transform
     self.rb    = self.entity.rigidbody
     self.mv    = self.entity.movement

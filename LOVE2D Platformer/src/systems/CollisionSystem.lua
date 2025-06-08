@@ -20,13 +20,13 @@ end
 function CollisionSystem:update(dt)
     -- Iterate over all Entities that thçis System acts on
     for i, entity in ipairs(self.secondPool) do
-        local newPosX = entity.transform.posX
-        local newPosY = entity.transform.posY
+        local newPosX = entity.transform.posX + entity.collider.offsetX
+        local newPosY = entity.transform.posY + entity.collider.offsetY
         local actualX, actualY, cols, len = BumpWorld:move(entity, newPosX, newPosY)
 
         -- Update the current entity position
-        entity.transform.posX = actualX
-        entity.transform.posY = actualY
+        entity.transform.posX = actualX - entity.collider.offsetX
+        entity.transform.posY = actualY - entity.collider.offsetY
         entity.movement.onFloor = false
         -- Check if is onFloor
         for i=1, len do

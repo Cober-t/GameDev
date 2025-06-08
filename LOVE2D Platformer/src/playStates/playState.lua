@@ -57,7 +57,7 @@ function PlayState:draw()
     -- love.graphics.print("FPS: "..tostring(love.timer.getFPS()).." -- State: "..Player.state)
     love.graphics.print("Floor: "..tostring(Player.entity.movement.onFloor).." -- "..
                         "Pressing_Jump: "..tostring(Player.entity.movement.pressingJump).." -- "..
-                        "JumpForce: "..tostring(Player.entity.movement.jumpForce))
+                        "VelocityY: "..tostring(Player.entity.rigidbody.velocity.y))
 
 end
 
