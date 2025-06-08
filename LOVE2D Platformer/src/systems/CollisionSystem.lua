@@ -31,7 +31,10 @@ function CollisionSystem:update(dt)
         -- Check if is onFloor
         for i=1, len do
             local col = cols[i]
-            if col.normal.y < 0 then entity.movement.onFloor = true end
+            if col.normal.y < 0 then
+                entity.movement.onFloor = true
+                entity.movement.canJumpAgain = false -- Will be true at the first jump
+            end
         end
     end
 end

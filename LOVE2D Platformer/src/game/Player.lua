@@ -79,7 +79,6 @@ end
 function Player:moveJump(dt)
     self.mv.pressingJump = true
     self.mv.desiredJump = true
-    -- self.rb.velocity.y = self.mv.jumpForce * -1
     if self.mv.onFloor then
         self.state = self.lastDirection == -1 and "jumpLeft" or "jumpRight"
     end

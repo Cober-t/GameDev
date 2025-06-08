@@ -56,8 +56,8 @@ function PlayState:draw()
     -- Draw HUD or DebugSystem
     -- love.graphics.print("FPS: "..tostring(love.timer.getFPS()).." -- State: "..Player.state)
     love.graphics.print("Floor: "..tostring(Player.entity.movement.onFloor).." -- "..
-                        "Pressing_Jump: "..tostring(Player.entity.movement.pressingJump).." -- "..
-                        "VelocityY: "..tostring(Player.entity.rigidbody.velocity.y))
+                        "CanJump Again: "..tostring(Player.entity.movement.canJumpAgain).." -- "..
+                        "Desired Jump: "..tostring(Player.entity.movement.desiredJump))
 
 end
 

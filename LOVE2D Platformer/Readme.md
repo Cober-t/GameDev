@@ -5,14 +5,14 @@
 [ ] Remap Controllers
 [ ] Save game and settings (Serialize system)
 [X] Debug colliders
-[ ] Collider offsets
+[X] Collider offsets
 [ ] Collider Triggers (ej. killzone that restart game)
 [ ] Player smooth movement
    - [X] Smooth Movement, acceleration, turn speed...
-   - [ ] Variable fall speed
-   - [ ] Variable jump height
-   - [ ] Coyote time
-   - [ ] Jump buffer
+   - [X] Variable fall speed
+   - [X] Variable jump height
+   - [X] Coyote time
+   - [X] Jump buffer
    - [ ] Dash
-   - [ ] Double Jump
+   - [X] Double Jump
    - [ ] Wall jump
