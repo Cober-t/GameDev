@@ -3,6 +3,13 @@ MovementSystem = ECS.system({ pool = {"transform", "rigidbody", "movement"} })
 
 ----------------------------------------------------------------------------------
 
+-- Maps a number from one range to another
+function map(x, in_min, in_max, out_min, out_max)
+	return out_min + (x - in_min)*(out_max - out_min)/(in_max - in_min)
+end
+
+----------------------------------------------------------------------------------
+
 function MovementSystem:update(dt)
 
     for _, entity in ipairs(self.pool) do
@@ -10,7 +17,7 @@ function MovementSystem:update(dt)
             ::continue:: 
         end
         entity.movement.pressingKey = entity.movement.direction ~= 0
-        entity.movement.desiredVelocity.x = entity.movement.direction * math.max(entity.rigidbody.maxSpeed - entity.rigidbody.friction, 0.0);
+        entity.movement.desiredVelocity.x = entity.movement.direction * math.max(entity.rigidbody.maxSpeed - entity.rigidbody.friction, 0.0)
         entity.movement.velocity = entity.rigidbody.velocity
         
         -- Movement ------------------------------------------------------------------------------
@@ -38,6 +45,24 @@ function MovementSystem:update(dt)
                     entity.movement.desiredJump = false;
                     entity.movement.jumpBufferCounter = 0;
                 end
+            end
+        end
+
+        -- Variable jump force. Calculate target jump height based on hold time
+        if entity.movement.variableJumpHeight then            
+            entity.movement.jumpHoldTime = entity.movement.pressingJump and (entity.movement.jumpHoldTime + dt) or 0.0
+
+            -- Optional: Calculate jump cut-off height for debugging/UI purposes
+            if entity.movement.currentlyJumping and entity.movement.pressingJump then
+                local holdTime = entity.movement.jumpHoldTime
+                local minHoldTime = entity.movement.minJumpHoldTime
+                local maxHoldTime = entity.movement.maxJumpHoldTime
+                local minJumpHeight = entity.movement.minJumpHeight
+                local maxJumpHeight = entity.movement.maxJumpHeight
+                
+                -- Clamp hold time to valid range
+                holdTime = math.max(minHoldTime, math.min(holdTime, maxHoldTime))
+                entity.movement.jumpCutOff = map(holdTime, minHoldTime, maxHoldTime, minJumpHeight, maxJumpHeight)
             end
         end
 

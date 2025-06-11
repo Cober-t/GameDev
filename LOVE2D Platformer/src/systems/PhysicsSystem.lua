@@ -37,7 +37,6 @@ function PhysicsSystem:update(dt)
         entity.transform.posX = entity.transform.posX + entity.rigidbody.velocity.x * dt
         -- Apply Gravity
         entity.rigidbody.velocity.y = entity.rigidbody.velocity.y - GRAVITY * dt * entity.rigidbody.gravityScale
-        
         entity.transform.posY = entity.transform.posY + entity.rigidbody.velocity.y
 
         -- Change velocity by collision normal
@@ -82,12 +81,19 @@ function PhysicsSystem:doAJump(mv, rb)
             mv.jumpForce = math.max(mv.jumpForce + mv.velocity.y, 0.0)
         elseif mv.velocity.y > 0.0 then
             -- mv.jumpForce = mv.jumpForce - math.abs(rb.velocity.y) Force Down in the future
-            mv.jumpForce = mv.jumpForce + math.abs(rb.velocity.y)
+            -- TODO: Or apply a multy to reduce impulse on second jump
+            mv.jumpForce = mv.jumpForce + math.abs(rb.velocity.y) * 0.85
         end
 
         -- Apply the new jumpForce to the velocity. It will be sent to the Rigidbody in FixedUpdate;
-        mv.velocity.y = mv.velocity.y - mv.jumpForce;
-        mv.currentlyJumping = true;
+        mv.velocity.y = mv.velocity.y - mv.jumpForce
+        mv.currentlyJumping = true
+
+        -- Initialize variable jump height tracking
+        if mv.variableJumpHeight then
+            mv.jumpStartTime = love.timer.getTime() -- Track when jump started
+            mv.jumpMinimumMet = false -- Track if minimum jump time has passed
+        end
 
         -- if juice != nil then
         --     -- Apply the jumping effects on the juice script
@@ -114,13 +120,7 @@ function PhysicsSystem:calculateGravity(mv, rb, dt)
         else
             -- If we're using variable jump height...)
             if mv.variableJumpHeight then
-                -- Apply upward multiplier if player is rising and holding jump
-                if mv.pressingJump and mv.currentlyJumping then
-                    rb.gravityMultiplier = rb.upwardMovementMultiplier
-                else
-                    -- But apply a special downward multiplier if the player lets go of jump
-                    rb.gravityMultiplier = mv.jumpCutOff;
-                end
+                self:handleVariableJumpHeight(mv, rb, dt)
             else
                 rb.gravityMultiplier = rb.upwardMovementMultiplier
             end
@@ -133,11 +133,18 @@ function PhysicsSystem:calculateGravity(mv, rb, dt)
         else
             -- Otherwise, apply the downward gravity multiplier as Kit comes back to Earth
             rb.gravityMultiplier = rb.downwardMovementMultiplier
+            -- Reset jump state when falling
+            if mv.variableJumpHeight and mv.currentlyJumping then
+                mv.currentlyJumping = false
+            end
         end
     else
         --Else not moving vertically at all
         if mv.onFloor then
             mv.currentlyJumping = false
+            if mv.variableJumpHeight then
+                mv.jumpMinimumMet = false
+            end
         end
         
         rb.gravityMultiplier = rb.defaultGravityScale
@@ -146,6 +153,52 @@ function PhysicsSystem:calculateGravity(mv, rb, dt)
     -- Set the character's Rigidbody's velocity
     -- But clamp the Y variable within the bounds of the speed limit, for the terminal velocity assist option
     rb.velocity.y = math.min(math.max(-rb.fallSpeedLimit, mv.velocity.y), 100.0)
+end
+
+
+----------------------------------------------------------------------------------
+
+function PhysicsSystem:handleVariableJumpHeight(mv, rb, dt)
+    -- Only apply variable jump logic if we're currently jumping and moving upward
+    if not mv.currentlyJumping then
+        rb.gravityMultiplier = rb.upwardMovementMultiplier
+        return
+    end
+    
+    -- Calculate how long we've been jumping
+    local currentTime = love.timer.getTime()
+    local jumpDuration = currentTime - mv.jumpStartTime
+    
+    -- Check if minimum jump time has been met
+    if jumpDuration >= mv.minJumpHoldTime then
+        mv.jumpMinimumMet = true
+    end
+    
+    -- Determine gravity based on jump button state and timing
+    if mv.pressingJump then
+        -- Still holding jump button
+        if jumpDuration < mv.maxJumpHoldTime then
+            -- Within max hold time - use light gravity for higher jumps
+            rb.gravityMultiplier = mv.jumpHoldGravityMultiplier or (rb.upwardMovementMultiplier * 0.6)
+        else
+            -- Exceeded max hold time - switch to normal upward gravity
+            rb.gravityMultiplier = rb.upwardMovementMultiplier
+        end
+    else
+        -- Jump button released
+        if mv.jumpMinimumMet then
+            -- Minimum time met - can use heavy gravity for jump cut
+            rb.gravityMultiplier = mv.jumpReleaseGravityMultiplier or (rb.upwardMovementMultiplier * 1.8)
+        else
+            -- Still in minimum time - use light gravity to ensure minimum jump height
+            rb.gravityMultiplier = mv.jumpHoldGravityMultiplier or (rb.upwardMovementMultiplier * 0.6)
+        end
+    end
+    
+    -- Optional: Add extra floatiness near the peak
+    if mv.enablePeakFloatiness and math.abs(rb.velocity.y) < mv.peakVelocityThreshold then
+        rb.gravityMultiplier = rb.gravityMultiplier * mv.peakGravityMultiplier
+    end
 end
 
 ----------------------------------------------------------------------------------

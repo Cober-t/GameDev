@@ -15,4 +15,10 @@
    - [X] Jump buffer
    - [ ] Dash
    - [X] Double Jump
+   - [ ] X Jumps in the air with different impulses
    - [ ] Wall jump
+
+[ ] Mechanics ideas
+   - [ ] Wavedash
+   - [ ] Diagonal hook
+   - [ ] Impulse with the platform edges
