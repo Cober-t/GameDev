@@ -1,5 +1,5 @@
 -- Settings
-DEBUG = true
+DEBUG = false
 
 -- Window
 CELL_SIZE = 16

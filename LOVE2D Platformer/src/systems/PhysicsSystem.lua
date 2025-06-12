@@ -15,95 +15,50 @@ function PhysicsSystem:update(dt)
     
     -- Calculate gravity for jumping entities
     for _, entity in ipairs(self.secondPool) do
+        local mv = entity.movement
+        local rb = entity.rigidbody
+        rb.gravityScale = (rb.groundGravity / GRAVITY) * rb.gravityMultiplier
 
-        entity.rigidbody.gravityScale = (entity.rigidbody.groundGravity / GRAVITY) * entity.rigidbody.gravityMultiplier
-        
         -- Get velocity from RigidbodyComponent
-        entity.movement.velocity.y = entity.rigidbody.velocity.y
-        -- Keep trying to do a jump, for as long as desiredJump is true
-        if entity.movement.desiredJump then
-            self:doAJump(entity.movement, entity.rigidbody)
-            entity.rigidbody.velocity.y = entity.movement.velocity.y
-            
-            -- Skip gravity calculations this frame, so currentlyJumping doesn't turn off
-            -- This makes sure you can't do the coyote time double jump bug
-        else
-            self:calculateGravity(entity.movement, entity.rigidbody, dt)
+        mv.velocity.y = rb.velocity.y
+
+        -- Skip gravity calculations this frame, so currentlyJumping doesn't turn off
+        -- This makes sure you can't do the coyote time double jump bug
+        if not mv.desiredJump then
+            self:calculateGravity(mv, rb, dt)
         end
     end
     
     for _, entity in ipairs(self.pool) do
+        local mv = entity.movement
+        local rb = entity.rigidbody
+        local tf = entity.transform
+        local cl = entity.collider
         -- Apply Movement
-        entity.transform.posX = entity.transform.posX + entity.rigidbody.velocity.x * dt
+        tf.posX = tf.posX + rb.velocity.x * dt
         -- Apply Gravity
-        entity.rigidbody.velocity.y = entity.rigidbody.velocity.y - GRAVITY * dt * entity.rigidbody.gravityScale
-        entity.transform.posY = entity.transform.posY + entity.rigidbody.velocity.y
+        rb.velocity.y = rb.velocity.y - GRAVITY * dt * rb.gravityScale
+        tf.posY = tf.posY + rb.velocity.y
 
         -- Change velocity by collision normal
-        if entity.movement.onFloor then
-            local newPosX = entity.transform.posX + entity.collider.offsetX
-            local newPosY = entity.transform.posY + entity.collider.offsetY
+        if mv.onFloor then
+            mv.airJumps = mv.maxAirJumps
+            local newPosX = tf.posX + cl.offsetX
+            local newPosY = tf.posY + cl.offsetY
             local actualX, actualY, cols, len = BumpWorld:check(entity, newPosX, newPosY, self.filter)
             for i=1, len do
                 local col = cols[i]
                 local nx = col.normal.x
                 local ny = col.normal.y
-                local vx = entity.rigidbody.velocity.x
-                local vy = entity.rigidbody.velocity.y
+                local vx = rb.velocity.x
+                local vy = rb.velocity.y
                 if (ny < 0 and vy > 0) or (ny > 0 and vy < 0) then
-                    vy = -vy * entity.rigidbody.bounciness
+                    vy = -vy * rb.bounciness
                 end
-                entity.rigidbody.velocity.x = vx
-                entity.rigidbody.velocity.y = vy
+                rb.velocity.x = vx
+                rb.velocity.y = vy
             end
         end
-    end
-end
-
-----------------------------------------------------------------------------------
-
-function PhysicsSystem:doAJump(mv, rb)
-    --Create the jump, provided we are on the ground, in coyote time, or have a double jump available
-    if mv.onFloor or (mv.coyoteTimeCounter > 0.03 and mv.coyoteTimeCounter < mv.coyoteTime) or mv.canJumpAgain then
-        mv.desiredJump = false
-        mv.jumpBufferCounter = 0.0
-        mv.coyoteTimeCounter = 0.0
-
-        -- If we have double jump on, allow us to jump again (but only once)
-        mv.canJumpAgain = (mv.maxAirJumps == 1 and mv.canJumpAgain == false)
-
-        -- Determine the power of the jump, based on our gravity and stats
-        mv.jumpForce = math.sqrt(-2.0 * GRAVITY * (rb.groundGravity / GRAVITY) * mv.jumpHeight)
-
-        -- If the Player is moving up or down when she jumps (such as when doing a double jump), change the jumpForce;
-        -- This will ensure the jump is the exact same strength, no matter your velocity.
-        if mv.velocity.y < 0.0 then
-            mv.jumpForce = math.max(mv.jumpForce + mv.velocity.y, 0.0)
-        elseif mv.velocity.y > 0.0 then
-            -- mv.jumpForce = mv.jumpForce - math.abs(rb.velocity.y) Force Down in the future
-            -- TODO: Or apply a multy to reduce impulse on second jump
-            mv.jumpForce = mv.jumpForce + math.abs(rb.velocity.y) * 0.85
-        end
-
-        -- Apply the new jumpForce to the velocity. It will be sent to the Rigidbody in FixedUpdate;
-        mv.velocity.y = mv.velocity.y - mv.jumpForce
-        mv.currentlyJumping = true
-
-        -- Initialize variable jump height tracking
-        if mv.variableJumpHeight then
-            mv.jumpStartTime = love.timer.getTime() -- Track when jump started
-            mv.jumpMinimumMet = false -- Track if minimum jump time has passed
-        end
-
-        -- if juice != nil then
-        --     -- Apply the jumping effects on the juice script
-        --     juice.jumpEffects();
-        -- end
-    end
-
-    if mv.jumpBuffer == 0 then
-        -- If we don't have a jump buffer, then turn off desiredJump immediately after hitting jumping
-        mv.desiredJump = false;
     end
 end
 

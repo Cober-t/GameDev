@@ -34,8 +34,9 @@ ECS.component("movement", function(e, jumpForce)
     e.jumpHeight = 0.4             -- Maximum jump height
     e.jumpCutOff = 0.5             -- Gravity multiplier when you let go of jump
     e.jumpBuffer = 0.15            -- How far from ground should we cache your jump?
+    e.airJumps = 0
     e.maxAirJumps = 1              -- How many times can you jump in the air?
-    e.timeToJumpApex = 1.0        -- How long it takes to reach that height before coming back down
+    e.timeToJumpApex = 1.2        -- How long it takes to reach that height before coming back down
     e.jumpStartTime = 0.0
     e.jumpMinimumMet = false
     e.jumpHoldTime = 0.0           -- How long space has been held
@@ -48,6 +49,7 @@ ECS.component("movement", function(e, jumpForce)
     -- Jump Options (states)
     e.variableJumpHeight = true    -- Should the character drop when you let go of jump?
     e.onFloor = false
+    e.onWall = false
     e.pressingJump = false
     e.canJumpAgain = false
     e.currentlyJumping = false
@@ -65,7 +67,7 @@ ECS.component("rigidbody", function(e, fallSpeed)
     e.bounciness = 0.0
     e.maxSpeed = 225.0             -- Maximum movement speed
     e.maxAcceleration = 900.0      -- How fast to reach max speed
-    e.maxDecceleration = 900.0     -- How fast to stop after letting go
+    e.maxDecceleration = 1200.0     -- How fast to stop after letting go
     e.maxTurnSpeed = 900.0         -- How fast to stop when changing direction
     e.maxAirAcceleration = 1000.0   -- How fast to reach max speed when in mid-air
     e.maxAirDecceleration = 900.0  -- How fast to stop in mid-air when no direction is used

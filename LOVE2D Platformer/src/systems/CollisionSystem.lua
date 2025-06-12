@@ -28,12 +28,16 @@ function CollisionSystem:update(dt)
         entity.transform.posX = actualX - entity.collider.offsetX
         entity.transform.posY = actualY - entity.collider.offsetY
         entity.movement.onFloor = false
+        entity.movement.onWall = false
         -- Check if is onFloor
         for i=1, len do
             local col = cols[i]
             if col.normal.y < 0 then
                 entity.movement.onFloor = true
                 entity.movement.canJumpAgain = false -- Will be true at the first jump
+            end
+            if col.normal.x ~= 0 then
+                entity.movement.onWall = true
             end
         end
     end
