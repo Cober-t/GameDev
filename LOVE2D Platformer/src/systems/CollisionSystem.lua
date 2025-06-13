@@ -13,28 +13,37 @@ function CollisionSystem:init()
                     entity.collider.width,
                     entity.collider.height)
     end
+    
+    self.accumulator = 0
+    self.fixedDeltaTime = FIXED_DT
 end
 
 ----------------------------------------------------------------------------------
 
 function CollisionSystem:update(dt)
-    -- Iterate over all Entities that thçis System acts on
-    for i, entity in ipairs(self.secondPool) do
-        local newPosX = entity.transform.posX + entity.collider.offsetX
-        local newPosY = entity.transform.posY + entity.collider.offsetY
-        local actualX, actualY, cols, len = BumpWorld:move(entity, newPosX, newPosY)
+    self.accumulator = self.accumulator + dt
 
-        -- Update the current entity position
-        entity.transform.posX = actualX - entity.collider.offsetX
-        entity.transform.posY = actualY - entity.collider.offsetY
-        entity.movement.onFloor = false
-        entity.movement.onWall = false
-        -- Check if is onFloor
-        for i=1, len do
-            local col = cols[i]
-            if col.normal.y < 0  then entity.movement.onFloor = true end
-            if col.normal.x ~= 0 then entity.movement.onWall  = true end
+    while self.accumulator >= self.fixedDeltaTime do
+
+        -- Iterate over all Entities that this System acts on
+        for i, entity in ipairs(self.secondPool) do
+            local newPosX = entity.transform.posX + entity.collider.offsetX
+            local newPosY = entity.transform.posY + entity.collider.offsetY
+            local actualX, actualY, cols, len = BumpWorld:move(entity, newPosX, newPosY)
+
+            -- Update the current entity position
+            entity.transform.posX = actualX - entity.collider.offsetX
+            entity.transform.posY = actualY - entity.collider.offsetY
+            entity.movement.onFloor = false
+            entity.movement.onWall = false
+            -- Check if is onFloor
+            for i=1, len do
+                local col = cols[i]
+                if col.normal.y < 0  then entity.movement.onFloor = true end
+                if col.normal.x ~= 0 then entity.movement.onWall  = true end
+            end
         end
+        self.accumulator = self.accumulator - self.fixedDeltaTime
     end
 end
 

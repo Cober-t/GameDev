@@ -35,7 +35,7 @@ function Camera:update(target, dt)
     if self.nativeCam.x < leftLimit   then self.nativeCam.x = leftLimit   end
     if self.nativeCam.y < topLimit    then self.nativeCam.y = topLimit    end
     if self.nativeCam.x > rightLimit  then self.nativeCam.x = rightLimit  end
-    if self.nativeCam.y > bottomLimit then self.nativeCam.y = bottomLimit end
+    -- if self.nativeCam.y > bottomLimit then self.nativeCam.y = bottomLimit end
 end
 
 ----------------------------------------------------------------------------------

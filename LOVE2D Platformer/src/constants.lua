@@ -1,5 +1,6 @@
 -- Settings
 DEBUG = false
+FIXED_DT = 1 / 60
 
 -- Window
 CELL_SIZE = 16

@@ -6,7 +6,10 @@
    - [ ] Save game and settings (Serialize system)
    - [X] Debug colliders
    - [X] Collider offsets
+   - [ ] Logging system
+   - [ ] Fix Camera Tearing (SubViewport smooth camera)
    - [ ] Collider Triggers (ej. killzone that restart game)
+   - [X] Fixed Systems performance
    - [ ] Player smooth movement
       - [X] Smooth Movement, acceleration, turn speed...
       - [X] Variable fall speed

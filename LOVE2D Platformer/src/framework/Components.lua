@@ -17,8 +17,8 @@ ECS.component("movement", function(e, jumpForce)
     e.maxSpeed = 225.0             -- Maximum movement speed
     e.maxAcceleration = 900.0      -- How fast to reach max speed
     e.maxDecceleration = 1200.0    -- How fast to stop after letting go
-    e.maxTurnSpeed = 900.0         -- How fast to stop when changing direction
-    e.maxAirAcceleration = 1000.0  -- How fast to reach max speed when in mid-air
+    e.maxTurnSpeed = 1200.0         -- How fast to stop when changing direction
+    e.maxAirAcceleration = 1200.0  -- How fast to reach max speed when in mid-air
     e.maxAirDecceleration = 900.0  -- How fast to stop in mid-air when no direction is used
     e.maxAirTurnSpeed = 700.0      -- How fast to stop when changing direction when in mid-air
     -- Movement (necessary for calculations)
@@ -37,11 +37,11 @@ ECS.component("movement", function(e, jumpForce)
     e.direction = 0
 
     -- Jump
-    e.jumpHeight = 1.0                  -- Maximum jump height
+    e.jumpHeight = 2.75                 -- Maximum jump height
     e.coyoteTime = 0.085                -- How long should coyote time last?
     e.jumpBuffer = 0.15                 -- How far from ground should we cache your jump?
-    e.timeToJumpApex = 1.0              -- How long it takes to reach that height before coming back down
-    e.fallSpeedLimit = 2.2              -- The fastest speed the character can fall
+    e.timeToJumpApex = 1.5              -- How long it takes to reach that height before coming back down
+    e.fallSpeedLimit = 50000.0              -- The fastest speed the character can fall
     e.maxAirJumps = 1                   -- How many times can you jump in the air?
     e.maxJumpHoldTime = 0.8             -- Maximum time to hold for full jump (adjust as needed)
     e.minJumpHoldTime = 0.1             -- Minimum hold time for shortest jump
@@ -51,7 +51,7 @@ ECS.component("movement", function(e, jumpForce)
     e.downwardMovementMultiplier = 5.0  -- Gravity multiplier to apply when coming down
     -- Variable jump
     e.jumpHoldGravityMultiplier = 0.6   -- Light gravity while holding jump
-    e.jumpReleaseGravityMultiplier = 1.8-- Heavy gravity when jump released
+    e.jumpReleaseGravityMultiplier = 2.5-- Heavy gravity when jump released
     -- Jump (necessary for calculations)
     e.jumpForce = 0.0
     e.jumpBufferCounter = 0.0

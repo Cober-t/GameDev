@@ -7,64 +7,73 @@ function PhysicsSystem:init()
     for _, entity in ipairs(self.secondPool) do 
         entity.rigidbody.groundGravity = (-2.0 * entity.movement.jumpHeight) / math.pow(entity.movement.timeToJumpApex, 2)
     end
+
+    self.accumulator = 0
+    self.fixedDeltaTime = FIXED_DT
 end
 
 ----------------------------------------------------------------------------------
 
 function PhysicsSystem:update(dt)
     
-    -- Calculate gravity for jumping entities
-    for _, entity in ipairs(self.secondPool) do
-        local mv = entity.movement
-        local rb = entity.rigidbody
-        rb.gravityScale = (rb.groundGravity / GRAVITY) * rb.gravityMultiplier
+    -- Fixed physics calculations, for decouple game logic from framerate
+    self.accumulator = self.accumulator + dt
+    while self.accumulator >= self.fixedDeltaTime do
 
-        -- Get velocity from RigidbodyComponent
-        mv.velocity.y = rb.velocity.y
-
-        if not mv.desiredJump then
-            self:calculateGravity(mv, rb, dt)
-        end
-    end
+        -- Calculate gravity for jumping entities
+        for _, entity in ipairs(self.secondPool) do
+            local mv = entity.movement
+            local rb = entity.rigidbody
+            rb.gravityScale = (rb.groundGravity / GRAVITY) * rb.gravityMultiplier
     
-    -- Move bodies and calculate states
-    for _, entity in ipairs(self.pool) do
-        local mv = entity.movement
-        local rb = entity.rigidbody
-        local tf = entity.transform
-        local cl = entity.collider
-        -- Apply Movement
-        tf.posX = tf.posX + rb.velocity.x * dt
-        
-        -- Last gravity calculations
-        -- If falling limit the Y variable within the bounds of the speed limit, for the terminal velocity option
-        rb.velocity.y = rb.velocity.y - GRAVITY * dt * rb.gravityScale
-        if rb.velocity.y > -0.01 then
-            rb.velocity.y = rb.velocity.y > mv.fallSpeedLimit and mv.fallSpeedLimit or rb.velocity.y
-        end
-        -- Apply Gravity
-        tf.posY = tf.posY + rb.velocity.y
-
-        -- Change velocity and states by collision normal
-        if mv.onFloor then
-            mv.airJumps = mv.maxAirJumps
-            local newPosX = tf.posX + cl.offsetX
-            local newPosY = tf.posY + cl.offsetY
-            local actualX, actualY, cols, len = BumpWorld:check(entity, newPosX, newPosY, self.filter)
-            for i=1, len do
-                local col = cols[i]
-                local nx = col.normal.x
-                local ny = col.normal.y
-                local vx = rb.velocity.x
-                local vy = rb.velocity.y
-                if (ny < 0 and vy > 0) or (ny > 0 and vy < 0) then
-                    vy = -vy * rb.bounciness
-                end
-                rb.velocity.x = vx
-                rb.velocity.y = vy
+            -- Get velocity from RigidbodyComponent
+            mv.velocity.y = rb.velocity.y
+    
+            if not mv.desiredJump then
+                self:calculateGravity(mv, rb, self.fixedDeltaTime)
             end
         end
-    end
+
+        -- Move bodies and calculate states
+        for _, entity in ipairs(self.pool) do
+            local mv = entity.movement
+            local rb = entity.rigidbody
+            local tf = entity.transform
+            local cl = entity.collider
+            -- Apply Movement
+            tf.posX = tf.posX + rb.velocity.x * self.fixedDeltaTime
+            
+            -- Last gravity calculations
+            -- If falling limit the Y variable within the bounds of the speed limit, for the terminal velocity option
+            rb.velocity.y = rb.velocity.y - GRAVITY * self.fixedDeltaTime * rb.gravityScale
+            if rb.velocity.y > -0.01 then
+                rb.velocity.y = rb.velocity.y > mv.fallSpeedLimit and mv.fallSpeedLimit or rb.velocity.y
+            end
+            -- Apply Gravity
+            tf.posY = tf.posY + rb.velocity.y
+
+            -- Change velocity and states by collision normal
+            if mv.onFloor then
+                mv.airJumps = mv.maxAirJumps
+                local newPosX = tf.posX + cl.offsetX
+                local newPosY = tf.posY + cl.offsetY
+                local actualX, actualY, cols, len = BumpWorld:check(entity, newPosX, newPosY, self.filter)
+                for i=1, len do
+                    local col = cols[i]
+                    local nx = col.normal.x
+                    local ny = col.normal.y
+                    local vx = rb.velocity.x
+                    local vy = rb.velocity.y
+                    if (ny < 0 and vy > 0) or (ny > 0 and vy < 0) then
+                        vy = -vy * rb.bounciness
+                    end
+                    rb.velocity.x = vx
+                    rb.velocity.y = vy
+                end
+            end
+        end
+        self.accumulator = self.accumulator - self.fixedDeltaTime
+    end   
 end
 
 ----------------------------------------------------------------------------------

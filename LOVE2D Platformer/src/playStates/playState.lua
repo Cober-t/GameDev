@@ -1,10 +1,6 @@
 PlayState = GameStateMachine:extend()
 
 ----------------------------------------------------------------------------------
---- Local values
-
-
-----------------------------------------------------------------------------------
 
 function PlayState:new()
     Log:debug("PlayState created!")
@@ -22,7 +18,6 @@ function PlayState:enter()
     -- Level1:init()
     Player:init()
 
-    -- TEST: Put the player on the floor for this level
     local posY =  Level1.tileMap.height * Level1.tileMap.tileheight - love.graphics.getHeight()/2
     Player.trans.posY = posY
 
