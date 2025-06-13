@@ -26,9 +26,6 @@ function Player:new()
     --     walkState = PlayerWalkState(),
     -- }
 
-    self.accumulator = 0
-    self.fixedDeltaTime = 1 / 60
-
     self:initAnimations()
 end
 
@@ -122,13 +119,7 @@ function Player:updateAnimation(dt)
         self.state = self.lastDirection == -1 and "idleLeft" or "idleRight"
     end
     self.animation = self.animations[self.state]
-
-    -- Fixed animation deltatime, for decouple animation speed from framerate
-    self.accumulator = self.accumulator + love.timer.getDelta()
-    while self.accumulator >= self.fixedDeltaTime do
-        self.animation:update(self.fixedDeltaTime)
-        self.accumulator = self.accumulator - self.fixedDeltaTime
-    end
+    self.animation:update(dt)
 end
 
 ----------------------------------------------------------------------------------

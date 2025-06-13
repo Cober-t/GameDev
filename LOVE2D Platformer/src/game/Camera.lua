@@ -17,13 +17,16 @@ end
 function Camera:setTarget(target)
     if self.target == nil then self.target = target end
     self.nativeCam:lookAt(target.transform.posX, target.transform.posY)
+    self.nativeCam.smoother = HumCamera.smooth.damped(self.dampSpeed)
 end
 
 ----------------------------------------------------------------------------------
 
-function Camera:update(target, dt)
+function Camera:update(target)
     if self.enabled then
-        self.nativeCam:lockPosition(self.target.transform.posX, self.target.transform.posY, HumCamera.smooth.damped(self.dampSpeed))
+        self.nativeCam:lockPosition(self.target.transform.posX,
+                                    self.target.transform.posY,
+                                    self.nativeCam.smoother)
     end
 
     -- Camera limit
@@ -35,7 +38,7 @@ function Camera:update(target, dt)
     if self.nativeCam.x < leftLimit   then self.nativeCam.x = leftLimit   end
     if self.nativeCam.y < topLimit    then self.nativeCam.y = topLimit    end
     if self.nativeCam.x > rightLimit  then self.nativeCam.x = rightLimit  end
-    -- if self.nativeCam.y > bottomLimit then self.nativeCam.y = bottomLimit end
+    if self.nativeCam.y > bottomLimit then self.nativeCam.y = bottomLimit end
 end
 
 ----------------------------------------------------------------------------------

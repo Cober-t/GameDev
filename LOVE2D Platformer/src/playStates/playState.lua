@@ -6,6 +6,9 @@ function PlayState:new()
     Log:debug("PlayState created!")
     self.events = {}
     self:setupInputEvents()
+
+    self.accumulator = 0
+    self.fixedDeltaTime = FIXED_DT
 end
 
 ----------------------------------------------------------------------------------
@@ -37,9 +40,14 @@ end
 ----------------------------------------------------------------------------------
 
 function PlayState:update(dt)
-    Camera:update(Player, dt)
-    
-    Player:update(dt)
+    -- Fixed camera update and player animations, for decouple render updates from framerate
+    self.accumulator = self.accumulator + dt
+    while self.accumulator >= self.fixedDeltaTime do
+        Camera:update(Player)
+        Player:update(self.fixedDeltaTime)
+        self.accumulator = self.accumulator - self.fixedDeltaTime
+    end
+
     EventDispatcher:update()
 end
 
@@ -52,7 +60,7 @@ function PlayState:draw()
     -- love.graphics.print("FPS: "..tostring(love.timer.getFPS()).." -- State: "..Player.state)
     love.graphics.print("Floor: "..tostring(Player.entity.movement.onFloor).." -- "..
                         "Wall: "..tostring(Player.entity.movement.onWall).." -- "..
-                        "GravityMul"..tostring(Player.entity.rigidbody.gravityMultiplier))
+                        "FrameRate: "..love.timer.getFPS())
 end
 
 ----------------------------------------------------------------------------------

@@ -74,7 +74,7 @@ end
 
 function GamepadInput:checkPressed()
     if self.joystick then
-        self.isPressed = self.joystick:isGamepadDown(self.inputKey)
+        self.isPressed = self.joystick:isGamepadDown(self.key)
     else
         self.isPressed = false
     end
