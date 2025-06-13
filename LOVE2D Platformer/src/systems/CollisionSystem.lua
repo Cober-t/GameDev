@@ -1,10 +1,10 @@
 CollisionSystem = ECS.system( {pool = {"transform", "collider"} ,
-                               secondPool = {"transform", "movement", "collider", }})
+                               secondPool = {"transform", "movement", "collider" }})
 
 ----------------------------------------------------------------------------------
 
 function CollisionSystem:init()
-
+    Log:debug("CollisionSystem CREATES " .. #self.pool .. " colliders!")
     for _, entity in ipairs(self.pool) do
         entity.collider.active = false
         BumpWorld:add(entity,
@@ -15,31 +15,31 @@ function CollisionSystem:init()
     end
     
     self.accumulator = 0
-    self.fixedDeltaTime = FIXED_DT
+    self.fixedDeltaTime = 1 / 60
 end
 
 ----------------------------------------------------------------------------------
 
 function CollisionSystem:update(dt)
     self.accumulator = self.accumulator + dt
-
+    
     while self.accumulator >= self.fixedDeltaTime do
-
         -- Iterate over all Entities that this System acts on
         for i, entity in ipairs(self.secondPool) do
             local newPosX = entity.transform.posX + entity.collider.offsetX
             local newPosY = entity.transform.posY + entity.collider.offsetY
-            local actualX, actualY, cols, len = BumpWorld:move(entity, newPosX, newPosY)
-
+            local actualX, actualY, cols, len = BumpWorld:check(entity, newPosX, newPosY)
+            BumpWorld:update(entity, actualX, actualY)
+            
             -- Update the current entity position
             entity.transform.posX = actualX - entity.collider.offsetX
             entity.transform.posY = actualY - entity.collider.offsetY
             entity.movement.onFloor = false
             entity.movement.onWall = false
-            -- Check if is onFloor
+            -- Change velocity and states by collision normal
             for i=1, len do
                 local col = cols[i]
-                if col.normal.y < 0  then entity.movement.onFloor = true end
+                if col.normal.y < 0  then entity.movement.onFloor = true  end
                 if col.normal.x ~= 0 then entity.movement.onWall  = true end
             end
         end
@@ -50,7 +50,9 @@ end
 ----------------------------------------------------------------------------------
 
 function CollisionSystem:exit()
-    for _, entity in ipairs(self.pool) do
+    local items, len = BumpWorld:getItems()
+    Log:debug("CollisionSysmte DESTROY " .. #items .. " colliders!")
+    for _, entity in ipairs(items) do
         BumpWorld:remove(entity)
     end
 end

@@ -41,7 +41,7 @@ ECS.component("movement", function(e, jumpForce)
     e.coyoteTime = 0.085                -- How long should coyote time last?
     e.jumpBuffer = 0.15                 -- How far from ground should we cache your jump?
     e.timeToJumpApex = 1.5              -- How long it takes to reach that height before coming back down
-    e.fallSpeedLimit = 50000.0              -- The fastest speed the character can fall
+    e.fallSpeedLimit = 10.0              -- The fastest speed the character can fall
     e.maxAirJumps = 1                   -- How many times can you jump in the air?
     e.maxJumpHoldTime = 0.8             -- Maximum time to hold for full jump (adjust as needed)
     e.minJumpHoldTime = 0.1             -- Minimum hold time for shortest jump

@@ -4,7 +4,13 @@ local Level1 = Level:extend()
 
 function Level1:new()
     self.super.new(self, LevelMaps.first)
-    Log:debug("Level1 creation!")
+    Log:debug("Level1 initialize!")
+end
+
+----------------------------------------------------------------------------------
+
+function Level1:init()
+    Log:debug("Level1 ADDED to the World!")
     self.colliders = {}
     if self.layers["Ground"] then
         for i, obj in pairs(self.layers["Ground"].objects) do
@@ -13,19 +19,17 @@ function Level1:new()
                         :give("collider", 0, 0, obj.width, obj.height))
         end
     end
-end
-
-----------------------------------------------------------------------------------
-
-function Level1:init()
-    Log:debug("Level1 initialize!")
     -- Add level to the world
 end
 
 ----------------------------------------------------------------------------------
 
 function Level1:exit()
-    Log:debug("Level1 destroyed!")
+    Log:debug("Level1 DESTROYED from the World!")
+    for _, entity in ipairs(self.colliders) do
+        World:removeEntity(entity)
+    end
+    self.colliders = nil
 end
 
 ----------------------------------------------------------------------------------

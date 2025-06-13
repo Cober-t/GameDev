@@ -9,7 +9,19 @@ local grid = Anim8.newGrid(32, 32, spriteSheet:getWidth(), spriteSheet:getHeight
 ----------------------------------------------------------------------------------
 
 function Player:new()
-    Log:debug("Player created!")
+    Log:debug("Player initialize!")
+ 
+    -- self.stateList = {
+    --     idleState = PlayerIdleState(),
+    --     walkState = PlayerWalkState(),
+    -- }
+
+end
+
+----------------------------------------------------------------------------------
+
+function Player:init()
+    Log:debug("Player ADDED to the World!  ")
     self.visible = true
     self.state = "idleRight"
     self.entity = ECS.entity(World)
@@ -21,18 +33,9 @@ function Player:new()
     self.rb    = self.entity.rigidbody
     self.mv    = self.entity.movement
     self.col   = self.entity.collider
-    -- self.stateList = {
-    --     idleState = PlayerIdleState(),
-    --     walkState = PlayerWalkState(),
-    -- }
-
     self:initAnimations()
-end
 
-----------------------------------------------------------------------------------
-
-function Player:init()
-    Log:debug("Player initialized!")
+                    
     if BumpWorld:hasItem(self.entity) then
         BumpWorld:update(self.entity, 
                          self.trans.posX + self.col.offsetX,
@@ -45,7 +48,8 @@ end
 ----------------------------------------------------------------------------------
 
 function Player:exit()
-    Log:debug("Player destroyed!")
+    Log:debug("Player DESTROYED from the World!")
+    World:removeEntity(self.entity)
 end
 
 ----------------------------------------------------------------------------------

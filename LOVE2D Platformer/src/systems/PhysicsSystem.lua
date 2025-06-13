@@ -4,6 +4,7 @@ PhysicsSystem = ECS.system({ pool = {"transform", "rigidbody", "collider"},
 ----------------------------------------------------------------------------------
 
 function PhysicsSystem:init()
+    Log:debug("PhysicsSystem INIT " .. #self.secondPool .. " entities!")
     for _, entity in ipairs(self.secondPool) do 
         entity.rigidbody.groundGravity = (-2.0 * entity.movement.jumpHeight) / math.pow(entity.movement.timeToJumpApex, 2)
     end
@@ -46,7 +47,7 @@ function PhysicsSystem:update(dt)
             -- Last gravity calculations
             -- If falling limit the Y variable within the bounds of the speed limit, for the terminal velocity option
             rb.velocity.y = rb.velocity.y - GRAVITY * self.fixedDeltaTime * rb.gravityScale
-            if rb.velocity.y > -0.01 then
+            if rb.velocity.y > 0.01 then
                 rb.velocity.y = rb.velocity.y > mv.fallSpeedLimit and mv.fallSpeedLimit or rb.velocity.y
             end
             -- Apply Gravity
@@ -72,6 +73,7 @@ function PhysicsSystem:update(dt)
                 end
             end
         end
+
         self.accumulator = self.accumulator - self.fixedDeltaTime
     end   
 end

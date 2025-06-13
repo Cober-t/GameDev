@@ -9,7 +9,7 @@ function Camera:new(level)
     self.target = nil
     self.drawList = nil
     self.enabled = true
-    self.dampSpeed = 6.0
+    self.dampSpeed = 8.0
 end
 
 ----------------------------------------------------------------------------------
@@ -22,7 +22,7 @@ end
 
 ----------------------------------------------------------------------------------
 
-function Camera:update(target)
+function Camera:update()
     if self.enabled then
         self.nativeCam:lockPosition(self.target.transform.posX,
                                     self.target.transform.posY,
@@ -38,7 +38,7 @@ function Camera:update(target)
     if self.nativeCam.x < leftLimit   then self.nativeCam.x = leftLimit   end
     if self.nativeCam.y < topLimit    then self.nativeCam.y = topLimit    end
     if self.nativeCam.x > rightLimit  then self.nativeCam.x = rightLimit  end
-    if self.nativeCam.y > bottomLimit then self.nativeCam.y = bottomLimit end
+    -- if self.nativeCam.y > bottomLimit then self.nativeCam.y = bottomLimit end
 end
 
 ----------------------------------------------------------------------------------

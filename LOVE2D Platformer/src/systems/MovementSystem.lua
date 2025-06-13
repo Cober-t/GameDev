@@ -3,6 +3,7 @@ MovementSystem = ECS.system({ pool = {"transform", "rigidbody", "movement"} })
 ----------------------------------------------------------------------------------
 
 function MovementSystem:init()
+    Log:debug("MovementSystem INIT!")
     self.accumulator = 0
     self.fixedDeltaTime = FIXED_DT
 end
@@ -18,7 +19,7 @@ function MovementSystem:update(dt)
         for _, entity in ipairs(self.pool) do
             local mv = entity.movement
             local rb = entity.rigidbody
-
+            
             if not mv.canMove then
                 goto continue
             end
@@ -161,7 +162,6 @@ function MovementSystem:doAJump(mv, rb, dt)
 
         -- Determine the power of the jump, based on our gravity and stats
         mv.jumpForce = math.sqrt(-2.0 * GRAVITY * (rb.groundGravity / GRAVITY) * mv.jumpHeight)
-
         -- If the Player is moving up or down when she jumps (such as when doing a double jump), change the jumpForce;
         -- This will ensure the jump is the exact same strength, no matter your velocity.
         if mv.velocity.y < 0.0 then
