@@ -21,7 +21,7 @@ function love.load()
     Log:enableFileLogging("my_log_game.log")
     Push:setupScreen(VIRTUAL_WIDTH, VIRTUAL_HEIGHT, WINDOW_WIDTH, WINDOW_HEIGHT, {
         fullscreen = false,
-        vsync = true,
+        vsync = false,
         resizable = true,
         canvas = false
     })

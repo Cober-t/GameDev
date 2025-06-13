@@ -9,6 +9,7 @@ function Camera:new(level)
     self.target = nil
     self.drawList = nil
     self.enabled = true
+    self.dampSpeed = 6.0
 end
 
 ----------------------------------------------------------------------------------
@@ -22,7 +23,7 @@ end
 
 function Camera:update(target, dt)
     if self.enabled then
-        self.nativeCam:lockPosition(self.target.transform.posX, self.target.transform.posY, HumCamera.smooth.damped(3))
+        self.nativeCam:lockPosition(self.target.transform.posX, self.target.transform.posY, HumCamera.smooth.damped(self.dampSpeed))
     end
 
     -- Camera limit
