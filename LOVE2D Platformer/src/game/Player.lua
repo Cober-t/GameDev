@@ -25,6 +25,10 @@ function Player:new()
     --     idleState = PlayerIdleState(),
     --     walkState = PlayerWalkState(),
     -- }
+
+    self.accumulator = 0
+    self.fixedDeltaTime = 1 / 60
+
     self:initAnimations()
 end
 
@@ -78,9 +82,7 @@ end
 function Player:moveJump(dt)
     self.mv.pressingJump = true
     self.mv.desiredJump = true
-    if self.mv.onFloor then
-        self.state = self.lastDirection == -1 and "jumpLeft" or "jumpRight"
-    end
+    self.state = self.lastDirection == -1 and "jumpLeft" or "jumpRight"
 end
 
 ----------------------------------------------------------------------------------
@@ -116,11 +118,17 @@ end
 ----------------------------------------------------------------------------------
 
 function Player:updateAnimation(dt)
-    if self.mv.direction == 0 and self.mv.onFloor then
+    if not self.mv.desiredJump and self.mv.direction == 0 and self.mv.onFloor then
         self.state = self.lastDirection == -1 and "idleLeft" or "idleRight"
     end
     self.animation = self.animations[self.state]
-    self.animation:update(dt)
+
+    -- Fixed animation deltatime, for decouple animation speed from framerate
+    self.accumulator = self.accumulator + love.timer.getDelta()
+    while self.accumulator >= self.fixedDeltaTime do
+        self.animation:update(self.fixedDeltaTime)
+        self.accumulator = self.accumulator - self.fixedDeltaTime
+    end
 end
 
 ----------------------------------------------------------------------------------
