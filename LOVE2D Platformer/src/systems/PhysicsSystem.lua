@@ -22,13 +22,12 @@ function PhysicsSystem:update(dt)
         -- Get velocity from RigidbodyComponent
         mv.velocity.y = rb.velocity.y
 
-        -- Skip gravity calculations this frame, so currentlyJumping doesn't turn off
-        -- This makes sure you can't do the coyote time double jump bug
         if not mv.desiredJump then
             self:calculateGravity(mv, rb, dt)
         end
     end
     
+    -- Move bodies and calculate states
     for _, entity in ipairs(self.pool) do
         local mv = entity.movement
         local rb = entity.rigidbody
@@ -36,11 +35,17 @@ function PhysicsSystem:update(dt)
         local cl = entity.collider
         -- Apply Movement
         tf.posX = tf.posX + rb.velocity.x * dt
-        -- Apply Gravity
+        
+        -- Last gravity calculations
+        -- If falling limit the Y variable within the bounds of the speed limit, for the terminal velocity option
         rb.velocity.y = rb.velocity.y - GRAVITY * dt * rb.gravityScale
+        if rb.velocity.y > -0.01 then
+            rb.velocity.y = rb.velocity.y > mv.fallSpeedLimit and mv.fallSpeedLimit or rb.velocity.y
+        end
+        -- Apply Gravity
         tf.posY = tf.posY + rb.velocity.y
 
-        -- Change velocity by collision normal
+        -- Change velocity and states by collision normal
         if mv.onFloor then
             mv.airJumps = mv.maxAirJumps
             local newPosX = tf.posX + cl.offsetX
@@ -73,11 +78,10 @@ function PhysicsSystem:calculateGravity(mv, rb, dt)
             -- Don't change it if Kit is stood on something (such as a moving platform)
             rb.gravityMultiplier = rb.defaultGravityScale;
         else
-            -- If we're using variable jump height...)
-            if mv.variableJumpHeight then
-                self:handleVariableJumpHeight(mv, rb, dt)
-            else
-                rb.gravityMultiplier = rb.upwardMovementMultiplier
+            -- If we're not using variable jump height
+            -- Variable Jump is calculated on MovementSystem
+            if not mv.variableJumpHeight then
+                rb.gravityMultiplier = mv.upwardMovementMultiplier
             end
         end
     -- Else if going down...
@@ -87,7 +91,7 @@ function PhysicsSystem:calculateGravity(mv, rb, dt)
             rb.gravityMultiplier = rb.defaultGravityScale
         else
             -- Otherwise, apply the downward gravity multiplier as Kit comes back to Earth
-            rb.gravityMultiplier = rb.downwardMovementMultiplier
+            rb.gravityMultiplier = mv.downwardMovementMultiplier
             -- Reset jump state when falling
             if mv.variableJumpHeight and mv.currentlyJumping then
                 mv.currentlyJumping = false
@@ -98,7 +102,7 @@ function PhysicsSystem:calculateGravity(mv, rb, dt)
         if mv.onFloor then
             mv.currentlyJumping = false
             if mv.variableJumpHeight then
-                mv.jumpMinimumMet = false
+                mv.jumpMinimumReached = false
             end
         end
         
@@ -106,54 +110,7 @@ function PhysicsSystem:calculateGravity(mv, rb, dt)
     end
 
     -- Set the character's Rigidbody's velocity
-    -- But clamp the Y variable within the bounds of the speed limit, for the terminal velocity assist option
-    rb.velocity.y = math.min(math.max(-rb.fallSpeedLimit, mv.velocity.y), 100.0)
-end
-
-
-----------------------------------------------------------------------------------
-
-function PhysicsSystem:handleVariableJumpHeight(mv, rb, dt)
-    -- Only apply variable jump logic if we're currently jumping and moving upward
-    if not mv.currentlyJumping then
-        rb.gravityMultiplier = rb.upwardMovementMultiplier
-        return
-    end
-    
-    -- Calculate how long we've been jumping
-    local currentTime = love.timer.getTime()
-    local jumpDuration = currentTime - mv.jumpStartTime
-    
-    -- Check if minimum jump time has been met
-    if jumpDuration >= mv.minJumpHoldTime then
-        mv.jumpMinimumMet = true
-    end
-    
-    -- Determine gravity based on jump button state and timing
-    if mv.pressingJump then
-        -- Still holding jump button
-        if jumpDuration < mv.maxJumpHoldTime then
-            -- Within max hold time - use light gravity for higher jumps
-            rb.gravityMultiplier = mv.jumpHoldGravityMultiplier or (rb.upwardMovementMultiplier * 0.6)
-        else
-            -- Exceeded max hold time - switch to normal upward gravity
-            rb.gravityMultiplier = rb.upwardMovementMultiplier
-        end
-    else
-        -- Jump button released
-        if mv.jumpMinimumMet then
-            -- Minimum time met - can use heavy gravity for jump cut
-            rb.gravityMultiplier = mv.jumpReleaseGravityMultiplier or (rb.upwardMovementMultiplier * 1.8)
-        else
-            -- Still in minimum time - use light gravity to ensure minimum jump height
-            rb.gravityMultiplier = mv.jumpHoldGravityMultiplier or (rb.upwardMovementMultiplier * 0.6)
-        end
-    end
-    
-    -- Optional: Add extra floatiness near the peak
-    if mv.enablePeakFloatiness and math.abs(rb.velocity.y) < mv.peakVelocityThreshold then
-        rb.gravityMultiplier = rb.gravityMultiplier * mv.peakGravityMultiplier
-    end
+    rb.velocity.y = mv.velocity.y
 end
 
 ----------------------------------------------------------------------------------

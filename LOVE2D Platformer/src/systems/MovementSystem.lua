@@ -8,20 +8,18 @@ function MovementSystem:update(dt)
         local mv = entity.movement
         local rb = entity.rigidbody
 
-        if not mv.canMove then ::continue::  end
+        if not mv.canMove then
+            goto continue
+        end
         mv.pressingKey = mv.direction ~= 0
-        mv.desiredVelocity.x = mv.direction * math.max(rb.maxSpeed - rb.friction, 0.0)
+        mv.desiredVelocity.x = mv.direction * math.max(mv.maxSpeed - rb.friction, 0.0)
         mv.velocity = rb.velocity
         
         -- Movement ------------------------------------------------------------------------------
         if mv.useAcceleration then
             self:runWithAcceleration(mv, rb, dt)
         else
-            if self.col.onFloor then
-                self:runWithoutAcceleration(mv, dt)
-            else
-                self:runWithAcceleration(mv, rb, dt)
-            end
+            self:runWithoutAcceleration(mv, rb)
         end
 
         -- Jump ---------------------------------------------------------------------------------
@@ -30,6 +28,16 @@ function MovementSystem:update(dt)
         self:calculateVariableJump(mv, dt)
         self:calculateCoyoteTime(mv, dt)
         self:doAJump(mv, rb, dt)
+
+        -- If the Player does not have variable jump
+        if mv.desiredJump and not mv.variableJumpHeight then goto continue end
+        
+        -- If the Player is going up
+        if rb.velocity.y < -0.01 and not mv.onFloor then
+            self:handleVariableJumpHeight(mv, rb, dt)
+        end
+
+        ::continue::
     end
 end
 
@@ -41,9 +49,9 @@ end
 
 function MovementSystem:runWithAcceleration(mv, rb, dt)
     -- Set our acceleration, deceleration, and turn speed stats, based on whether we're on the ground on in the air
-    mv.acceleration = mv.onFloor and rb.maxAcceleration  or rb.maxAirAcceleration
-    mv.deceleration = mv.onFloor and rb.maxDecceleration or rb.maxAirDecceleration
-    mv.turnSpeed    = mv.onFloor and rb.maxTurnSpeed     or rb.maxAirTurnSpeed 
+    mv.acceleration = mv.onFloor and mv.maxAcceleration  or mv.maxAirAcceleration
+    mv.deceleration = mv.onFloor and mv.maxDecceleration or mv.maxAirDecceleration
+    mv.turnSpeed    = mv.onFloor and mv.maxTurnSpeed     or mv.maxAirTurnSpeed 
  
     if mv.pressingKey then
         -- If the sign (i.e. positive or negative) of our input direction doesn't match our movement, it means we're turning around and so should use the turn speed stat.
@@ -78,10 +86,10 @@ end
 
 ----------------------------------------------------------------------------------
 
-function MovementSystem:runWithoutAcceleration(mv, dt)
+function MovementSystem:runWithoutAcceleration(mv, rb)
     -- If we're not using acceleration and deceleration, just send our desired velocity (direction * max speed) to the Rigidbody
     mv.velocity.x = mv.desiredVelocity.x
-    mv.rb.velocity.x = mv.velocity.x
+    rb.velocity.x = mv.velocity.x
 end
 
 ----------------------------------------------------------------------------------
@@ -157,8 +165,8 @@ function MovementSystem:doAJump(mv, rb, dt)
 
         -- Initialize variable jump height tracking
         if mv.variableJumpHeight then
-            mv.jumpStartTime = love.timer.getTime() -- Track when jump started
-            mv.jumpMinimumMet = false -- Track if minimum jump time has passed
+            mv.jumpStartTime = dt -- Track when jump started
+            mv.jumpMinimumReached = false -- Track if minimum jump time has passed
         end
 
         -- if juice != nil then
@@ -174,4 +182,48 @@ function MovementSystem:doAJump(mv, rb, dt)
 
     rb.velocity.y = mv.velocity.y
 end
+----------------------------------------------------------------------------------
+
+function MovementSystem:handleVariableJumpHeight(mv, rb, dt)
+    -- Only apply variable jump logic if we're currently jumping and moving upward
+    if not mv.currentlyJumping then
+        rb.gravityMultiplier = mv.upwardMovementMultiplier
+        return
+    end
+
+    -- Calculate how long we've been jumping
+    local currentTime = love.timer.getTime()
+    local jumpDuration = currentTime - mv.jumpStartTime
+    
+    -- Check if minimum jump time has been met
+    if jumpDuration >= mv.minJumpHoldTime then
+        mv.jumpMinimumReached = true
+    end
+    
+    -- Determine gravity based on jump button state and timing
+    if mv.pressingJump then
+        -- Still holding jump button
+        if jumpDuration < mv.maxJumpHoldTime then
+            -- Within max hold time - use light gravity for higher jumps
+            rb.gravityMultiplier = mv.upwardMovementMultiplier * mv.jumpHoldGravityMultiplier
+        else
+            -- Exceeded max hold time - switch to normal upward gravity
+            rb.gravityMultiplier = mv.upwardMovementMultiplier
+        end
+    else
+        -- Jump button released
+        if mv.jumpMinimumReached then
+            -- Minimum time met - can use heavy gravity for jump cut
+            rb.gravityMultiplier = mv.upwardMovementMultiplier * mv.jumpReleaseGravityMultiplier
+        else
+            -- Still in minimum time - use light gravity to ensure minimum jump height
+            rb.gravityMultiplier = mv.upwardMovementMultiplier * mv.jumpHoldGravityMultiplier
+        end
+    end
+    -- Optional: Add extra floatiness near the peak
+    if mv.enablePeakFloatiness and math.abs(rb.velocity.y) < mv.peakVelocityThreshold then
+        rb.gravityMultiplier = rb.gravityMultiplier * mv.peakGravityMultiplier
+    end
+end
+
 ----------------------------------------------------------------------------------

@@ -57,8 +57,7 @@ end
 ----------------------------------------------------------------------------------
 --- HANDLE EVENTS ----------------------------------------------------------------
 ----------------------------------------------------------------------------------
--- Update the current state in the future --
--- On an AnimationSystem in the future with a component
+-- Update the current state in the future (AnimationSystem with a component)
 -- .........................................
 function Player:moveLeft(dt)
     self.mv.direction = -1

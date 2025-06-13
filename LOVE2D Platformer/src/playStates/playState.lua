@@ -58,7 +58,7 @@ function PlayState:draw()
     love.graphics.print("Floor: "..tostring(Player.entity.movement.onFloor).." -- "..
                         "Wall: "..tostring(Player.entity.movement.onWall).." -- "..
                         "Coyote"..tostring(Player.entity.movement.coyoteTimeCounter).." -- "..
-                        "AirJumps: "..tostring(Player.entity.movement.airJumps))
+                        "JumpForce: "..tostring(Player.entity.rigidbody.gravityMultiplier))
 
 end
 
