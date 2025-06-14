@@ -13,10 +13,6 @@ function PlayState:new()
     self.player = Player()
     self.level1 = Level1()
     self.camera = Camera(self.level1)
-
-    self.accumulator = 0
-    self.fixedDeltaTime = FIXED_DT
-
 end
 
 ----------------------------------------------------------------------------------
@@ -58,12 +54,8 @@ end
 
 function PlayState:update(dt)
     -- Fixed camera update and player animations, for decouple render updates from framerate
-    self.accumulator = self.accumulator + dt
-    while self.accumulator >= self.fixedDeltaTime do
-        self.camera:update()
-        self.player:update(self.fixedDeltaTime)
-        self.accumulator = self.accumulator - self.fixedDeltaTime
-    end
+    self.camera:update()
+    self.player:update(dt)
 
     EventDispatcher:update()
 end
