@@ -8,6 +8,9 @@ CurrentState  = GameStateMachine {
 
 ----------------------------------------------------------------------------------
 
+accumulator = 0
+fixedDeltaTime = FIXED_DT
+
 function love.load()
 
     Log:setLevel(LogLevel.DEBUG)
@@ -43,9 +46,13 @@ end
 ----------------------------------------------------------------------------------
 
 function love.update(dt)
-    CurrentState:update(dt)
-    
-    World:emit("update", dt)
+    -- Fixed physics calculations, for decouple game logic from framerate
+    accumulator = accumulator + dt
+    while accumulator >= fixedDeltaTime do
+        CurrentState:update(fixedDeltaTime)
+        World:emit("update", fixedDeltaTime)
+        accumulator = accumulator - fixedDeltaTime
+    end   
 end
 
 ----------------------------------------------------------------------------------
