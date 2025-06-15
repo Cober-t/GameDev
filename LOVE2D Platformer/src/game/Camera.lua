@@ -9,36 +9,37 @@ function Camera:new(level)
     self.target = nil
     self.drawList = nil
     self.enabled = true
-    self.dampSpeed = 8.0
+    self.dampSpeed = 200.0
 end
 
 ----------------------------------------------------------------------------------
 
 function Camera:setTarget(target)
     if self.target == nil then self.target = target end
-    self.nativeCam:lookAt(target.transform.posX, target.transform.posY)
-    self.nativeCam.smoother = HumCamera.smooth.damped(self.dampSpeed)
+    self.nativeCam.x = target.transform.posX
+    self.nativeCam.y = target.transform.posY
 end
 
+function lerp(a,b,dt) return a + (b-a) * dt end
 ----------------------------------------------------------------------------------
 
-function Camera:update()
-    if self.enabled then
-        self.nativeCam:lockPosition(self.target.transform.posX,
-                                    self.target.transform.posY,
-                                    self.nativeCam.smoother)
+function Camera:update(dt)
+    if self.enabled and self.target then
+        self.nativeCam.x = lerp(self.nativeCam.x, self.target.transform.posX, 5.0 * dt)
+        self.nativeCam.y = lerp(self.nativeCam.y, self.target.transform.posY, 5.0 * dt)
     end
 
     -- Camera limit
     local leftLimit   = love.graphics.getWidth() / (2 * CAM_ZOOM)
     local topLimit    = love.graphics.getHeight()/ (2 * CAM_ZOOM)
     -- If its a tiled map and not a full image
-    local rightLimit  = self.currentLevel.tileMap.width  * self.currentLevel.tileMap.tilewidth
-    local bottomLimit = self.currentLevel.tileMap.height * self.currentLevel.tileMap.tileheight - 100
+    local rightLimit  = self.currentLevel.tileMap.width  * self.currentLevel.tileMap.tilewidth  - VIRTUAL_WIDTH/(2*CAM_ZOOM)
+    local bottomLimit = self.currentLevel.tileMap.height * self.currentLevel.tileMap.tileheight - VIRTUAL_HEIGHT/(2*CAM_ZOOM)
     if self.nativeCam.x < leftLimit   then self.nativeCam.x = leftLimit   end
     if self.nativeCam.y < topLimit    then self.nativeCam.y = topLimit    end
     if self.nativeCam.x > rightLimit  then self.nativeCam.x = rightLimit  end
-    -- if self.nativeCam.y > bottomLimit then self.nativeCam.y = bottomLimit end
+    if self.nativeCam.y > bottomLimit then self.nativeCam.y = bottomLimit end
+
 end
 
 ----------------------------------------------------------------------------------

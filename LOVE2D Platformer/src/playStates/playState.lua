@@ -26,12 +26,11 @@ function PlayState:enter()
     -- Handle global
     self.level1:init()
     self.player:init()
+    self.camera:setTarget(self.player.entity)
 
     local posY =  self.level1.tileMap.height * self.level1.tileMap.tileheight - love.graphics.getHeight()/2
     self.player.entity.transform.posY = posY
-
-    self.camera:setTarget(self.player.entity)
-
+    
     World:emit("init")
 end
 
@@ -54,7 +53,7 @@ end
 
 function PlayState:update(dt)
     -- Fixed camera update and player animations, for decouple render updates from framerate
-    self.camera:update()
+    self.camera:update(dt)
     self.player:update(dt)
 
     EventDispatcher:update()
