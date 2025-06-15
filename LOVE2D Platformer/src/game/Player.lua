@@ -64,7 +64,8 @@ end
 ----------------------------------------------------------------------------------
 -- Update the current state in the future (AnimationSystem with a component)
 -- .........................................
-function Player:moveLeft(dt)
+function Player:moveLeft()
+    assert(self.mv)
     self.mv.direction = -1
     self.lastDirection = self.mv.direction
     self.state = self.mv.onFloor and "walkLeft" or "jumpLeft"
@@ -72,7 +73,8 @@ end
 
 ----------------------------------------------------------------------------------
 
-function Player:moveRight(dt)
+function Player:moveRight()
+    assert(self.mv)
     self.mv.direction = 1
     self.lastDirection = self.direction
     self.state = self.mv.onFloor and "walkRight" or "jumpRight"
@@ -80,7 +82,8 @@ end
 
 ----------------------------------------------------------------------------------
 
-function Player:moveJump(dt)
+function Player:moveJump()
+    assert(self.mv)
     self.mv.pressingJump = true
     self.mv.desiredJump = true
     self.state = self.lastDirection == -1 and "jumpLeft" or "jumpRight"
@@ -89,12 +92,13 @@ end
 ----------------------------------------------------------------------------------
 
 function Player:releaseJump()
+    assert(self.mv)
     self.mv.pressingJump = false
 end
 
 ----------------------------------------------------------------------------------
 
-function Player:idle(dt)
+function Player:idle()
     self.mv.direction = 0
     if not self.mv.onFloor then return end
     self.state = self.mv.direction == -1 and "idleLeft" or "idleRight"

@@ -26,15 +26,48 @@ POLL_TYPE = {
     IS_HELD = "isHeld"
 }
 
--- Input keys
+-- TODO: MOVE TO INPUT KEYS CLASS
 KEYBOARD = "keyboard"
 GAMEPAD  = "gamepad"
+INPUT_TYPE = "inputType"
+JOYSTICK_ID = "joystickID"
 
 Key = {}
-Key.up       = { KEYBOARD="w",      GAMEPAD="dpup"   }
-Key.down     = { KEYBOARD="s",      GAMEPAD="dpdown" }
-Key.left     = { KEYBOARD="a",      GAMEPAD="dpleft" }
-Key.right    = { KEYBOARD="d",      GAMEPAD="dpright"}
-Key.jump     = { KEYBOARD="j",      GAMEPAD="x"      }
-Key.uiAccept = { KEYBOARD="j",      GAMEPAD="a"      }
-Key.uiCancel = { KEYBOARD="escape", GAMEPAD="start"  }
+Key.left = "left"
+Key.right = "right"
+Key.up = "up"
+Key.space = "space"
+Key.w = "w"
+Key.a = "a"
+Key.s = "s"
+Key.d = "d"
+Key.q = "q"
+Key.e = "e"
+Key.escape = "escape"
+
+Button = {}
+Button.dpup = "dpup"
+Button.dpdown = "dpdown"
+Button.dpleft = "dpleft"
+Button.dpright = "dpright"
+Button.a_btn = "a"
+Button.b_btn = "b"
+Button.x_btn = "x"
+Button.y_btn = "y"
+
+INPUTS = {}
+INPUTS.left      =  {INPUT_TYPE = KEYBOARD}
+INPUTS.right     =  {INPUT_TYPE = KEYBOARD}
+INPUTS.up        =  {INPUT_TYPE = KEYBOARD}
+INPUTS.space     =  {INPUT_TYPE = KEYBOARD}
+INPUTS.escape    =  {INPUT_TYPE = KEYBOARD}
+INPUTS.w         =  {INPUT_TYPE = KEYBOARD}
+INPUTS.a         =  {INPUT_TYPE = KEYBOARD}
+INPUTS.s         =  {INPUT_TYPE = KEYBOARD}
+INPUTS.d         =  {INPUT_TYPE = KEYBOARD}
+INPUTS.q         =  {INPUT_TYPE = KEYBOARD}
+INPUTS.e         =  {INPUT_TYPE = KEYBOARD}
+INPUTS.dpup    =  {INPUT_TYPE = GAMEPAD, JOYSTICK_ID = 1}
+INPUTS.dpdown  =  {INPUT_TYPE = GAMEPAD, JOYSTICK_ID = 1}
+INPUTS.dpleft  =  {INPUT_TYPE = GAMEPAD, JOYSTICK_ID = 1}
+INPUTS.dpright =  {INPUT_TYPE = GAMEPAD, JOYSTICK_ID = 1}

@@ -9,10 +9,10 @@ function PlayState:new()
     Log:debug("PlayState created!")
 
     self.events = {}
-    self:setupInputEvents()
     self.player = Player()
     self.level1 = Level1()
     self.camera = Camera(self.level1)
+    self:setupInputEvents()
 end
 
 ----------------------------------------------------------------------------------
@@ -79,37 +79,34 @@ end
 function PlayState:setupInputEvents()
     Log:debug("Setting up events on PlayState")
     -- Movement events - these use the game state context to access the player
-    self.events.left = self:addKeyboardEvent('left', function(context, input)
-            self.player:moveLeft(love.timer.getDelta())
-    end, POLL_TYPE.IS_HELD)
+    self.events.left = self:addEvent( { Key.left, Key.a, Button.dpleft },
+                function() self.player:moveLeft() end,
+                POLL_TYPE.IS_HELD)
 
-    self.events.right = self:addKeyboardEvent('right', function(context, input)
-            self.player:moveRight(love.timer.getDelta())
-    end, POLL_TYPE.IS_HELD)
+    self.events.right = self:addEvent( { Key.right, Key.d, Button.dpright },
+                function() self.player:moveRight() end,
+                POLL_TYPE.IS_HELD)
 
-    self.events.idleLeft = self:addKeyboardEvent('left', function(context, input)
-            self.player:idle()
-    end, POLL_TYPE.JUST_RELEASED)
+    self.events.idle = self:addEvent( { Key.left,  Key.a, Button.dpleft,
+                                        Key.right, Key.d, Button.dpright },
+                function() self.player:idle() end,
+                POLL_TYPE.JUST_RELEASED)
 
-    self.events.idleRight = self:addKeyboardEvent('right', function(context, input)
-            self.player:idle()
-    end, POLL_TYPE.JUST_RELEASED)
+    self.events.jump = self:addEvent( { Key.up,  Key.space, Button.dpup },
+                function() self.player:moveJump() end,
+                POLL_TYPE.JUST_PRESSED)
 
-    self.events.jump = self:addKeyboardEvent('space', function(context, input)
-            self.player:moveJump(love.timer.getDelta())
-    end, POLL_TYPE.JUST_PRESSED)
+    self.events.jump = self:addEvent( { Key.up,  Key.space, Button.dpup },
+                function() self.player:releaseJump() end,
+                POLL_TYPE.JUST_RELEASED)
 
-    self.events.jump = self:addKeyboardEvent('space', function(context, input)
-            self.player:releaseJump()
-    end, POLL_TYPE.JUST_RELEASED)
+    self.events.quit = self:addEvent( { Key.escape },
+                function(context, input) love.event.quit() end,
+                POLL_TYPE.IS_HELD)
 
-    self.events.quit = self:addKeyboardEvent('escape', function(context, input)
-            love.event.quit()
-    end, POLL_TYPE.IS_HELD)
-
-    self.events.changeStartState = self:addKeyboardEvent("q", function(context, input)
-        context:changeToPauseState()
-    end, POLL_TYPE.JUST_PRESSED)
+    self.events.changeStartState = self:addEvent( { Key.q },
+                function(context, input) self:changeToPauseState() end,
+                POLL_TYPE.JUST_PRESSED)
 end
 
 ----------------------------------------------------------------------------------

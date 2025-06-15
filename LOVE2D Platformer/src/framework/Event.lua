@@ -3,10 +3,9 @@ local Event = Class:extend()
 
 ----------------------------------------------------------------------------------
 
-function Event:new(input, callback, context, pollType)
+function Event:new(input, callback, pollType)
     self.input = input       -- Input object (keyboard/gamepad)
     self.callback = callback -- Function to call when event triggers
-    self.context = context   -- Optional context object (self reference)
     self.pollType = pollType or POLL_TYPE.JUST_PRESSED -- Default to justPressed
     self.enabled = true
 end
@@ -27,13 +26,7 @@ function Event:poll()
         shouldTrigger = self.input:isHeld()
     end
 
-    if shouldTrigger then
-        if self.context then
-            self.callback(self.context, self.input)
-        else
-            self.callback(self.input)
-        end
-    end
+    if shouldTrigger then self.callback() end
 end
 
 ----------------------------------------------------------------------------------
@@ -89,18 +82,18 @@ end
 
 ----------------------------------------------------------------------------------
 
-function EventDispatcher:createKeyboardEvent(key, callback, context, pollType)
+function EventDispatcher:createKeyboardEvent(key, callback, pollType)
     local input = self:getOrCreateInput(KEYBOARD, key)
-    local event = Event(input, callback, context, pollType)
+    local event = Event(input, callback, pollType)
     self.events[#self.events + 1] = event
     return event
 end
 
 ----------------------------------------------------------------------------------
 
-function EventDispatcher:createGamepadEvent(button, callback, context, joystickId, pollType)
+function EventDispatcher:createGamepadEvent(button, callback, pollType, joystickId)
     local input = self:getOrCreateInput(GAMEPAD, button, joystickId)
-    local event = Event(input, callback, context, pollType)
+    local event = Event(input, callback, pollType)
     self.events[#self.events + 1] = event
     return event
 end

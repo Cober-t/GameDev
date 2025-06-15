@@ -38,7 +38,7 @@ end
 ----------------------------------------------------------------------------------
 function PauseState:setupInputEvents()
     Log:debug("Setting up events on PauseState")
-    self.events.changeStartState = self:addKeyboardEvent("e", function(context, input)
+    self.events.changeStartState = self:addEvent( {Key.e }, function(context, input)
         CurrentState:change("play")
     end, POLL_TYPE.JUST_PRESSED)
 end
