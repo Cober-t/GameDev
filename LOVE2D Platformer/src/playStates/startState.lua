@@ -4,7 +4,6 @@ StartState = GameStateMachine:extend()
 
 function StartState:new()
     Log:debug("StartState created!")
-    self.events = {}
     self:setupInputEvents()
 end
 

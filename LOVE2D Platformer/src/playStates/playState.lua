@@ -7,23 +7,20 @@ Level1 = require "src/game/level1"
 
 function PlayState:new()
     Log:debug("PlayState created!")
-
-    self.events = {}
-    self.player = Player()
-    self.level1 = Level1()
-    self.camera = Camera(self.level1)
-    self:setupInputEvents()
 end
 
 ----------------------------------------------------------------------------------
 
 function PlayState:enter()
+    self.player = Player()
+    self.level1 = Level1()
+    self.camera = Camera(self.level1)
+    self:setupInputEvents()
     Log:debug("PlayState initialize!")
 
-    self:enableEvents()
+    StateMachine:enableEvents()
     Log:debug("PlayState ENABLE events!")
 
-    -- Handle global
     self.level1:init()
     self.player:init()
     self.camera:setTarget(self.player.entity)
@@ -37,10 +34,9 @@ end
 ----------------------------------------------------------------------------------
 
 function PlayState:exit()
-    
     self.level1:exit()
     self.player:exit()
-    self:disableEvents()
+    StateMachine:disableEvents()
     Log:debug("PlayState DISABLE events!")
 
     World:emit("exit")
@@ -79,40 +75,34 @@ end
 function PlayState:setupInputEvents()
     Log:debug("Setting up events on PlayState")
     -- Movement events - these use the game state context to access the player
-    self.events.left = self:addEvent( { Key.left, Key.a, Button.dpleft },
+    StateMachine:addEvent( { Key.left, Key.a, Button.dpleft },
                 function() self.player:moveLeft() end,
                 POLL_TYPE.IS_HELD)
 
-    self.events.right = self:addEvent( { Key.right, Key.d, Button.dpright },
+    StateMachine:addEvent( { Key.right, Key.d, Button.dpright },
                 function() self.player:moveRight() end,
                 POLL_TYPE.IS_HELD)
 
-    self.events.idle = self:addEvent( { Key.left,  Key.a, Button.dpleft,
+    StateMachine:addEvent( { Key.left,  Key.a, Button.dpleft,
                                         Key.right, Key.d, Button.dpright },
                 function() self.player:idle() end,
                 POLL_TYPE.JUST_RELEASED)
 
-    self.events.jump = self:addEvent( { Key.up,  Key.space, Button.dpup },
+    StateMachine:addEvent( { Key.up,  Key.space, Button.dpup },
                 function() self.player:moveJump() end,
                 POLL_TYPE.JUST_PRESSED)
 
-    self.events.jump = self:addEvent( { Key.up,  Key.space, Button.dpup },
+    StateMachine:addEvent( { Key.up,  Key.space, Button.dpup },
                 function() self.player:releaseJump() end,
                 POLL_TYPE.JUST_RELEASED)
 
-    self.events.quit = self:addEvent( { Key.escape },
-                function(context, input) love.event.quit() end,
+    StateMachine:addEvent( { Key.escape },
+                function() love.event.quit() end,
                 POLL_TYPE.IS_HELD)
 
-    self.events.changeStartState = self:addEvent( { Key.q },
-                function(context, input) self:changeToPauseState() end,
+    StateMachine:addEvent( { Key.q },
+                function() StateMachine:change(GAME_STATES.PAUSE) end,
                 POLL_TYPE.JUST_PRESSED)
-end
-
-----------------------------------------------------------------------------------
-
-function PlayState:changeToPauseState()
-    CurrentState:change("pause")
 end
 
 ----------------------------------------------------------------------------------

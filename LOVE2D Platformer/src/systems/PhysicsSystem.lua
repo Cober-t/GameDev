@@ -6,6 +6,7 @@ PhysicsSystem = ECS.system({ pool = {"transform", "rigidbody", "collider"},
 function PhysicsSystem:init()
     Log:debug("PhysicsSystem INIT " .. #self.secondPool .. " entities!")
     for _, entity in ipairs(self.secondPool) do 
+        print("AAAAAAAAAAAAAAAAAAAA")
         entity.rigidbody.groundGravity = (-2.0 * entity.movement.jumpHeight) / math.pow(entity.movement.timeToJumpApex, 2)
     end
 

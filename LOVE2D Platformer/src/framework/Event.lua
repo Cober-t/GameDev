@@ -3,16 +3,19 @@ local Event = Class:extend()
 
 ----------------------------------------------------------------------------------
 
-function Event:new(input, callback, pollType)
+function Event:new(input, key, callback, pollType, context)
     self.input = input       -- Input object (keyboard/gamepad)
+    self.key = key
     self.callback = callback -- Function to call when event triggers
     self.pollType = pollType or POLL_TYPE.JUST_PRESSED -- Default to justPressed
     self.enabled = true
+    self.context = context
 end
 
 ----------------------------------------------------------------------------------
 
 function Event:poll()
+    
     if not self.enabled then return end
 
     local shouldTrigger = false
@@ -60,8 +63,8 @@ end
 
 ----------------------------------------------------------------------------------
 
-function EventDispatcher:getOrCreateInput(inputType, inputKey, joystickId)
-    local lookupKey = inputType .. ":" .. inputKey .. ":" .. (joystickId or "")
+function EventDispatcher:getOrCreateInput(inputType, inputKey, pollType, context, joystickId)
+    local lookupKey = inputType .. ":" .. inputKey .. ":" .. (joystickId or "") .. ":" .. pollType .. ":" .. context
 
     if not self.inputLookup[lookupKey] then
         local input
@@ -70,7 +73,7 @@ function EventDispatcher:getOrCreateInput(inputType, inputKey, joystickId)
         elseif inputType == GAMEPAD then
             input = GamepadInput(inputKey, joystickId)
         else
-            error("Unknown input type: " .. inputType)
+            Log:error("Unknown input type: " .. inputType)
         end
 
         self.inputs[#self.inputs + 1] = input
@@ -82,29 +85,85 @@ end
 
 ----------------------------------------------------------------------------------
 
-function EventDispatcher:createKeyboardEvent(key, callback, pollType)
-    local input = self:getOrCreateInput(KEYBOARD, key)
-    local event = Event(input, callback, pollType)
-    self.events[#self.events + 1] = event
-    return event
+function EventDispatcher:createKeyboardEvent(key, callback, pollType, context)
+    local input = self:getOrCreateInput(KEYBOARD, key, pollType, context)
+    local newEvent = Event(input, key, callback, pollType, context)
+    
+    if newEvent then
+        -- TODO: Find a way to detect duplicated events
+        for _, event in ipairs(self.events) do
+            if event.input == newEvent.input then
+                return newEvent
+            end
+        end
+        
+        self.events[#self.events + 1] = newEvent 
+    else
+        Log:error("KEYBOARD event couldn be created! : "..input)
+    end
+    return newEvent
 end
 
 ----------------------------------------------------------------------------------
 
-function EventDispatcher:createGamepadEvent(button, callback, pollType, joystickId)
-    local input = self:getOrCreateInput(GAMEPAD, button, joystickId)
-    local event = Event(input, callback, pollType)
-    self.events[#self.events + 1] = event
-    return event
+function EventDispatcher:createGamepadEvent(button, callback, pollType, joystickId, context)
+    local input = self:getOrCreateInput(GAMEPAD, button, pollType, context, joystickId)
+    local newEvent = Event(input, button, callback, pollType, context)
+
+    if newEvent then
+        -- TODO: Find a way to detect duplicated events
+        for _, event in ipairs(self.events) do
+            if event.input == newEvent.input then 
+                return event
+            end
+        end
+        self.events[#self.events + 1] = newEvent 
+    else
+        Log:error("GAMEPAD event couldn be created! : "..input)
+    end
+    return newEvent
+end
+
+
+----------------------------------------------------------------------------------
+
+function EventDispatcher:removeAllContextEvents(context)
+    for _, event in ipairs(self.events) do
+        if event.context == context then
+            table.remove(self.events, _)
+            return
+        end
+    end
 end
 
 ----------------------------------------------------------------------------------
 
-function EventDispatcher:removeEvent(event)
-    for i = #self.events, 1, -1 do
-        if self.events[i] == event then
-            table.remove(self.events, i)
-            break
+function EventDispatcher:removeEvent(e, context)
+    for _, event in ipairs(self.events) do
+        if event == e and event.context == context then
+            table.remove(self.events, _)
+            return
+        end
+    end
+end
+
+----------------------------------------------------------------------------------
+
+function EventDispatcher:enableEvents(context)
+    for _, event in ipairs(self.events) do
+        if event.context == context then
+            event:enable()
+        end
+    end
+end
+
+
+----------------------------------------------------------------------------------
+
+function EventDispatcher:disableEvents(context)
+    for _, event in ipairs(self.events) do
+        if event.context == context then
+            event:disable()
         end
     end
 end

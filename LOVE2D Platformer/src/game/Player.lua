@@ -34,7 +34,6 @@ function Player:init()
     self.mv    = self.entity.movement
     self.col   = self.entity.collider
     self:initAnimations()
-
                     
     if BumpWorld:hasItem(self.entity) then
         BumpWorld:update(self.entity, 

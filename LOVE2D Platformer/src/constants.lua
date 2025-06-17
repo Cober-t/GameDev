@@ -26,6 +26,12 @@ POLL_TYPE = {
     IS_HELD = "isHeld"
 }
 
+GAME_STATES = {
+    START = "start",
+    PAUSE = "pause",
+    PLAY  = "play",
+}
+
 -- TODO: MOVE TO INPUT KEYS CLASS
 KEYBOARD = "keyboard"
 GAMEPAD  = "gamepad"

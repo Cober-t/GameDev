@@ -12,16 +12,28 @@ function GameStateMachine:new(states)
 	}
 	self.states = states or {} -- [name] -> [function that returns states]
 	self.current = self.empty
-	self.events = {}
+	self.currentStateKey = nil
+	-- self.events = {}
 end
 
 ----------------------------------------------------------------------------------
 
-function GameStateMachine:change(stateName)
+function GameStateMachine:start(stateName, params)
+	assert(self.states[stateName]) -- state must exist!
+	self.currentStateKey = stateName
+	self.current = self.states[stateName]()
+	self.current:enter(params)
+	Log:debug("State starting "..stateName.."!")
+end
+
+----------------------------------------------------------------------------------
+
+function GameStateMachine:change(stateName, params)
 	assert(self.states[stateName]) -- state must exist!
 	self.current:exit()
+	self.currentStateKey = stateName
 	self.current = self.states[stateName]()
-	self.current:enter()
+	self.current:enter(params)
 	Log:debug("State changing to "..stateName.."!")
 end
 
@@ -53,65 +65,55 @@ end
 ----------------------------------------------------------------------------------
 
 function GameStateMachine:addEvent(keys, callback, pollType)
-	assert(#keys>0)
+	assert(#keys > 0)
 	for _, key in ipairs(keys) do
 		if INPUTS[key] and INPUTS[key].INPUT_TYPE == KEYBOARD then
-			if not EventDispatcher:createKeyboardEvent(key, callback, pollType) then
-				Log:error("Keyboard Key: "..key.." could not be created!")
-			end
+			GameStateMachine:addKeyboardEvent(key, callback, pollType, self.currentStateKey)
+
 		elseif INPUTS[key] and INPUTS[key].INPUT_TYPE == GAMEPAD then
 			local joystickID = INPUTS[key].JOYSTICK_ID and INPUTS[key].JOYSTICK_ID or 0
-			if EventDispatcher:createGamepadEvent(key, callback, pollType, joystickID) then
-				Log:error("Gamepad Key: "..key.." could not be created!")
-			end
+			GameStateMachine:addGamepadEvent(key, callback, pollType, joystickID, self.currentStateKey)
 		end
 	end
+	return nil
 end
 
 ----------------------------------------------------------------------------------
 
-function GameStateMachine:addKeyboardEvent(key, callback, pollType)
-    local event = EventDispatcher:createKeyboardEvent(key, callback, pollType)
-    self.events[#self.events + 1] = event
-    return event
+function GameStateMachine:addKeyboardEvent(key, callback, pollType, context)
+    return EventDispatcher:createKeyboardEvent(key, callback, pollType, context)
 end
 
 ----------------------------------------------------------------------------------
 
-function GameStateMachine:addGamepadEvent(button, callback, pollType, joystickId)
-    local event = EventDispatcher:createGamepadEvent(button, callback, joystickId, pollType)
-    self.events[#self.events + 1] = event
-    return event
+function GameStateMachine:addGamepadEvent(button, callback, pollType, joystickId, context)
+    return EventDispatcher:createGamepadEvent(button, callback, pollType, joystickId, context)
 end
 
 ----------------------------------------------------------------------------------
 
 function GameStateMachine:removeAllEvents()
-    for _, event in ipairs(self.events) do
-        EventDispatcher:removeEvent(event)
-    end
-    self.events = {}
+	Log:info("REMOVE "..self.currentStateKey.." EVENTS")
+	EventDispatcher:removeAllContextEvents(self.currentStateKey)
 end
 
 ----------------------------------------------------------------------------------
 
+function GameStateMachine:removeEvent(event)
+	EventDispatcher:removeEvent(event, self.currentStateKey)
+end
+
+
+----------------------------------------------------------------------------------
+
 function GameStateMachine:enableEvents()
-    for _, event in ipairs(self.events) do
-        event:enable()
-    end
+	EventDispatcher:enableEvents(self.currentStateKey)
 end
 
 ----------------------------------------------------------------------------------
 
 function GameStateMachine:disableEvents()
-    for _, event in ipairs(self.events) do
-        event:disable()
-    end
-end
-
-----------------------------------------------------------------------------------
-
-function GameStateMachine:setupInputEvents()
+    EventDispatcher:disableEvents(self.currentStateKey)
 end
 
 ----------------------------------------------------------------------------------

@@ -1,10 +1,10 @@
 require 'src/Dependencies'
 
-CurrentState  = GameStateMachine {
-        ['start'] = function() return StartState() end,
-        ['play']  = function() return PlayState()  end,
-        ['pause'] = function() return PauseState() end,
-    }
+StateMachine  = GameStateMachine({
+        [GAME_STATES.START] = function() return StartState() end,
+        [GAME_STATES.PLAY]  = function() return PlayState()  end,
+        [GAME_STATES.PAUSE] = function() return PauseState() end,
+    })
 
 ----------------------------------------------------------------------------------
 
@@ -25,7 +25,7 @@ function love.load()
     Log:debug("Creating Systems for the GAME")
     World:addSystems( MovementSystem, PhysicsSystem, CollisionSystem)
 
-    CurrentState:change('play')
+    StateMachine:start(GAME_STATES.PLAY)
 end
 
 ----------------------------------------------------------------------------------
@@ -33,7 +33,7 @@ end
 function love.keypressed(key)
     if key == "r" then -- Restart the level
         Log:debug("RESTART invokated")
-        CurrentState:change('play')
+        StateMachine:change(GAME_STATES.PLAY)
     end
 end
 
@@ -49,7 +49,7 @@ function love.update(dt)
     -- Fixed physics calculations, for decouple game logic from framerate
     accumulator = accumulator + dt
     while accumulator >= fixedDeltaTime do
-        CurrentState:update(fixedDeltaTime)
+        StateMachine:update(fixedDeltaTime)
         World:emit("update", fixedDeltaTime)
         accumulator = accumulator - fixedDeltaTime
     end   
@@ -59,7 +59,7 @@ end
 
 function love.draw()
     Push:start()
-        CurrentState:draw()
+        StateMachine:draw()
         -- World:emit("draw") --minmap
     Push:finish()
 end
