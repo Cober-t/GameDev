@@ -58,13 +58,14 @@ function EventDispatcher:new()
     Log:debug("EventDispatcher created!")
     self.inputs = {}        -- All registered inputs
     self.events = {}        -- All registered events
-    self.inputLookup = {}   -- Quick lookup for inputs by key
+    self.inputLookup  = {}  -- Quick lookup for inputs by key
+    self.eventsLookup = {}  -- Quick lookup for events by key
 end
 
 ----------------------------------------------------------------------------------
 
 function EventDispatcher:getOrCreateInput(inputType, inputKey, pollType, context, joystickId)
-    local lookupKey = inputType .. ":" .. inputKey .. ":" .. (joystickId or "") .. ":" .. pollType .. ":" .. context
+    local lookupKey = inputType .. ":" .. inputKey .. ":" .. (joystickId or "") .. ":" .. pollType
 
     if not self.inputLookup[lookupKey] then
         local input
@@ -77,29 +78,27 @@ function EventDispatcher:getOrCreateInput(inputType, inputKey, pollType, context
         end
 
         self.inputs[#self.inputs + 1] = input
+        self.eventsLookup[#self.eventsLookup + 1] = lookupKey
         self.inputLookup[lookupKey] = input
     end
 
-    return self.inputLookup[lookupKey]
+    return lookupKey
 end
 
 ----------------------------------------------------------------------------------
 
 function EventDispatcher:createKeyboardEvent(key, callback, pollType, context)
-    local input = self:getOrCreateInput(KEYBOARD, key, pollType, context)
-    local newEvent = Event(input, key, callback, pollType, context)
-    
+    local lookupKey = self:getOrCreateInput(KEYBOARD, key, pollType, context)
+    local newEvent = Event(self.inputLookup[lookupKey], key, callback, pollType, context)
+
     if newEvent then
-        -- TODO: Find a way to detect duplicated events
-        for _, event in ipairs(self.events) do
-            if event.input == newEvent.input then
-                return newEvent
-            end
+        if not self.events[lookupKey] then
+            self.events[lookupKey] = newEvent
+        else
+            self.events[lookupKey].callback = callback
         end
-        
-        self.events[#self.events + 1] = newEvent 
     else
-        Log:error("KEYBOARD event couldn be created! : "..input)
+        Log:error("KEYBOARD event couldn be created! : "..lookupKey)
     end
     return newEvent
 end
@@ -107,19 +106,17 @@ end
 ----------------------------------------------------------------------------------
 
 function EventDispatcher:createGamepadEvent(button, callback, pollType, joystickId, context)
-    local input = self:getOrCreateInput(GAMEPAD, button, pollType, context, joystickId)
-    local newEvent = Event(input, button, callback, pollType, context)
+    local lookupKey = self:getOrCreateInput(GAMEPAD, button, pollType, context, joystickId)
+    local newEvent = Event(self.inputLookup[lookupKey], button, callback, pollType, context)
 
     if newEvent then
-        -- TODO: Find a way to detect duplicated events
-        for _, event in ipairs(self.events) do
-            if event.input == newEvent.input then 
-                return event
-            end
+        if not self.events[lookupKey] then
+            self.events[lookupKey] = newEvent
+        else
+            self.events[lookupKey].callback = callback
         end
-        self.events[#self.events + 1] = newEvent 
     else
-        Log:error("GAMEPAD event couldn be created! : "..input)
+        Log:error("GAMEPAD event couldn be created! : "..lookupKey)
     end
     return newEvent
 end
@@ -128,9 +125,10 @@ end
 ----------------------------------------------------------------------------------
 
 function EventDispatcher:removeAllContextEvents(context)
-    for _, event in ipairs(self.events) do
-        if event.context == context then
-            table.remove(self.events, _)
+    for _, key in ipairs(self.eventsLookup) do
+        if self.events[key].context == context then
+            self.eventsLookup[_] = nil
+            self.events[key] = nil
             return
         end
     end
@@ -138,10 +136,12 @@ end
 
 ----------------------------------------------------------------------------------
 
-function EventDispatcher:removeEvent(e, context)
-    for _, event in ipairs(self.events) do
-        if event == e and event.context == context then
-            table.remove(self.events, _)
+function EventDispatcher:removeEvent(key, pollType, context)
+    for _, id in ipairs(self.eventsLookup) do
+        local event = self.events[id]
+        if event.key == key and event.pollType == pollType and event.context == context then
+            event = nil
+            self.eventsLookup[_] = nil
             return
         end
     end
@@ -150,8 +150,9 @@ end
 ----------------------------------------------------------------------------------
 
 function EventDispatcher:enableEvents(context)
-    for _, event in ipairs(self.events) do
-        if event.context == context then
+    for _, key in ipairs(self.eventsLookup) do
+        local event = self.events[key]
+        if event and event.context == context then
             event:enable()
         end
     end
@@ -161,8 +162,9 @@ end
 ----------------------------------------------------------------------------------
 
 function EventDispatcher:disableEvents(context)
-    for _, event in ipairs(self.events) do
-        if event.context == context then
+    for _, key in ipairs(self.eventsLookup) do
+        local event = self.events[key]
+        if event and event.context == context then
             event:disable()
         end
     end
@@ -177,8 +179,8 @@ function EventDispatcher:update()
     end
 
     -- Poll all events
-    for _, event in ipairs(self.events) do
-        event:poll()
+    for _, key in ipairs(self.eventsLookup) do
+        self.events[key]:poll()
     end
 end
 

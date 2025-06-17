@@ -23,7 +23,7 @@ CAM_ZOOM = 4
 POLL_TYPE = {
     JUST_PRESSED = "justPressed",
     JUST_RELEASED = "justReleased",
-    IS_HELD = "isHeld"
+    IS_HELD = "isHeld",
 }
 
 GAME_STATES = {

@@ -39,7 +39,7 @@ end
 function PauseState:setupInputEvents()
     Log:debug("Setting up events on PauseState")
 
-    local event = StateMachine:addEvent( { Key.e }, 
+    StateMachine:addEvent( { Key.e }, 
                 function() StateMachine:change(GAME_STATES.PLAY) end, 
                 POLL_TYPE.JUST_PRESSED)
 end

@@ -100,6 +100,8 @@ function PlayState:setupInputEvents()
                 function() love.event.quit() end,
                 POLL_TYPE.IS_HELD)
 
+    StateMachine:removeEvent(Key.escape, POLL_TYPE.IS_HELD, GAME_STATES.PLAY)
+
     StateMachine:addEvent( { Key.q },
                 function() StateMachine:change(GAME_STATES.PAUSE) end,
                 POLL_TYPE.JUST_PRESSED)

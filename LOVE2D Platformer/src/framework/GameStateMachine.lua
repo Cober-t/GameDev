@@ -93,14 +93,14 @@ end
 ----------------------------------------------------------------------------------
 
 function GameStateMachine:removeAllEvents()
-	Log:info("REMOVE "..self.currentStateKey.." EVENTS")
+	Log:info("REMOVE ALL "..self.currentStateKey.." EVENTS")
 	EventDispatcher:removeAllContextEvents(self.currentStateKey)
 end
 
 ----------------------------------------------------------------------------------
 
-function GameStateMachine:removeEvent(event)
-	EventDispatcher:removeEvent(event, self.currentStateKey)
+function GameStateMachine:removeEvent(event, pollType, context)
+	EventDispatcher:removeEvent(event, pollType, context)
 end
 
 
