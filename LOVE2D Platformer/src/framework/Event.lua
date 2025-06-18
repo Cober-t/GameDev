@@ -58,8 +58,7 @@ function EventDispatcher:new()
     Log:debug("EventDispatcher created!")
     self.inputs = {}        -- All registered inputs
     self.events = {}        -- All registered events
-    self.inputLookup  = {}  -- Quick lookup for inputs by key
-    self.eventsLookup = {}  -- Quick lookup for events by key
+    self.lookupKeys  = {}   -- Quick lookup for inputs and events
 end
 
 ----------------------------------------------------------------------------------
@@ -67,7 +66,7 @@ end
 function EventDispatcher:getOrCreateInput(inputType, inputKey, pollType, context, joystickId)
     local lookupKey = inputType .. ":" .. inputKey .. ":" .. (joystickId or "") .. ":" .. pollType
 
-    if not self.inputLookup[lookupKey] then
+    if not self.inputs[lookupKey] then
         local input
         if inputType == KEYBOARD then
             input = KeyboardInput(inputKey)
@@ -77,9 +76,8 @@ function EventDispatcher:getOrCreateInput(inputType, inputKey, pollType, context
             Log:error("Unknown input type: " .. inputType)
         end
 
-        self.inputs[#self.inputs + 1] = input
-        self.eventsLookup[#self.eventsLookup + 1] = lookupKey
-        self.inputLookup[lookupKey] = input
+        self.inputs[lookupKey] = input
+        self.lookupKeys[#self.lookupKeys + 1] = lookupKey
     end
 
     return lookupKey
@@ -89,7 +87,7 @@ end
 
 function EventDispatcher:createKeyboardEvent(key, callback, pollType, context)
     local lookupKey = self:getOrCreateInput(KEYBOARD, key, pollType, context)
-    local newEvent = Event(self.inputLookup[lookupKey], key, callback, pollType, context)
+    local newEvent = Event(self.inputs[lookupKey], key, callback, pollType, context)
 
     if newEvent then
         if not self.events[lookupKey] then
@@ -107,7 +105,7 @@ end
 
 function EventDispatcher:createGamepadEvent(button, callback, pollType, joystickId, context)
     local lookupKey = self:getOrCreateInput(GAMEPAD, button, pollType, context, joystickId)
-    local newEvent = Event(self.inputLookup[lookupKey], button, callback, pollType, context)
+    local newEvent = Event(self.inputs[lookupKey], button, callback, pollType, context)
 
     if newEvent then
         if not self.events[lookupKey] then
@@ -125,10 +123,10 @@ end
 ----------------------------------------------------------------------------------
 
 function EventDispatcher:removeAllContextEvents(context)
-    for _, key in ipairs(self.eventsLookup) do
-        if self.events[key].context == context then
-            self.eventsLookup[_] = nil
-            self.events[key] = nil
+    for _, lookupKey in ipairs(self.lookupKeys) do
+        if self.events[lookupKey].context == context then
+            self.lookupKeys[_] = nil
+            self.events[lookupKey] = nil
             return
         end
     end
@@ -137,11 +135,11 @@ end
 ----------------------------------------------------------------------------------
 
 function EventDispatcher:removeEvent(key, pollType, context)
-    for _, id in ipairs(self.eventsLookup) do
-        local event = self.events[id]
+    for _, lookupKey in ipairs(self.lookupKeys) do
+        local event = self.events[lookupKey]
         if event.key == key and event.pollType == pollType and event.context == context then
             event = nil
-            self.eventsLookup[_] = nil
+            self.lookupKeys[_] = nil
             return
         end
     end
@@ -150,8 +148,8 @@ end
 ----------------------------------------------------------------------------------
 
 function EventDispatcher:enableEvents(context)
-    for _, key in ipairs(self.eventsLookup) do
-        local event = self.events[key]
+    for _, lookupKey in ipairs(self.lookupKeys) do
+        local event = self.events[lookupKey]
         if event and event.context == context then
             event:enable()
         end
@@ -162,8 +160,8 @@ end
 ----------------------------------------------------------------------------------
 
 function EventDispatcher:disableEvents(context)
-    for _, key in ipairs(self.eventsLookup) do
-        local event = self.events[key]
+    for _, lookupKey in ipairs(self.lookupKeys) do
+        local event = self.events[lookupKey]
         if event and event.context == context then
             event:disable()
         end
@@ -172,16 +170,20 @@ end
 
 ----------------------------------------------------------------------------------
 
-function EventDispatcher:update()
+function EventDispatcher:update(key, pollType)
     -- Update all inputs first
-    for _, input in ipairs(self.inputs) do
-        input:update()
+    for _, lookupKey in ipairs(self.lookupKeys) do
+        if self.inputs[lookupKey].key == key then
+            self.inputs[lookupKey]:update()
+            self.events[lookupKey]:poll()
+        end
     end
+end
 
-    -- Poll all events
-    for _, key in ipairs(self.eventsLookup) do
-        self.events[key]:poll()
-    end
+----------------------------------------------------------------------------------
+
+function EventDispatcher:getEventsCount()
+    return(#self.lookupKeys)
 end
 
 ----------------------------------------------------------------------------------

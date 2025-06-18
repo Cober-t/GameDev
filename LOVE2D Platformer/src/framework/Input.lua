@@ -13,7 +13,7 @@ end
 ----------------------------------------------------------------------------------
 -- Abstract method (to be overridden)
 function Input:checkPressed()
-    error("checkPressed must be implemented by subclass")
+    Log:error("checkPressed must be implemented by subclass")
 end
 
 ----------------------------------------------------------------------------------

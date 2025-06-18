@@ -31,10 +31,15 @@ end
 ----------------------------------------------------------------------------------
 
 function love.keypressed(key)
-    if key == "r" then -- Restart the level
-        Log:debug("RESTART invokated")
-        StateMachine:change(GAME_STATES.PLAY)
-    end
+    EventDispatcher:update(key)
+    -- Restart the level
+    if key == "r" then StateMachine:change(GAME_STATES.PLAY) end
+end
+
+----------------------------------------------------------------------------------
+
+function love.keyreleased(key)
+    EventDispatcher:update(key)
 end
 
 ----------------------------------------------------------------------------------

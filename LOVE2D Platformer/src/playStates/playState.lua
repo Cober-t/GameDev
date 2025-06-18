@@ -25,6 +25,7 @@ function PlayState:enter()
     self.player:init()
     self.camera:setTarget(self.player.entity)
 
+    -- Test: Start player position
     local posY =  self.level1.tileMap.height * self.level1.tileMap.tileheight - love.graphics.getHeight()/2
     self.player.entity.transform.posY = posY
     
@@ -51,8 +52,6 @@ function PlayState:update(dt)
     -- Fixed camera update and player animations, for decouple render updates from framerate
     self.camera:update(dt)
     self.player:update(dt)
-
-    EventDispatcher:update()
 end
 
 ----------------------------------------------------------------------------------
@@ -84,7 +83,7 @@ function PlayState:setupInputEvents()
                 POLL_TYPE.IS_HELD)
 
     StateMachine:addEvent( { Key.left,  Key.a, Button.dpleft,
-                                        Key.right, Key.d, Button.dpright },
+                             Key.right, Key.d, Button.dpright },
                 function() self.player:idle() end,
                 POLL_TYPE.JUST_RELEASED)
 
@@ -96,15 +95,15 @@ function PlayState:setupInputEvents()
                 function() self.player:releaseJump() end,
                 POLL_TYPE.JUST_RELEASED)
 
-    StateMachine:addEvent( { Key.escape },
+    StateMachine:addEvent( { Key.escape, Button.rightshoulder, Button.leftshoulder },
                 function() love.event.quit() end,
                 POLL_TYPE.IS_HELD)
-
-    StateMachine:removeEvent(Key.escape, POLL_TYPE.IS_HELD, GAME_STATES.PLAY)
 
     StateMachine:addEvent( { Key.q },
                 function() StateMachine:change(GAME_STATES.PAUSE) end,
                 POLL_TYPE.JUST_PRESSED)
+
+    Log:debug("CREATED EVENTS: "..StateMachine:getEventsCount())
 end
 
 ----------------------------------------------------------------------------------

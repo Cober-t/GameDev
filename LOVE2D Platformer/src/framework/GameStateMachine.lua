@@ -75,7 +75,12 @@ function GameStateMachine:addEvent(keys, callback, pollType)
 			GameStateMachine:addGamepadEvent(key, callback, pollType, joystickID, self.currentStateKey)
 		end
 	end
-	return nil
+end
+
+----------------------------------------------------------------------------------
+
+function GameStateMachine:getEventsCount()
+    return EventDispatcher:getEventsCount()
 end
 
 ----------------------------------------------------------------------------------

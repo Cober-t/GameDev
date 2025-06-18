@@ -60,6 +60,15 @@ Button.a_btn = "a"
 Button.b_btn = "b"
 Button.x_btn = "x"
 Button.y_btn = "y"
+Button.leftstick = "leftstick"
+Button.rightstick = "rightstick"
+Button.lefttrigger = "lefttrigger"  -- also available as axes
+Button.righttrigger = "righttrigger"-- also available as axes
+Button.leftshoulder = "leftshoulder"
+Button.rightshoulder = "rightshoulder"
+Button.start = "start"
+Button.back = "back"
+Button.guide = "guide"
 
 INPUTS = {}
 INPUTS.left      =  {INPUT_TYPE = KEYBOARD}
@@ -77,3 +86,16 @@ INPUTS.dpup    =  {INPUT_TYPE = GAMEPAD, JOYSTICK_ID = 1}
 INPUTS.dpdown  =  {INPUT_TYPE = GAMEPAD, JOYSTICK_ID = 1}
 INPUTS.dpleft  =  {INPUT_TYPE = GAMEPAD, JOYSTICK_ID = 1}
 INPUTS.dpright =  {INPUT_TYPE = GAMEPAD, JOYSTICK_ID = 1}
+INPUTS.a_btn   =  {INPUT_TYPE = GAMEPAD}
+INPUTS.b_btn   =  {INPUT_TYPE = GAMEPAD}
+INPUTS.x_btn   =  {INPUT_TYPE = GAMEPAD}
+INPUTS.y_btn   =  {INPUT_TYPE = GAMEPAD}
+INPUTS.leftstick =     {INPUT_TYPE = GAMEPAD, JOYSTICK_ID = 1}
+INPUTS.rightstick =    {INPUT_TYPE = GAMEPAD, JOYSTICK_ID = 1}
+INPUTS.lefttrigger =   {INPUT_TYPE = GAMEPAD}
+INPUTS.righttrigger =  {INPUT_TYPE = GAMEPAD}
+INPUTS.leftshoulder  = {INPUT_TYPE = GAMEPAD}
+INPUTS.rightshoulder = {INPUT_TYPE = GAMEPAD}
+INPUTS.start   =  {INPUT_TYPE = GAMEPAD}
+INPUTS.back    =  {INPUT_TYPE = GAMEPAD}
+INPUTS.guide   =  {INPUT_TYPE = GAMEPAD}
