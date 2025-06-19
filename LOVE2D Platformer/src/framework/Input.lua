@@ -8,6 +8,7 @@ function Input:new(type, key)
     self.isPressed = false
     self.wasPressed = false
     self.isReleased = false
+    self.isActive = false
 end
 
 ----------------------------------------------------------------------------------
@@ -20,8 +21,23 @@ end
 
 function Input:update()
     self.wasPressed = self.isPressed
-    self:checkPressed()
+    if self.isActive then self:checkPressed() end
     self.isReleased = self.wasPressed and not self.isPressed
+end
+
+----------------------------------------------------------------------------------
+
+function Input:activate()
+    self.isActive = true
+end
+
+----------------------------------------------------------------------------------
+
+function Input:deactivate()
+    self.isActive   = false
+    self.isPressed  = false
+    self.wasPressed = false
+    self.isReleased = false
 end
 
 ----------------------------------------------------------------------------------
@@ -64,10 +80,10 @@ GamepadInput = Input:extend()
 
 ----------------------------------------------------------------------------------
 
-function GamepadInput:new(button, joystickId)
+function GamepadInput:new(button, joystickID)
     GamepadInput.super.new(self, 'gamepad', button)
-    self.joystickId = joystickId or 1
-    self.joystick = love.joystick.getJoysticks()[self.joystickId]
+    self.joystickID = joystickID or 1
+    self.joystick = love.joystick.getJoysticks()[self.joystickID]
 end
 
 ----------------------------------------------------------------------------------

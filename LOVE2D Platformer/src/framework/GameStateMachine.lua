@@ -91,8 +91,8 @@ end
 
 ----------------------------------------------------------------------------------
 
-function GameStateMachine:addGamepadEvent(button, callback, pollType, joystickId, context)
-    return EventDispatcher:createGamepadEvent(button, callback, pollType, joystickId, context)
+function GameStateMachine:addGamepadEvent(button, callback, pollType, joystickID, context)
+    return EventDispatcher:createGamepadEvent(button, callback, pollType, joystickID, context)
 end
 
 ----------------------------------------------------------------------------------

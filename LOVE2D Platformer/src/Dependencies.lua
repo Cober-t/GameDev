@@ -46,6 +46,7 @@ require "src/framework/baseEntityState"
 require "src/framework/gameStateMachine"
 require "src/framework/components"
 require "src/framework/input"
+require "src/framework/eventDispatcher"
 require "src/framework/event"
 EventDispatcher = EventDispatcher()
 

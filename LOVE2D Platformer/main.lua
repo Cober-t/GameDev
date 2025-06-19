@@ -30,8 +30,8 @@ end
 
 ----------------------------------------------------------------------------------
 
-function love.keypressed(key)
-    EventDispatcher:update(key)
+function love.keypressed(key, scancode, isrepeat)
+    EventDispatcher:keypressed(key, scancode, isrepeat)
     -- Restart the level
     if key == "r" then StateMachine:change(GAME_STATES.PLAY) end
 end
@@ -39,7 +39,19 @@ end
 ----------------------------------------------------------------------------------
 
 function love.keyreleased(key)
-    EventDispatcher:update(key)
+    EventDispatcher:keyreleased(key)
+end
+
+----------------------------------------------------------------------------------
+
+function love.gamepadpressed(joystick, button)
+    EventDispatcher:gamepadpressed(joystick, button)
+end
+
+----------------------------------------------------------------------------------
+
+function love.gamepadreleased(joystick, button)
+    EventDispatcher:gamepadreleased(joystick, button)
 end
 
 ----------------------------------------------------------------------------------
@@ -51,6 +63,7 @@ end
 ----------------------------------------------------------------------------------
 
 function love.update(dt)
+    EventDispatcher:update()
     -- Fixed physics calculations, for decouple game logic from framerate
     accumulator = accumulator + dt
     while accumulator >= fixedDeltaTime do
