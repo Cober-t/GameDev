@@ -14,34 +14,33 @@ end
 function EventDispatcher:getOrCreateInput(inputType, inputKey, pollType, context, joystickID)
     local lookupKey = inputType .. ":" .. inputKey .. ":" .. (joystickID or "") .. ":" .. pollType
 
-    if not self.inputs[lookupKey] then
-        local input
-        if inputType == KEYBOARD then
-            input = KeyboardInput(inputKey)
-        elseif inputType == GAMEPAD then
-            input = GamepadInput(inputKey, joystickID)
-        else
-            Log:error("Unknown input type: " .. inputType)
-        end
-
-        self.inputs[lookupKey] = input
-        self.lookupKeys[#self.lookupKeys + 1] = lookupKey
-
-        -- Save a list of lookupkeys for a key, because a key can have more than one event
-        if not self.keyToLookupMap[inputKey] then
-            -- Create an empty table first 
-            self.keyToLookupMap[inputKey] = {}
-        end
-        table.insert(self.keyToLookupMap[inputKey], lookupKey)
+    if self.inputs[lookupKey] then return end
+    local input
+    if inputType == KEYBOARD then
+        input = KeyboardInput(inputKey)
+    elseif inputType == GAMEPAD then
+        input = GamepadInput(inputKey, joystickID)
+    else
+        Log:error("Unknown input type: " .. inputType)
     end
+
+    self.inputs[lookupKey] = input
+    self.lookupKeys[#self.lookupKeys + 1] = lookupKey
+
+    -- Save a list of lookupkeys for a key, because a key can have more than one event
+    if not self.keyToLookupMap[inputKey] then
+        -- Create an empty table first 
+        self.keyToLookupMap[inputKey] = {}
+    end
+    table.insert(self.keyToLookupMap[inputKey], lookupKey)
 
     return lookupKey
 end
 
 ----------------------------------------------------------------------------------
 
-function EventDispatcher:createKeyboardEvent(key, callback, pollType, context)
-    local lookupKey = self:getOrCreateInput(KEYBOARD, key, pollType, context)
+function EventDispatcher:createEvent(inputType, key, callback, pollType, context)
+    local lookupKey = self:getOrCreateInput(inputType, key, pollType, context)
     local newEvent = Event(self.inputs[lookupKey], key, callback, pollType, context)
 
     if newEvent then
@@ -51,25 +50,7 @@ function EventDispatcher:createKeyboardEvent(key, callback, pollType, context)
             self.events[lookupKey].callback = callback
         end
     else
-        Log:error("KEYBOARD event couldn be created! : "..lookupKey)
-    end
-    return newEvent
-end
-
-----------------------------------------------------------------------------------
-
-function EventDispatcher:createGamepadEvent(button, callback, pollType, joystickID, context)
-    local lookupKey = self:getOrCreateInput(GAMEPAD, button, pollType, context, joystickID)
-    local newEvent = Event(self.inputs[lookupKey], button, callback, pollType, context)
-
-    if newEvent then
-        if not self.events[lookupKey] then
-            self.events[lookupKey] = newEvent
-        else
-            self.events[lookupKey].callback = callback
-        end
-    else
-        Log:error("GAMEPAD event couldn be created! : "..lookupKey)
+        Log:error(inputType.." event couldn be created! : "..lookupKey)
     end
     return newEvent
 end
@@ -77,16 +58,14 @@ end
 ----------------------------------------------------------------------------------
 
 function EventDispatcher:keypressed(key, scancode, isrepeat)
-    if isrepeat then return end -- Ignore key repeats
+    if not self.keyToLookupMap[key] or isrepeat then return end -- Ignore key repeats
 
     -- Activate all inputs associated with this key
-    if self.keyToLookupMap[key] then
-        for _, lookupKey in ipairs(self.keyToLookupMap[key]) do
-            local input = self.inputs[lookupKey]
-            if input and input.type == KEYBOARD then
-                input:activate()
-                self.activeInputs[lookupKey] = true
-            end
+    for _, lookupKey in ipairs(self.keyToLookupMap[key]) do
+        local input = self.inputs[lookupKey]
+        if input and input.type == KEYBOARD then
+            input:activate()
+            self.activeInputs[lookupKey] = true
         end
     end
 end
@@ -94,15 +73,13 @@ end
 ----------------------------------------------------------------------------------
 
 function EventDispatcher:keyreleased(key)
+    if not self.keyToLookupMap[key] then return end
+    
     -- Activate all inputs associated with this key
-    if self.keyToLookupMap[key] then
-        for _, lookupKey in ipairs(self.keyToLookupMap[key]) do
-            local input = self.inputs[lookupKey]
-            if input and input.type == KEYBOARD then
-                -- input:deactivate()
-                -- Delete later for update the event on released
-                self.activeInputs[lookupKey] = false
-            end
+    for _, lookupKey in ipairs(self.keyToLookupMap[key]) do
+        local input = self.inputs[lookupKey]
+        if input and input.type == KEYBOARD then
+            self.activeInputs[lookupKey] = false
         end
     end
 end
@@ -146,8 +123,6 @@ function EventDispatcher:gamepadreleased(joystick, button)
         for _, lookupKey in ipairs(self.keyToLookupMap[button]) do
             local input = self.inputs[lookupKey]
             if input and input.type == GAMEPAD and input.joystickID == joystickID then
-                -- input:deactivate()
-                -- Delete later for update the event on released
                 self.activeInputs[lookupKey] = false
             end
         end
@@ -161,6 +136,7 @@ function EventDispatcher:removeAllContextEvents(context)
         local lookupKey = self.lookupKeys[i]        
         local event = self.events[lookupKey]
         if event and event.context == context then
+            -- Clean up key mapping
             if self.keyToLookupMap[event.key] then
                 for j, mappedKey in ipairs(self.keyToLookupMap[event.key]) do
                     if mappedKey == lookupKey then

@@ -86,13 +86,13 @@ end
 ----------------------------------------------------------------------------------
 
 function GameStateMachine:addKeyboardEvent(key, callback, pollType, context)
-    return EventDispatcher:createKeyboardEvent(key, callback, pollType, context)
+    return EventDispatcher:createEvent(KEYBOARD, key, callback, pollType, context)
 end
 
 ----------------------------------------------------------------------------------
 
 function GameStateMachine:addGamepadEvent(button, callback, pollType, joystickID, context)
-    return EventDispatcher:createGamepadEvent(button, callback, pollType, joystickID, context)
+    return EventDispatcher:createEvent(GAMEPAD, button, callback, pollType, joystickID, context)
 end
 
 ----------------------------------------------------------------------------------
