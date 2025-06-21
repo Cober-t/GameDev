@@ -35,6 +35,16 @@ GAME_STATES = {
 -- TODO: MOVE TO INPUT KEYS CLASS
 KEYBOARD = "keyboard"
 GAMEPAD  = "gamepad"
+GAMEPAD_AXIS  = "gamepad_axis"
+AXIS = {
+    LEFT_X = "leftx",
+    LEFT_Y = "lefty",
+    RIGHT_X = "rightx",
+    RIGHT_Y = "righty",
+    TRIGGER_LEFT = "triggerleft",
+    TRIGGER_RIGHT = "triggerright"
+}
+
 INPUT_TYPE = "inputType"
 JOYSTICK_ID = "joystickID"
 
@@ -92,10 +102,10 @@ INPUTS.x_btn   =  {INPUT_TYPE = GAMEPAD}
 INPUTS.y_btn   =  {INPUT_TYPE = GAMEPAD}
 INPUTS.leftstick =     {INPUT_TYPE = GAMEPAD, JOYSTICK_ID = 1}
 INPUTS.rightstick =    {INPUT_TYPE = GAMEPAD, JOYSTICK_ID = 1}
-INPUTS.lefttrigger =   {INPUT_TYPE = GAMEPAD}
-INPUTS.righttrigger =  {INPUT_TYPE = GAMEPAD}
-INPUTS.leftshoulder  = {INPUT_TYPE = GAMEPAD}
-INPUTS.rightshoulder = {INPUT_TYPE = GAMEPAD}
+INPUTS.lefttrigger =   {INPUT_TYPE = GAMEPAD, JOYSTICK_ID = 1}
+INPUTS.righttrigger =  {INPUT_TYPE = GAMEPAD, JOYSTICK_ID = 1}
+INPUTS.leftshoulder  = {INPUT_TYPE = GAMEPAD, JOYSTICK_ID = 1}
+INPUTS.rightshoulder = {INPUT_TYPE = GAMEPAD, JOYSTICK_ID = 1}
 INPUTS.start   =  {INPUT_TYPE = GAMEPAD}
 INPUTS.back    =  {INPUT_TYPE = GAMEPAD}
 INPUTS.guide   =  {INPUT_TYPE = GAMEPAD}

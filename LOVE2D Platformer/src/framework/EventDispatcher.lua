@@ -11,15 +11,18 @@ end
 
 ----------------------------------------------------------------------------------
 
-function EventDispatcher:getOrCreateInput(inputType, inputKey, pollType, context, joystickID)
-    local lookupKey = inputType .. ":" .. inputKey .. ":" .. (joystickID or "") .. ":" .. pollType
+function EventDispatcher:getOrCreateInput(inputType, inputKey, pollType, joystickID, context, threshold, direction)
+    local lookupKey = inputType .. ":" .. inputKey .. ":" .. (joystickID or "") .. ":" .. pollType .. ":" .. (threshold or 0.3) .. ":" .. (direction or "any")
 
-    if self.inputs[lookupKey] then return end
+    if self.inputs[lookupKey] then return lookupKey end
+
     local input
     if inputType == KEYBOARD then
         input = KeyboardInput(inputKey)
     elseif inputType == GAMEPAD then
         input = GamepadInput(inputKey, joystickID)
+    elseif inputType == GAMEPAD_AXIS then
+        input = GamepadAxisInput(inputKey, joystickID, threshold, direction)
     else
         Log:error("Unknown input type: " .. inputType)
     end
@@ -39,20 +42,23 @@ end
 
 ----------------------------------------------------------------------------------
 
-function EventDispatcher:createEvent(inputType, key, callback, pollType, context)
-    local lookupKey = self:getOrCreateInput(inputType, key, pollType, context)
-    local newEvent = Event(self.inputs[lookupKey], key, callback, pollType, context)
+function EventDispatcher:createEvent(inputType, keys, callback, pollType, joystickID, context, threshold, direction)
+    assert(#keys > 0)
 
-    if newEvent then
-        if not self.events[lookupKey] then
-            self.events[lookupKey] = newEvent
+	for _, key in ipairs(keys) do
+        local lookupKey = self:getOrCreateInput(inputType, key, pollType, joystickID, context, threshold, direction)
+        local newEvent = Event(self.inputs[lookupKey], key, callback, pollType, context)
+    
+        if newEvent then
+            if not self.events[lookupKey] then
+                self.events[lookupKey] = newEvent
+            else
+                self.events[lookupKey].callback = callback
+            end
         else
-            self.events[lookupKey].callback = callback
+            Log:error(inputType.." event couldn be created! : "..lookupKey)
         end
-    else
-        Log:error(inputType.." event couldn be created! : "..lookupKey)
-    end
-    return newEvent
+	end
 end
 
 ----------------------------------------------------------------------------------
@@ -95,7 +101,7 @@ function EventDispatcher:gamepadpressed(joystick, button)
             break
         end
     end
-
+    
     if joystickID and self.keyToLookupMap[button] then
         for _, lookupKey in ipairs(self.keyToLookupMap[button]) do
             local input = self.inputs[lookupKey]
@@ -209,16 +215,37 @@ end
 ----------------------------------------------------------------------------------
 
 function EventDispatcher:update()
+    -- Update all axis inputs (they need constant monitoring)
+    for lookupKey, input in pairs(self.inputs) do
+        if input.type == GAMEPAD_AXIS then
+            input:update()
+            -- Auto-activate axis inputs that cross threshold
+            if input:isHeld() and not self.activeInputs[lookupKey] then
+                self.activeInputs[lookupKey] = true
+            elseif not input:isHeld() and self.activeInputs[lookupKey] then
+                self.activeInputs[lookupKey] = nil
+            end
+        end
+    end
+
     -- Only update active inputs
     for lookupKey, _ in pairs(self.activeInputs) do
-        if self.inputs[lookupKey] then
-            self.inputs[lookupKey]:update()
+        local input = self.inputs[lookupKey]
+        if input and input.type ~= GAMEPAD_AXIS then
+            input:update()
         end
     end
     
     -- Poll events for active inputs
     for lookupKey, _ in pairs(self.activeInputs) do
         if self.events[lookupKey] then
+            self.events[lookupKey]:poll()
+        end
+    end
+
+    -- Also poll axis events that might not be "active" but still need polling
+    for lookupKey, input in pairs(self.inputs) do
+        if input.type == GAMEPAD_AXIS and self.events[lookupKey] and not self.activeInputs[lookupKey] then
             self.events[lookupKey]:poll()
         end
     end

@@ -73,37 +73,79 @@ end
 -- Handle Events for this GameState--
 function PlayState:setupInputEvents()
     Log:debug("Setting up events on PlayState")
-    -- Movement events - these use the game state context to access the player
-    StateMachine:addEvent( { Key.left, Key.a, Button.dpleft },
+    
+    -- KEYBOARD --
+    EventDispatcher:createEvent( 
+                KEYBOARD, { Key.left, Key.a },
                 function() self.player:moveLeft() end,
-                POLL_TYPE.IS_HELD)
-
-    StateMachine:addEvent( { Key.right, Key.d, Button.dpright },
+                POLL_TYPE.IS_HELD, 1, GAME_STATES.PLAY)
+    EventDispatcher:createEvent( 
+                KEYBOARD, { Key.right, Key.d },
                 function() self.player:moveRight() end,
-                POLL_TYPE.IS_HELD)
-
-    StateMachine:addEvent( { Key.left,  Key.a, Button.dpleft,
-                             Key.right, Key.d, Button.dpright },
+                POLL_TYPE.IS_HELD, 1, GAME_STATES.PLAY)
+    EventDispatcher:createEvent( 
+                KEYBOARD, { Key.left, Key.a, Key.right, Key.d },
                 function() self.player:idle() end,
-                POLL_TYPE.JUST_RELEASED)
-
-    StateMachine:addEvent( { Key.up,  Key.space, Button.dpup },
+                POLL_TYPE.JUST_RELEASED, 1, GAME_STATES.PLAY)
+    EventDispatcher:createEvent( 
+                KEYBOARD, { Key.up, Key.space },
                 function() self.player:moveJump() end,
-                POLL_TYPE.JUST_PRESSED)
-
-    StateMachine:addEvent( { Key.up,  Key.space, Button.dpup },
+                POLL_TYPE.JUST_PRESSED, 1, GAME_STATES.PLAY)
+    EventDispatcher:createEvent( 
+                KEYBOARD, { Key.up, Key.space },
                 function() self.player:releaseJump() end,
-                POLL_TYPE.JUST_RELEASED)
-
-    StateMachine:addEvent( { Key.escape, Button.rightshoulder, Button.leftshoulder },
+                POLL_TYPE.JUST_RELEASED, 1, GAME_STATES.PLAY)
+    EventDispatcher:createEvent( 
+                KEYBOARD, { Key.escape },
                 function() love.event.quit() end,
-                POLL_TYPE.IS_HELD)
+                POLL_TYPE.IS_HELD, 1, GAME_STATES.PLAY)
 
-    StateMachine:addEvent( { Key.q },
+    EventDispatcher:createEvent( 
+                KEYBOARD, { Key.q },
                 function() StateMachine:change(GAME_STATES.PAUSE) end,
-                POLL_TYPE.JUST_PRESSED)
+                POLL_TYPE.JUST_PRESSED, 1, GAME_STATES.PLAY)
 
-    Log:debug("CREATED EVENTS: "..StateMachine:getEventsCount())
+    -- GAMEPAD--
+    EventDispatcher:createEvent( 
+                GAMEPAD, { Button.dpleft },
+                function() self.player:moveLeft() end,
+                POLL_TYPE.IS_HELD, 1, GAME_STATES.PLAY)
+    EventDispatcher:createEvent( 
+                GAMEPAD, { Button.dpright },
+                function() self.player:moveRight() end,
+                POLL_TYPE.IS_HELD, 1, GAME_STATES.PLAY)
+    EventDispatcher:createEvent( 
+                GAMEPAD, { Button.dpleft, Button.dpright },
+                function() self.player:idle() end,
+                POLL_TYPE.JUST_RELEASED, 1, GAME_STATES.PLAY)
+    EventDispatcher:createEvent( 
+                GAMEPAD, { Button.dpup },
+                function() self.player:moveJump() end,
+                POLL_TYPE.JUST_PRESSED, 1, GAME_STATES.PLAY)    
+    EventDispatcher:createEvent( 
+                GAMEPAD, { Button.dpup },
+                function() self.player:releaseJump() end,
+                POLL_TYPE.JUST_RELEASED, 1, GAME_STATES.PLAY)
+    EventDispatcher:createEvent( 
+                GAMEPAD, { Button.rightshoulder, Button.leftshoulder },
+                function() love.event.quit() end,
+                POLL_TYPE.IS_HELD, 1, GAME_STATES.PLAY)
+
+    -- AXIS --
+    EventDispatcher:createEvent(
+            GAMEPAD_AXIS, { AXIS.LEFT_X }, 
+            function() self.player:moveLeft() end,
+            POLL_TYPE.IS_HELD, 1, GAME_STATES.PLAY, 0.2, "negative")
+    EventDispatcher:createEvent(
+            GAMEPAD_AXIS, { AXIS.LEFT_X }, 
+            function() self.player:moveRight() end,
+            POLL_TYPE.IS_HELD, 1, GAME_STATES.PLAY, 0.2, "positive")
+    EventDispatcher:createEvent(
+            GAMEPAD_AXIS, { AXIS.LEFT_X }, 
+            function() self.player:idle() end,
+            POLL_TYPE.JUST_RELEASED, 1, GAME_STATES.PLAY, 0.2, "any" )
+
+    Log:debug("CREATED EVENTS: "..EventDispatcher:getEventsCount())
 end
 
 ----------------------------------------------------------------------------------
