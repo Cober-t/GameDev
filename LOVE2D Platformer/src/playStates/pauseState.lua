@@ -43,7 +43,7 @@ function PauseState:setupInputEvents()
     EventDispatcher:createEvent(
                 KEYBOARD, { Key.e }, 
                 function() StateMachine:change(GAME_STATES.PLAY) end, 
-                POLL_TYPE.JUST_PRESSED, 1, GAME_STATES.PAUSE )
+                POLL_TYPE.JUST_PRESSED, GAME_STATES.PAUSE )
 end
 
 ----------------------------------------------------------------------------------

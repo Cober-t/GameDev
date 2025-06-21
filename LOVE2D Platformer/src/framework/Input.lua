@@ -12,7 +12,6 @@ function Input:new(type, key, active)
 end
 
 ----------------------------------------------------------------------------------
--- Abstract method (to be overridden)
 function Input:checkPressed()
     Log:error("checkPressed must be implemented by subclass")
 end
@@ -61,7 +60,7 @@ function Input:isHeld()
 end
 
 ----------------------------------------------------------------------------------
--- Keyboard Input class
+-- Keyboard Input class ----------------------------------------------------------
 KeyboardInput = Input:extend()
 
 ----------------------------------------------------------------------------------
@@ -77,7 +76,7 @@ function KeyboardInput:checkPressed()
 end
 
 ----------------------------------------------------------------------------------
--- Gamepad Input class
+-- Gamepad Input class -----------------------------------------------------------
 GamepadInput = Input:extend()
 
 ----------------------------------------------------------------------------------
@@ -99,12 +98,12 @@ function GamepadInput:checkPressed()
 end
 
 ----------------------------------------------------------------------------------
--- Gamepad Axis Input class - NEW!
+-- Gamepad Axis Input class ------------------------------------------------------
 GamepadAxisInput = Input:extend()
 
 ----------------------------------------------------------------------------------
 
-function GamepadAxisInput:new(axis, joystickID, threshold, direction)
+function GamepadAxisInput:new(axis, threshold, direction, joystickID)
     GamepadAxisInput.super.new(self, GAMEPAD_AXIS, axis, true) -- Axis events are always active
     self.joystickID = joystickID or 1
     self.joystick = love.joystick.getJoysticks()[self.joystickID]

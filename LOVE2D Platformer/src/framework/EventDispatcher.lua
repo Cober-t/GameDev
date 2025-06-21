@@ -11,7 +11,7 @@ end
 
 ----------------------------------------------------------------------------------
 
-function EventDispatcher:getOrCreateInput(inputType, inputKey, pollType, joystickID, context, threshold, direction)
+function EventDispatcher:getOrCreateInput(inputType, inputKey, pollType, context, threshold, direction, joystickID)
     local lookupKey = inputType .. ":" .. inputKey .. ":" .. (joystickID or "") .. ":" .. pollType .. ":" .. (threshold or 0.3) .. ":" .. (direction or "any")
 
     if self.inputs[lookupKey] then return lookupKey end
@@ -20,9 +20,9 @@ function EventDispatcher:getOrCreateInput(inputType, inputKey, pollType, joystic
     if inputType == KEYBOARD then
         input = KeyboardInput(inputKey)
     elseif inputType == GAMEPAD then
-        input = GamepadInput(inputKey, joystickID)
+        input = GamepadInput(inputKey)
     elseif inputType == GAMEPAD_AXIS then
-        input = GamepadAxisInput(inputKey, joystickID, threshold, direction)
+        input = GamepadAxisInput(inputKey, threshold, direction)
     else
         Log:error("Unknown input type: " .. inputType)
     end
@@ -42,11 +42,11 @@ end
 
 ----------------------------------------------------------------------------------
 
-function EventDispatcher:createEvent(inputType, keys, callback, pollType, joystickID, context, threshold, direction)
+function EventDispatcher:createEvent(inputType, keys, callback, pollType, context, threshold, direction, joystickID)
     assert(#keys > 0)
 
 	for _, key in ipairs(keys) do
-        local lookupKey = self:getOrCreateInput(inputType, key, pollType, joystickID, context, threshold, direction)
+        local lookupKey = self:getOrCreateInput(inputType, key, pollType, context, threshold, direction, joystickID)
         local newEvent = Event(self.inputs[lookupKey], key, callback, pollType, context)
     
         if newEvent then
