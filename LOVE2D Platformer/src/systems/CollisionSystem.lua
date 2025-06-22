@@ -33,18 +33,14 @@ function CollisionSystem:update(dt)
         entity.movement.onWall = false
         
         -- Resect collision info
-        local movingEntityExists = false
-        for _, entt in pairs(self.activeColliders) do
+        for entt, _ in pairs(self.activeColliders) do
             entt.collider.active = false
-            if entt == entity then
-                movingEntityExists = true
-            end
         end
         -- Update moving entity collider info
         entity.collider.active = len ~= 0
-        if entity.collider.active and not movingEntityExists then
+        if entity.collider.active and not self.activeColliders[entity] then
             -- TODO: Call OnCollisionEnter
-            table.insert(self.activeColliders, entity)
+            self.activeColliders[entity] = true
         end
         
         for i=1, len do
@@ -56,29 +52,22 @@ function CollisionSystem:update(dt)
                 if col.normal.x ~= 0 then entity.movement.onWall  = true end
             end
             -- Check for new colliders
-            local colliderAlreadyExist = false
-            for _, entity in pairs(self.activeColliders) do
-                if entity == col.other then
-                    colliderAlreadyExist = true
-                    break
-                end
-            end 
-            if not colliderAlreadyExist then
-                table.insert(self.activeColliders, col.other) 
+            if not self.activeColliders[col.other] then
+                self.activeColliders[col.other] = true
             end
             -- Handle collisions
             self:handleCollisions(col.item, col.other, col)
         end
         
         -- Check for unactive colldiers
-        for _, entity in ipairs(self.activeColliders) do 
-            if not entity.collider.active then
+        for entt, active in pairs(self.activeColliders) do 
+            if not entt.collider.active then
                 -- TODO: Call OnCollisionExit
-                table.remove(self.activeColliders, _)
+                self.activeColliders[entt] = nil
             end
         end
+        
     end
-
 end
 
 ----------------------------------------------------------------------------------
@@ -150,7 +139,7 @@ function CollisionSystem:draw()
     
     -- Draw active colliders
     love.graphics.setColor(1, 0, 0, 1)
-    for _, entity in ipairs(self.activeColliders) do
+    for entity, _ in pairs(self.activeColliders) do
         local x, y, w, h = BumpWorld:getRect(entity)
         love.graphics.rectangle("line", x, y, w, h)
     end
