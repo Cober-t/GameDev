@@ -1,10 +1,11 @@
-CollisionSystem = ECS.system( {pool = {"transform", "collider"} ,
-                               secondPool = {"transform", "movement", "collider" }})
+CollisionSystem = ECS.system( {pool = {"transform", "collider"} , -- Debug
+                               secondPool = {"transform", "movement", "rigidbody", "collider" }})
 
 ----------------------------------------------------------------------------------
 
 function CollisionSystem:init()
     Log:debug("CollisionSystem CREATES " .. #self.pool .. " colliders!")
+    self.activeColliders = {}
     for _, entity in ipairs(self.pool) do
         entity.collider.active = false
         BumpWorld:add(entity,
@@ -13,45 +14,96 @@ function CollisionSystem:init()
                     entity.collider.width,
                     entity.collider.height)
     end
-    
-    self.accumulator = 0
-    self.fixedDeltaTime = 1 / 60
 end
 
 ----------------------------------------------------------------------------------
 
 function CollisionSystem:update(dt)
-    self.accumulator = self.accumulator + dt
-    
-    while self.accumulator >= self.fixedDeltaTime do
-        -- Iterate over all Entities that this System acts on
-        for i, entity in ipairs(self.secondPool) do
-            local newPosX = entity.transform.posX + entity.collider.offsetX
-            local newPosY = entity.transform.posY + entity.collider.offsetY
-            local actualX, actualY, cols, len = BumpWorld:check(entity, newPosX, newPosY)
-            BumpWorld:update(entity, actualX, actualY)
-            
-            -- Update the current entity position
-            entity.transform.posX = actualX - entity.collider.offsetX
-            entity.transform.posY = actualY - entity.collider.offsetY
-            entity.movement.onFloor = false
-            entity.movement.onWall = false
-            -- Change velocity and states by collision normal
-            for i=1, len do
-                local col = cols[i]
-                if col.normal.y < 0  then entity.movement.onFloor = true  end
-                if col.normal.x ~= 0 then entity.movement.onWall  = true end
+    -- Iterate over all Entities that are going to move
+    for i, entity in ipairs(self.secondPool) do
+        local newPosX = entity.transform.posX + entity.collider.offsetX
+        local newPosY = entity.transform.posY + entity.collider.offsetY
+        local actualX, actualY, cols, len = BumpWorld:move(entity, newPosX, newPosY,
+                                function(item, other) return other.collider.type end)
+        
+        -- Update the current entity position
+        entity.transform.posX = actualX - entity.collider.offsetX
+        entity.transform.posY = actualY - entity.collider.offsetY
+        entity.movement.onFloor = false
+        entity.movement.onWall = false
+        
+        -- Resect collision info
+        local movingEntityExists = false
+        for _, entt in pairs(self.activeColliders) do
+            entt.collider.active = false
+            if entt == entity then
+                movingEntityExists = true
             end
         end
-        self.accumulator = self.accumulator - self.fixedDeltaTime
+        -- Update moving entity collider info
+        entity.collider.active = len ~= 0
+        if entity.collider.active and not movingEntityExists then
+            -- TODO: Call OnCollisionEnter
+            table.insert(self.activeColliders, entity)
+        end
+        
+        for i=1, len do
+            local col = cols[i]
+            col.other.collider.active = true
+            -- If we collide with a trigger we dont want to stop our movement
+            if col.other.collider.type ~= "cross" then 
+                if col.normal.y < 0  then entity.movement.onFloor = true end
+                if col.normal.x ~= 0 then entity.movement.onWall  = true end
+            end
+            -- Check for new colliders
+            local colliderAlreadyExist = false
+            for _, entity in pairs(self.activeColliders) do
+                if entity == col.other then
+                    colliderAlreadyExist = true
+                    break
+                end
+            end 
+            if not colliderAlreadyExist then
+                table.insert(self.activeColliders, col.other) 
+            end
+            -- Handle collisions
+            self:handleCollisions(col.item, col.other, col)
+        end
+        
+        -- Check for unactive colldiers
+        for _, entity in ipairs(self.activeColliders) do 
+            if not entity.collider.active then
+                -- TODO: Call OnCollisionExit
+                table.remove(self.activeColliders, _)
+            end
+        end
     end
+
+end
+
+----------------------------------------------------------------------------------
+
+function CollisionSystem:handleCollisions(item, other, collision)
+    -- TODO: Call OnCollisionUpdate
+    if other.collider.type == "cross" then 
+        other.collider:triggerFunction()
+    end
+end
+
+----------------------------------------------------------------------------------
+
+function CollisionSystem:collisionFilter(item, other)
+    -- if item.collider.type == "slide" and other.collider.type == "cross" then
+        -- in the future...
+    -- end
+    return other.collider.type
 end
 
 ----------------------------------------------------------------------------------
 
 function CollisionSystem:exit()
     local items, len = BumpWorld:getItems()
-    Log:debug("CollisionSysmte DESTROY " .. #items .. " colliders!")
+    Log:debug("CollisionSystem DESTROY " .. #items .. " colliders!")
     for _, entity in ipairs(items) do
         BumpWorld:remove(entity)
     end
@@ -72,25 +124,35 @@ function CollisionSystem:draw()
     -- DebugSystem
     if not DEBUG then return end
 
-    -- for cy, row in pairs(BumpWorld.rows) do
-    --     for cx, cell in pairs(row) do
-    --         local l,t,w,h = getCellRect(cx,cy)
-    --         local intensity = (cell.itemCount * 16 + 16) / 255
-    --         love.graphics.setColor(1,1,1,0.3)
-    --         love.graphics.rectangle('fill', l,t,w,h)
-    --         love.graphics.setColor(1,1,1,0.04)
-    --         love.graphics.rectangle('line', l,t,w,h)
-    --     end
-    -- end
-
-    love.graphics.setColor(1, 1, 1, 1)
+    -- Draw active processing areas
+    for cy, row in pairs(BumpWorld.rows) do
+        for cx, cell in pairs(row) do
+            local l,t,w,h = getCellRect(cx,cy)
+            local intensity = (cell.itemCount * 16 + 16) / 255
+            love.graphics.setColor(1,1,1,0.3)
+            love.graphics.rectangle('fill', l,t,w,h)
+            love.graphics.setColor(1,1,1,0.04)
+            love.graphics.rectangle('line', l,t,w,h)
+        end
+    end
+    
+    -- Draw inactive colliders
     for _, entity in ipairs(self.pool) do
         local x, y, w, h = BumpWorld:getRect(entity)
-        if entity.collider.active then
-            love.graphics.setColor(1, 0, 0, 1)
-        else
-            love.graphics.setColor(1, 1, 1, 1)
-        end
-        love.graphics.rectangle("line",x,y, w, h)
+        -- if entity.collider.active then
+        --     love.graphics.setColor(1, 0, 0, 1)
+        -- else
+        -- end
+        love.graphics.setColor(1, 1, 1, 1)
+        love.graphics.rectangle("line", x, y, w, h)
     end
+
+    
+    -- Draw active colliders
+    love.graphics.setColor(1, 0, 0, 1)
+    for _, entity in ipairs(self.activeColliders) do
+        local x, y, w, h = BumpWorld:getRect(entity)
+        love.graphics.rectangle("line", x, y, w, h)
+    end
+    love.graphics.setColor(1, 1, 1, 1)
 end

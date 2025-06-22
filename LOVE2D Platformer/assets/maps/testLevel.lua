@@ -9,8 +9,8 @@ return {
   height = 32,
   tilewidth = 16,
   tileheight = 16,
-  nextlayerid = 5,
-  nextobjectid = 28,
+  nextlayerid = 6,
+  nextobjectid = 30,
   properties = {},
   tilesets = {
     {
@@ -483,6 +483,48 @@ return {
           y = 240,
           width = 144,
           height = 16,
+          rotation = 0,
+          visible = true,
+          properties = {}
+        }
+      }
+    },
+    {
+      type = "objectgroup",
+      draworder = "topdown",
+      id = 5,
+      name = "Killzone",
+      class = "",
+      visible = true,
+      opacity = 1,
+      offsetx = 0,
+      offsety = 0,
+      parallaxx = 1,
+      parallaxy = 1,
+      properties = {},
+      objects = {
+        {
+          id = 28,
+          name = "",
+          type = "",
+          shape = "rectangle",
+          x = 496,
+          y = 480,
+          width = 144,
+          height = 32,
+          rotation = 0,
+          visible = true,
+          properties = {}
+        },
+        {
+          id = 29,
+          name = "",
+          type = "",
+          shape = "rectangle",
+          x = 784,
+          y = 480,
+          width = 80,
+          height = 32,
           rotation = 0,
           visible = true,
           properties = {}

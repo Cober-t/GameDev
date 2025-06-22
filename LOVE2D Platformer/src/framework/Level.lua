@@ -9,6 +9,7 @@ function Level:new(tileMap)
         [LVL_LAYER_WORLD]      = tileMap.layers[LVL_LAYER_WORLD],
         [LVL_LAYER_BG]         = tileMap.layers[LVL_LAYER_BG],
         [LVL_LAYER_COLLISIONS] = tileMap.layers[LVL_LAYER_COLLISIONS],
+        [LVL_LAYER_KILLZONE]   = tileMap.layers[LVL_LAYER_KILLZONE],
     }
 end
 

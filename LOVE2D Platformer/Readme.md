@@ -7,8 +7,8 @@
    - [X] Debug colliders
    - [X] Collider offsets
    - [ ] Logging system
-   - [ ] Fix Camera Tearing (SubViewport smooth camera)
-   - [ ] Collider Triggers (ej. killzone that restart game)
+   - [X] Fix Camera Tearing (SubViewport smooth camera)
+   - [X] Collider Triggers (ej. killzone that restart game)
    - [X] Fixed Systems performance
    - [ ] Player smooth movement
       - [X] Smooth Movement, acceleration, turn speed...

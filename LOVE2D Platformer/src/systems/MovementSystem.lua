@@ -4,54 +4,45 @@ MovementSystem = ECS.system({ pool = {"transform", "rigidbody", "movement"} })
 
 function MovementSystem:init()
     Log:debug("MovementSystem INIT!")
-    self.accumulator = 0
-    self.fixedDeltaTime = FIXED_DT
 end
 
 ----------------------------------------------------------------------------------
 
 function MovementSystem:update(dt)
-
-    -- Fixed movement calculations, for decouple game logic from framerate
-    self.accumulator = self.accumulator + dt
-    while self.accumulator >= self.fixedDeltaTime do
-
-        for _, entity in ipairs(self.pool) do
-            local mv = entity.movement
-            local rb = entity.rigidbody
-            
-            if not mv.canMove then
-                goto continue
-            end
-            mv.pressingKey = mv.direction ~= 0
-            mv.desiredVelocity.x = mv.direction * math.max(mv.maxSpeed - rb.friction, 0.0)
-            mv.velocity = rb.velocity
-            
-            -- Movement ------------------------------------------------------------------------------
-            if mv.useAcceleration then
-                self:runWithAcceleration(mv, rb, self.fixedDeltaTime)
-            else
-                self:runWithoutAcceleration(mv, rb)
-            end
-
-            -- Jump ---------------------------------------------------------------------------------
-            -- Jump Buffer allows us to queue up a jump, which will play when we next hit the ground
-            self:calculateJumpBuffer(mv, self.fixedDeltaTime)
-            self:calculateVariableJump(mv, self.fixedDeltaTime)
-            self:calculateCoyoteTime(mv, self.fixedDeltaTime)
-            self:doAJump(mv, rb, self.fixedDeltaTime)
-
-            -- If the Player does not have variable jump
-            if mv.desiredJump and not mv.variableJumpHeight then goto continue end
-            
-            -- If the Player is going up
-            if rb.velocity.y < -0.01 and not mv.onFloor then
-                self:handleVariableJumpHeight(mv, rb, self.fixedDeltaTime)
-            end
-
-            ::continue::
+    for _, entity in ipairs(self.pool) do
+        local mv = entity.movement
+        local rb = entity.rigidbody
+        
+        if not mv.canMove then
+            goto continue
         end
-        self.accumulator = self.accumulator - self.fixedDeltaTime
+        mv.pressingKey = mv.direction ~= 0
+        mv.desiredVelocity.x = mv.direction * math.max(mv.maxSpeed - rb.friction, 0.0)
+        mv.velocity = rb.velocity
+        
+        -- Movement ------------------------------------------------------------------------------
+        if mv.useAcceleration then
+            self:runWithAcceleration(mv, rb, dt)
+        else
+            self:runWithoutAcceleration(mv, rb)
+        end
+
+        -- Jump ---------------------------------------------------------------------------------
+        -- Jump Buffer allows us to queue up a jump, which will play when we next hit the ground
+        self:calculateJumpBuffer(mv, dt)
+        self:calculateVariableJump(mv, dt)
+        self:calculateCoyoteTime(mv, dt)
+        self:doAJump(mv, rb, dt)
+
+        -- If the Player does not have variable jump
+        if mv.desiredJump and not mv.variableJumpHeight then goto continue end
+        
+        -- If the Player is going up
+        if rb.velocity.y < -0.01 and not mv.onFloor then
+            self:handleVariableJumpHeight(mv, rb, dt)
+        end
+
+        ::continue::
     end
 end
 

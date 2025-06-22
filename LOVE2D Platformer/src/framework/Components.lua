@@ -88,12 +88,14 @@ end)
 
 ----------------------------------------------------------------------------------
 
-ECS.component("collider", function(e, offX, offY, w, h, isTrigger)
+ECS.component("collider", function(e, offX, offY, w, h, colType, triggerFun)
     e.offsetX = offX
     e.offsetY = offY
     e.width = w
     e.height = h
-    e.isTrigger = isTrigger
+    e.type = colType or "slide" -- Slide / Cross / Bounce
+    e.triggerFunction = triggerFun
+    e.active = false
 end)
 
 ----------------------------------------------------------------------------------

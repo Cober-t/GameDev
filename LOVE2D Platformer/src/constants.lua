@@ -1,5 +1,5 @@
 -- Settings
-DEBUG = false
+DEBUG = true
 FIXED_DT = 1 / 60
 
 -- Window
@@ -13,6 +13,7 @@ VIRTUAL_HEIGHT = 720
 LVL_LAYER_WORLD = "World"
 LVL_LAYER_BG = "Background"
 LVL_LAYER_COLLISIONS = "Ground"
+LVL_LAYER_KILLZONE = "Killzone"
 
 -- Physics
 GRAVITY = 9.8
@@ -31,6 +32,8 @@ GAME_STATES = {
     PAUSE = "pause",
     PLAY  = "play",
 }
+
+
 
 -- TODO: MOVE TO INPUT KEYS CLASS
 KEYBOARD = "keyboard"
