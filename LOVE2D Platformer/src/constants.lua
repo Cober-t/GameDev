@@ -1,5 +1,5 @@
 -- Settings
-DEBUG = true
+DEBUG = false
 FIXED_DT = 1 / 60
 
 -- Window

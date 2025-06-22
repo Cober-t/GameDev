@@ -61,6 +61,8 @@ function PlayState:draw()
 
     -- Draw HUD or DebugSystem
     -- love.graphics.print("FPS: "..tostring(love.timer.getFPS()).." -- State: "..Player.state)
+    if not self.player or not self.player.entity then return end
+
     love.graphics.print("Floor: "..tostring(self.player.entity.movement.onFloor).." -- "..
                         "Wall: "..tostring(self.player.entity.movement.onWall).." -- "..
                         "FrameRate: "..love.timer.getFPS().." -- "..

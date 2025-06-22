@@ -75,7 +75,7 @@ end
 function CollisionSystem:handleCollisions(item, other, collision)
     -- TODO: Call OnCollisionUpdate
     if other.collider.type == "cross" then 
-        other.collider:triggerFunction()
+        item.collider:triggerFunction()
     end
 end
 
@@ -124,22 +124,21 @@ function CollisionSystem:draw()
             love.graphics.rectangle('line', l,t,w,h)
         end
     end
-    
+
     -- Draw inactive colliders
     for _, entity in ipairs(self.pool) do
         local x, y, w, h = BumpWorld:getRect(entity)
-        -- if entity.collider.active then
-        --     love.graphics.setColor(1, 0, 0, 1)
-        -- else
-        -- end
         love.graphics.setColor(1, 1, 1, 1)
         love.graphics.rectangle("line", x, y, w, h)
     end
 
-    
     -- Draw active colliders
-    love.graphics.setColor(1, 0, 0, 1)
     for entity, _ in pairs(self.activeColliders) do
+        if entity.collider.type == "cross" then
+            love.graphics.setColor(0, 1, 0, 1)
+        else
+            love.graphics.setColor(1, 0, 0, 1)
+        end
         local x, y, w, h = BumpWorld:getRect(entity)
         love.graphics.rectangle("line", x, y, w, h)
     end

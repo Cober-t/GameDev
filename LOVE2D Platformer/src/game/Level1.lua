@@ -25,7 +25,7 @@ function Level1:init()
             table.insert(self.colliders, ECS.entity(World)
                         :give("transform", obj.x, obj.y)
                         :give("collider", 0, 0, obj.width, obj.height, "cross", -- TODO: Relate entity type and collision type
-                            function() self:killzoneFunction() end))
+                            function(entity) entity:exit() end))
         end
     end
 end

@@ -28,7 +28,8 @@ function Player:init()
                     :give("transform", 100, 0)      -- x, y
                     :give("movement", 230.0)        -- jumpForce
                     :give("rigidbody", 1.13)        -- fallSpeedMulti
-                    :give("collider", 2, 6, 12, 13) -- offX, offY, w, h, trigger
+                    :give("collider", 2, 6, 12, 13, "slide", -- offX, offY, w, h, type
+                                function() self:exit() end)
     self.trans = self.entity.transform
     self.rb    = self.entity.rigidbody
     self.mv    = self.entity.movement
@@ -48,13 +49,15 @@ end
 
 function Player:exit()
     Log:debug("Player DESTROYED from the World!")
-    World:removeEntity(self.entity)
+    if self.entity then World:removeEntity(self.entity) end
+    self.entity = nil
 end
 
 ----------------------------------------------------------------------------------
 
 function Player:update(dt)
     -- Apply Animation
+    if not self.entity then return end
     self:updateAnimation(dt)
 end
 
@@ -132,6 +135,8 @@ end
 ----------------------------------------------------------------------------------
 
 function Player:draw()
+    if not self.entity then return end
+
     self.animation:draw(spriteSheet, self.entity.transform.posX, self.entity.transform.posY, nil, 1, 1, 8, 8)
 end
 
