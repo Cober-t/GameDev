@@ -7,7 +7,7 @@ function Event:new(input, key, callback, pollType, context)
     self.key = key           -- Key / Button / Axis that trigger this event
     self.callback = callback -- Function to call when event triggers
     self.pollType = pollType or POLL_TYPE.JUST_PRESSED -- Default to justPressed
-    self.enabled = true
+    self.enabled = false
     self.context = context
 end
 

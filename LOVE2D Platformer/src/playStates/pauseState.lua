@@ -11,14 +11,14 @@ end
 
 function PauseState:enter()
     self:setupInputEvents()
-    StateMachine:enableEvents()
+    EventDispatcher:enableEvents()
     Log:debug("PauseState initialize!")
 end
 
 ----------------------------------------------------------------------------------
 
 function PauseState:exit()
-    StateMachine:disableEvents()
+    EventDispatcher:disableEvents()
     Log:debug("PauseState destroyed!")
 end
 
@@ -43,7 +43,7 @@ function PauseState:setupInputEvents()
     EventDispatcher:createEvent(
                 KEYBOARD, { Key.e }, 
                 function() StateMachine:change(GAME_STATES.PLAY) end, 
-                POLL_TYPE.JUST_PRESSED, GAME_STATES.PAUSE )
+                POLL_TYPE.JUST_PRESSED )
 end
 
 ----------------------------------------------------------------------------------

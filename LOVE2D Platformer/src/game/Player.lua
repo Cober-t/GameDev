@@ -29,7 +29,10 @@ function Player:init()
                     :give("movement", 230.0)        -- jumpForce
                     :give("rigidbody", 1.13)        -- fallSpeedMulti
                     :give("collider", 2, 6, 12, 13, "slide", -- offX, offY, w, h, type
-                                function() self:exit() end)
+                                function() 
+                                    self:exit()
+                                    -- StateMachine:change(GAME_STATES.PLAY) 
+                                end)
     self.trans = self.entity.transform
     self.rb    = self.entity.rigidbody
     self.mv    = self.entity.movement

@@ -11,8 +11,8 @@ end
 
 ----------------------------------------------------------------------------------
 
-function EventDispatcher:getOrCreateInput(inputType, inputKey, pollType, context, threshold, direction, joystickID)
-    local lookupKey = inputType .. ":" .. inputKey .. ":" .. (joystickID or "") .. ":" .. pollType .. ":" .. (threshold or 0.3) .. ":" .. (direction or "any")
+function EventDispatcher:getOrCreateInput(inputType, inputKey, pollType, threshold, direction, joystickID, context)
+    local lookupKey = inputType .. ":" .. inputKey .. ":" .. (joystickID or "") .. ":" .. pollType .. ":" .. (threshold or "") .. ":" .. (direction or "") ..":"..context
 
     if self.inputs[lookupKey] then return lookupKey end
 
@@ -42,12 +42,13 @@ end
 
 ----------------------------------------------------------------------------------
 
-function EventDispatcher:createEvent(inputType, keys, callback, pollType, context, threshold, direction, joystickID)
+function EventDispatcher:createEvent(inputType, keys, callback, pollType, threshold, direction, joystickID, context)
     assert(#keys > 0)
+    local currentContext = context or StateMachine:getCurrentContext()
 
 	for _, key in ipairs(keys) do
-        local lookupKey = self:getOrCreateInput(inputType, key, pollType, context, threshold, direction, joystickID)
-        local newEvent = Event(self.inputs[lookupKey], key, callback, pollType, context)
+        local lookupKey = self:getOrCreateInput(inputType, key, pollType, threshold, direction, joystickID, currentContext)
+        local newEvent = Event(self.inputs[lookupKey], key, callback, pollType, currentContext)
     
         if newEvent then
             if not self.events[lookupKey] then
@@ -191,22 +192,23 @@ end
 
 ----------------------------------------------------------------------------------
 
-function EventDispatcher:enableEvents(context)
+function EventDispatcher:enableEvents()
     for _, lookupKey in ipairs(self.lookupKeys) do
         local event = self.events[lookupKey]
-        if event and event.context == context then
+        local currentContext = StateMachine:getCurrentContext()
+        if event and event.context == currentContext then
             event:enable()
         end
     end
 end
 
-
 ----------------------------------------------------------------------------------
 
-function EventDispatcher:disableEvents(context)
+function EventDispatcher:disableEvents()
     for _, lookupKey in ipairs(self.lookupKeys) do
         local event = self.events[lookupKey]
-        if event and event.context == context then
+        local currentContext = StateMachine:getCurrentContext()
+        if event and event.context == currentContext then
             event:disable()
         end
     end
@@ -246,7 +248,10 @@ function EventDispatcher:update()
     -- Also poll axis events that might not be "active" but still need polling
     for lookupKey, input in pairs(self.inputs) do
         if input.type == GAMEPAD_AXIS and self.events[lookupKey] and not self.activeInputs[lookupKey] then
-            self.events[lookupKey]:poll()
+            -- TODO: Improve this direction/value comprobation
+            if input.direction == "any" or input.direction == "negative" and input.value < 0 or input.direction == "positive" and input.value > 0 then
+                self.events[lookupKey]:poll()
+            end
         end
     end
 

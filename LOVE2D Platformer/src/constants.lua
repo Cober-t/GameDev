@@ -33,8 +33,6 @@ GAME_STATES = {
     PLAY  = "play",
 }
 
-
-
 -- TODO: MOVE TO INPUT KEYS CLASS
 KEYBOARD = "keyboard"
 GAMEPAD  = "gamepad"
@@ -52,17 +50,19 @@ INPUT_TYPE = "inputType"
 JOYSTICK_ID = "joystickID"
 
 Key = {}
-Key.left = "left"
-Key.right = "right"
-Key.up = "up"
-Key.space = "space"
+Key.left   = "left"
+Key.right  = "right"
+Key.up     = "up"
+Key.enter  = "return"
+Key.down   = "down"
+Key.space  = "space"
+Key.escape = "escape"
 Key.w = "w"
 Key.a = "a"
 Key.s = "s"
 Key.d = "d"
 Key.q = "q"
 Key.e = "e"
-Key.escape = "escape"
 
 Button = {}
 Button.dpup = "dpup"
@@ -82,33 +82,3 @@ Button.rightshoulder = "rightshoulder"
 Button.start = "start"
 Button.back = "back"
 Button.guide = "guide"
-
-INPUTS = {}
-INPUTS.left      =  {INPUT_TYPE = KEYBOARD}
-INPUTS.right     =  {INPUT_TYPE = KEYBOARD}
-INPUTS.up        =  {INPUT_TYPE = KEYBOARD}
-INPUTS.space     =  {INPUT_TYPE = KEYBOARD}
-INPUTS.escape    =  {INPUT_TYPE = KEYBOARD}
-INPUTS.w         =  {INPUT_TYPE = KEYBOARD}
-INPUTS.a         =  {INPUT_TYPE = KEYBOARD}
-INPUTS.s         =  {INPUT_TYPE = KEYBOARD}
-INPUTS.d         =  {INPUT_TYPE = KEYBOARD}
-INPUTS.q         =  {INPUT_TYPE = KEYBOARD}
-INPUTS.e         =  {INPUT_TYPE = KEYBOARD}
-INPUTS.dpup    =  {INPUT_TYPE = GAMEPAD, JOYSTICK_ID = 1}
-INPUTS.dpdown  =  {INPUT_TYPE = GAMEPAD, JOYSTICK_ID = 1}
-INPUTS.dpleft  =  {INPUT_TYPE = GAMEPAD, JOYSTICK_ID = 1}
-INPUTS.dpright =  {INPUT_TYPE = GAMEPAD, JOYSTICK_ID = 1}
-INPUTS.a_btn   =  {INPUT_TYPE = GAMEPAD}
-INPUTS.b_btn   =  {INPUT_TYPE = GAMEPAD}
-INPUTS.x_btn   =  {INPUT_TYPE = GAMEPAD}
-INPUTS.y_btn   =  {INPUT_TYPE = GAMEPAD}
-INPUTS.leftstick =     {INPUT_TYPE = GAMEPAD, JOYSTICK_ID = 1}
-INPUTS.rightstick =    {INPUT_TYPE = GAMEPAD, JOYSTICK_ID = 1}
-INPUTS.lefttrigger =   {INPUT_TYPE = GAMEPAD, JOYSTICK_ID = 1}
-INPUTS.righttrigger =  {INPUT_TYPE = GAMEPAD, JOYSTICK_ID = 1}
-INPUTS.leftshoulder  = {INPUT_TYPE = GAMEPAD, JOYSTICK_ID = 1}
-INPUTS.rightshoulder = {INPUT_TYPE = GAMEPAD, JOYSTICK_ID = 1}
-INPUTS.start   =  {INPUT_TYPE = GAMEPAD}
-INPUTS.back    =  {INPUT_TYPE = GAMEPAD}
-INPUTS.guide   =  {INPUT_TYPE = GAMEPAD}

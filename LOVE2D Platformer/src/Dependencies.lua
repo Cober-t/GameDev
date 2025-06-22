@@ -18,11 +18,19 @@ love.graphics.setDefaultFilter("nearest", "nearest")
 
 SpriteSheets = {
     player = love.graphics.newImage("assets/sprites/knight.png"),
+    background = love.graphics.newImage('assets/sprites/background.png'),
 }
 
 LevelMaps = {
     first = Sti("assets/maps/testLevel.lua"),
 }
+
+Fonts = {
+    small  = love.graphics.newFont('assets/fonts/PixelOperator8.ttf', 8),
+    medium = love.graphics.newFont('assets/fonts/PixelOperator8.ttf', 16),
+    large  = love.graphics.newFont('assets/fonts/PixelOperator8.ttf', 32)
+}
+
 
 -- GLOBALS --
 -- Abstract to CollisionSystem and ECS System

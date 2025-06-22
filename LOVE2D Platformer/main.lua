@@ -25,7 +25,7 @@ function love.load()
     Log:debug("Creating Systems for the GAME")
     World:addSystems( MovementSystem, PhysicsSystem, CollisionSystem)
 
-    StateMachine:start(GAME_STATES.PLAY)
+    StateMachine:start(GAME_STATES.START)
 end
 
 ----------------------------------------------------------------------------------

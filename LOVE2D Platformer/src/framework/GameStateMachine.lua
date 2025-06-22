@@ -62,14 +62,8 @@ end
 
 ----------------------------------------------------------------------------------
 
-function GameStateMachine:enableEvents()
-	EventDispatcher:enableEvents(self.currentStateKey)
-end
-
-----------------------------------------------------------------------------------
-
-function GameStateMachine:disableEvents()
-    EventDispatcher:disableEvents(self.currentStateKey)
+function GameStateMachine:getCurrentContext()
+	return self.currentStateKey
 end
 
 ----------------------------------------------------------------------------------
