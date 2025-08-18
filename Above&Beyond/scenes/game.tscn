@@ -1,8 +1,10 @@
-[gd_scene load_steps=9 format=4 uid="uid://db5jp2okfmn1"]
+[gd_scene load_steps=10 format=4 uid="uid://db5jp2okfmn1"]
 
-[ext_resource type="Script" uid="uid://dmbxav0r086ua" path="res://scripts/game.gd" id="1_7jktm"]
-[ext_resource type="Texture2D" uid="uid://bxwrdt7648ty6" path="res://assets/sprites/world_tileset.png" id="3_eow3j"]
+[ext_resource type="Script" uid="uid://kqmvgeo0d08j" path="res://scripts/game.gd" id="1_7jktm"]
+[ext_resource type="Texture2D" uid="uid://din0i6nf2q6qk" path="res://assets/sprites/world_tileset.png" id="3_eow3j"]
 [ext_resource type="PackedScene" uid="uid://bdnn4a75cvdhs" path="res://scenes/player.tscn" id="4_j5wjh"]
+[ext_resource type="Script" uid="uid://cnco8qqk0i3nl" path="res://scripts/movement_component.gd" id="4_p57ef"]
+[ext_resource type="Script" uid="uid://bi4j150jmlpgn" path="res://scripts/physics_component.gd" id="5_u5sy4"]
 [ext_resource type="PackedScene" uid="uid://tbrwpruu7o6u" path="res://scenes/killzone.tscn" id="5_vef74"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_0wfyh"]
@@ -148,12 +150,6 @@ physics_layer_0/collision_layer = 1
 physics_layer_0/collision_mask = 2
 sources/0 = SubResource("TileSetAtlasSource_0wfyh")
 
-[sub_resource type="Curve" id="Curve_sugp2"]
-_data = [Vector2(0, 0.5), 0.0, 1.4, 0, 0, Vector2(1, 1), 0.0, 0.0, 0, 0]
-point_count = 2
-metadata/_snap_enabled = true
-metadata/_snap_count = 2
-
 [sub_resource type="WorldBoundaryShape2D" id="WorldBoundaryShape2D_sugp2"]
 
 [node name="Game" type="Node2D"]
@@ -170,14 +166,6 @@ tile_set = SubResource("TileSet_sugp2")
 [node name="Player" parent="." instance=ExtResource("4_j5wjh")]
 unique_name_in_owner = true
 position = Vector2(0, 16)
-run_speed = 160.0
-next_jumps_force = -300.0
-fall_speed_multiplier = 1.4
-fall_speed_on_wall = 45.0
-dash_speed = 400.0
-dash_cooldown = 0.35
-dash_inertia = 0.3
-dash_curve = SubResource("Curve_sugp2")
 
 [node name="Camera2D" type="Camera2D" parent="Player"]
 texture_filter = 1
@@ -185,6 +173,23 @@ position = Vector2(0, -16)
 zoom = Vector2(4, 4)
 position_smoothing_enabled = true
 position_smoothing_speed = 2.0
+
+[node name="MovementComponent" type="Node" parent="Player"]
+script = ExtResource("4_p57ef")
+max_acceleration = 800.0
+max_air_acceleration = 600.0
+max_air_deceleration = 300.0
+jump_height = 150.0
+coyote_time = 0.025
+fall_speed_limit = 300.0
+downward_movement_multiplier = 7.0
+peak_gravity_multiplier = 1.0
+metadata/_custom_type_script = "uid://cnco8qqk0i3nl"
+
+[node name="PhysicsComponent" type="Node" parent="Player"]
+script = ExtResource("5_u5sy4")
+bounciness = 0.065
+metadata/_custom_type_script = "uid://bi4j150jmlpgn"
 
 [node name="Killzone" parent="." instance=ExtResource("5_vef74")]
 position = Vector2(473, 141)
