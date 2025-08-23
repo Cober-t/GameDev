@@ -7,7 +7,7 @@ extends CharacterBody2D
 @onready var movement_comp: MovementComponent
 @onready var physics_comp: PhysicsComponent
 
-# Godot's gravity from project settings
+# Godot's gravity from project settings5
 var gravity: float = ProjectSettings.get_setting("physics/2d/default_gravity", 980.0)
 
 func _ready():
@@ -153,7 +153,6 @@ func _do_a_jump(_delta):
 			mv.jump_force = max(mv.jump_force + velocity.y, 0.0)
 		elif velocity.y > 0.0:
 			mv.jump_force = mv.jump_force + abs(velocity.y) # * 0.85
-		print(mv.jump_force)
 		
 		# Apply jump (negative Y for upward movement in Godot)
 		velocity.y = velocity.y - mv.jump_force
