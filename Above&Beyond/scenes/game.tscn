@@ -171,24 +171,26 @@ position = Vector2(0, 16)
 texture_filter = 1
 position = Vector2(0, -16)
 zoom = Vector2(4, 4)
+process_callback = 0
 position_smoothing_enabled = true
-position_smoothing_speed = 2.0
 
 [node name="MovementComponent" type="Node" parent="Player"]
 script = ExtResource("4_p57ef")
-max_acceleration = 800.0
-max_air_acceleration = 600.0
-max_air_deceleration = 300.0
-jump_height = 150.0
-coyote_time = 0.025
-fall_speed_limit = 300.0
-downward_movement_multiplier = 7.0
+max_acceleration = 1000.0
+max_air_acceleration = 700.0
+max_air_deceleration = 500.0
+jump_height = 200.0
+coyote_time = 0.25
+fall_speed_limit = 400.0
+jump_release_gravity_multiplier = 1.2
+upward_movement_multiplier = 6.0
+downward_movement_multiplier = 9.0
+enable_peak_floatiness = false
 peak_gravity_multiplier = 1.0
 metadata/_custom_type_script = "uid://cnco8qqk0i3nl"
 
 [node name="PhysicsComponent" type="Node" parent="Player"]
 script = ExtResource("5_u5sy4")
-bounciness = 0.065
 metadata/_custom_type_script = "uid://bi4j150jmlpgn"
 
 [node name="Killzone" parent="." instance=ExtResource("5_vef74")]

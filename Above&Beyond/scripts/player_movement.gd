@@ -129,7 +129,7 @@ func _calculate_variable_jump(delta):
 		
 	mv.jump_hold_time = mv.jump_hold_time + delta if mv.pressing_jump else 0.0
 
-func _do_a_jump(delta):
+func _do_a_jump(_delta):
 	var mv = movement_comp
 	if not mv.desired_jump:
 		return
@@ -150,12 +150,13 @@ func _do_a_jump(delta):
 		
 		# Adjust jump force based on current velocity
 		if velocity.y < 0.0:
-			mv.jump_force = max(mv.jump_force - velocity.y, 0.0)
+			mv.jump_force = max(mv.jump_force + velocity.y, 0.0)
 		elif velocity.y > 0.0:
-			mv.jump_force = mv.jump_force + abs(velocity.y) * 0.85
+			mv.jump_force = mv.jump_force + abs(velocity.y) # * 0.85
+		print(mv.jump_force)
 		
 		# Apply jump (negative Y for upward movement in Godot)
-		velocity.y = -mv.jump_force
+		velocity.y = velocity.y - mv.jump_force
 		mv.currently_jumping = true
 		
 		# Initialize variable jump tracking
@@ -187,7 +188,7 @@ func _update_physics(delta):
 		if velocity.y > 0.01:
 			velocity.y = min(velocity.y, mv.fall_speed_limit)
 
-func _calculate_gravity(delta):
+func _calculate_gravity(_delta):
 	var mv = movement_comp
 	var rb = physics_comp
 	
@@ -213,7 +214,7 @@ func _calculate_gravity(delta):
 				mv.jump_minimum_reached = false
 		rb.gravity_multiplier = rb.default_gravity_scale
 
-func _handle_variable_jump_height(delta):
+func _handle_variable_jump_height(_delta):
 	var mv = movement_comp
 	var rb = physics_comp
 	
