@@ -4,6 +4,7 @@ extends Control
 
 func _ready() -> void:
 	settings_menu.find_child("back").text = "QUIT"
+	Refs.sub_viewport_container = $SubViewportContainer
 	
 func _process(_delta: float) -> void:
 	if Input.is_action_just_pressed("ui_cancel") or Input.is_action_just_pressed("ui_select"):

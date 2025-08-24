@@ -1,7 +1,8 @@
-[gd_scene load_steps=10 format=4 uid="uid://db5jp2okfmn1"]
+[gd_scene load_steps=11 format=4 uid="uid://db5jp2okfmn1"]
 
 [ext_resource type="Script" uid="uid://kqmvgeo0d08j" path="res://scripts/game.gd" id="1_7jktm"]
 [ext_resource type="Texture2D" uid="uid://din0i6nf2q6qk" path="res://assets/sprites/world_tileset.png" id="3_eow3j"]
+[ext_resource type="Script" uid="uid://cyuk3gjd2u0c7" path="res://scripts/camera_controller.gd" id="3_u5sy4"]
 [ext_resource type="PackedScene" uid="uid://bdnn4a75cvdhs" path="res://scenes/player.tscn" id="4_j5wjh"]
 [ext_resource type="Script" uid="uid://cnco8qqk0i3nl" path="res://scripts/movement_component.gd" id="4_p57ef"]
 [ext_resource type="Script" uid="uid://bi4j150jmlpgn" path="res://scripts/physics_component.gd" id="5_u5sy4"]
@@ -167,21 +168,16 @@ tile_set = SubResource("TileSet_sugp2")
 unique_name_in_owner = true
 position = Vector2(0, 16)
 
-[node name="Camera2D" type="Camera2D" parent="Player"]
-texture_filter = 1
-position = Vector2(0, -16)
-process_callback = 0
-position_smoothing_enabled = true
-
 [node name="MovementComponent" type="Node" parent="Player"]
 script = ExtResource("4_p57ef")
+max_speed = 125.0
 max_acceleration = 1000.0
 max_air_acceleration = 700.0
 max_air_deceleration = 500.0
 jump_height = 200.0
 coyote_time = 0.25
 fall_speed_limit = 400.0
-jump_release_gravity_multiplier = 1.2
+jump_release_gravity_multiplier = 3.0
 upward_movement_multiplier = 6.0
 downward_movement_multiplier = 9.0
 enable_peak_floatiness = false
@@ -191,6 +187,13 @@ metadata/_custom_type_script = "uid://cnco8qqk0i3nl"
 [node name="PhysicsComponent" type="Node" parent="Player"]
 script = ExtResource("5_u5sy4")
 metadata/_custom_type_script = "uid://bi4j150jmlpgn"
+
+[node name="Camera2D" type="Camera2D" parent="Player"]
+texture_filter = 1
+position = Vector2(0, -16)
+process_callback = 0
+position_smoothing_enabled = true
+script = ExtResource("3_u5sy4")
 
 [node name="Killzone" parent="." instance=ExtResource("5_vef74")]
 position = Vector2(473, 141)

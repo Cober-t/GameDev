@@ -36,7 +36,7 @@ func _physics_process(delta):
 	_update_movement(delta)
 	_update_physics(delta)
 	move_and_slide()
-	_update_collision_state()
+	_update_collision_state()	
 
 func _handle_input():
 	if not movement_comp.can_move:
