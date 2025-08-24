@@ -14,7 +14,7 @@ end)
 
 ECS.component("movement", function(e, jumpForce)
     -- Movement
-    e.maxSpeed = 225.0             -- Maximum movement speed
+    e.maxSpeed = 100.0             -- Maximum movement speed
     e.maxAcceleration = 900.0      -- How fast to reach max speed
     e.maxDecceleration = 1200.0    -- How fast to stop after letting go
     e.maxTurnSpeed = 1200.0         -- How fast to stop when changing direction

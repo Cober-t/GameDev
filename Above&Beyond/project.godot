@@ -30,7 +30,6 @@ settings/stdout/print_fps=true
 
 window/size/viewport_width=1920
 window/size/viewport_height=1080
-window/stretch/scale=4.0
 window/stretch/scale_mode="integer"
 window/default_gravity=9.8
 
@@ -177,6 +176,14 @@ move_joypad_right={
 2d/run_on_separate_thread=true
 common/physics_jitter_fix=0.0
 common/physics_interpolation=true
+common/snap/snap_2d_transforms_to_pixel=false
+common/snap/snap_2d_vertices_to_pixel=false
+common/stretch/scale=1.0
+common/stretch/aspect="keep"
+common/stretch/mode="disabled"
+common/size/viewport_height=1080
+common/size/viewport_width=1920
+common/stretch/scale_mode="integer"
 
 [rendering]
 

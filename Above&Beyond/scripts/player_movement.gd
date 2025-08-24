@@ -119,8 +119,11 @@ func _calculate_coyote_time(delta):
 	var mv = movement_comp
 	if mv.on_floor:
 		mv.coyote_time_counter = 0.0
-	else:
+		mv.coyote_timer_enable = false
+	elif mv.first_jump_enable:
 		mv.coyote_time_counter += delta
+		
+	mv.coyote_timer_enable = mv.first_jump_enable and mv.coyote_time_counter < mv.coyote_time
 
 func _calculate_variable_jump(delta):
 	var mv = movement_comp
@@ -135,15 +138,17 @@ func _do_a_jump(_delta):
 		return
 		
 	# Check jump conditions
-	var can_jump = mv.on_floor or (mv.coyote_time_counter > 0.03 and mv.coyote_time_counter < mv.coyote_time) or mv.air_jumps > 0
-	
+	var can_jump = mv.air_jumps > 0 or mv.on_floor or mv.coyote_timer_enable
+
 	if can_jump:
 		mv.desired_jump = false
 		mv.jump_buffer_counter = 0.0
 		
 		# Use air jump if not on floor and past coyote time
-		if not mv.on_floor and mv.coyote_time_counter > mv.coyote_time:
+		if not mv.on_floor and not mv.coyote_timer_enable:
 			mv.air_jumps -= 1
+		if mv.first_jump_enable:
+			mv.first_jump_enable = false
 		
 		# Calculate jump force
 		mv.jump_force = sqrt(2.0 * gravity * (physics_comp.ground_gravity / gravity) * mv.jump_height)
@@ -254,4 +259,5 @@ func _update_collision_state():
 	
 	# Reset air jumps when landing
 	if mv.on_floor and not was_on_floor:
+		mv.first_jump_enable = true
 		mv.air_jumps = mv.max_air_jumps
