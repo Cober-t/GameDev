@@ -4,6 +4,7 @@ extends CharacterBody2D
 
 @onready var movement_comp: MovementComponent
 @onready var physics_comp: PhysicsComponent
+@onready var animated_sprite_2d: AnimatedSprite2D = $AnimatedSprite2D
 
 var gravity: float = ProjectSettings.get_setting("physics/2d/default_gravity", 980.0)
 
@@ -49,8 +50,12 @@ func _handle_input() -> void:
 		
 	# Get horizontal input
 	movement_comp.direction = Input.get_axis("move_left", "move_right")
+	if movement_comp.direction != 0:
+		movement_comp.last_direction = movement_comp.direction
 	movement_comp.pressing_key = movement_comp.direction != 0.0
 	
+	animated_sprite_2d.flip_h = movement_comp.last_direction == -1
+
 	# Get jump input
 	movement_comp.pressing_jump = Input.is_action_pressed("jump")
 	if Input.is_action_just_pressed("jump"):

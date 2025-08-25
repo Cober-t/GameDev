@@ -1,18 +1,21 @@
 extends State
 class_name PlayerJump
 
-@export var player : CharacterBody2D
+@export var player : PlayerController
 
-@onready var mv: MovementComponent
+@onready var mv: MovementComponent = null
 
 # --------------------------------------------------------
 
 func Enter() -> void:
 	print("PLAYER ENTER JUMP STATE")
-	if player and player.has_node("MovementComponent"):
+	if not player:
+		return
+
+	if player.has_node("MovementComponent"):
 		mv = player.get_node("MovementComponent")
-	else:
-		mv = null
+	if player.animated_sprite_2d:
+		player.animated_sprite_2d.play("jump")
 
 # --------------------------------------------------------
 
