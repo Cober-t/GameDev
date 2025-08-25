@@ -1,16 +1,15 @@
-# PlayerController.gd
 # Main controller script that manages player movement and physics
 class_name PlayerController
 extends CharacterBody2D
 
-# Component references
 @onready var movement_comp: MovementComponent
 @onready var physics_comp: PhysicsComponent
 
-# Godot's gravity from project settings5
 var gravity: float = ProjectSettings.get_setting("physics/2d/default_gravity", 980.0)
 
-func _ready():
+# --------------------------------------------------------
+
+func _ready() -> void:
 	# Get or create components
 	movement_comp = get_node("MovementComponent") if has_node("MovementComponent") else null
 	physics_comp = get_node("PhysicsComponent") if has_node("PhysicsComponent") else null
@@ -26,19 +25,25 @@ func _ready():
 	# Initialize physics
 	_initialize_physics()
 
-func _initialize_physics():
+# --------------------------------------------------------
+
+func _initialize_physics() -> void:
 	# Calculate ground gravity based on jump parameters
 	# Note: In Godot, we want positive gravity for downward movement
 	physics_comp.ground_gravity = (2.0 * movement_comp.jump_height) / pow(movement_comp.time_to_jump_apex, 2)
 
-func _physics_process(delta):
+# --------------------------------------------------------
+
+func _physics_process(delta) -> void:
 	_handle_input()
 	_update_movement(delta)
 	_update_physics(delta)
 	move_and_slide()
-	_update_collision_state()	
+	_update_collision_state()
 
-func _handle_input():
+# --------------------------------------------------------
+
+func _handle_input() -> void:
 	if not movement_comp.can_move:
 		return
 		
@@ -51,7 +56,9 @@ func _handle_input():
 	if Input.is_action_just_pressed("jump"):
 		movement_comp.desired_jump = true
 
-func _update_movement(delta):
+# --------------------------------------------------------
+
+func _update_movement(delta) -> void:
 	if not movement_comp.can_move:
 		return
 		
@@ -74,7 +81,9 @@ func _update_movement(delta):
 	if movement_comp.variable_jump_height and velocity.y < -0.01 and not movement_comp.on_floor:
 		_handle_variable_jump_height(delta)
 
-func _run_with_acceleration(delta):
+# --------------------------------------------------------
+
+func _run_with_acceleration(delta) -> void:
 	var mv = movement_comp
 	
 	# Set acceleration values based on ground state
@@ -93,8 +102,12 @@ func _run_with_acceleration(delta):
 	
 	velocity.x = _move_towards(velocity.x, mv.desired_velocity.x, mv.max_speed_change)
 
-func _run_without_acceleration():
+# --------------------------------------------------------
+
+func _run_without_acceleration() -> void:
 	velocity.x = movement_comp.desired_velocity.x
+
+# --------------------------------------------------------
 
 func _move_towards(current: float, target: float, step_speed: float) -> float:
 	var difference = target - current
@@ -102,7 +115,9 @@ func _move_towards(current: float, target: float, step_speed: float) -> float:
 		return target
 	return current + step_speed if difference > 0 else current - step_speed
 
-func _calculate_jump_buffer(delta):
+# --------------------------------------------------------
+
+func _calculate_jump_buffer(delta) -> void:
 	var mv = movement_comp
 	if mv.jump_buffer <= 0:
 		return
@@ -115,7 +130,9 @@ func _calculate_jump_buffer(delta):
 		mv.desired_jump = false
 		mv.jump_buffer_counter = 0.0
 
-func _calculate_coyote_time(delta):
+# --------------------------------------------------------
+
+func _calculate_coyote_time(delta) -> void:
 	var mv = movement_comp
 	if mv.on_floor:
 		mv.coyote_time_counter = 0.0
@@ -125,14 +142,18 @@ func _calculate_coyote_time(delta):
 		
 	mv.coyote_timer_enable = mv.first_jump_enable and mv.coyote_time_counter < mv.coyote_time
 
-func _calculate_variable_jump(delta):
+# --------------------------------------------------------
+
+func _calculate_variable_jump(delta) -> void:
 	var mv = movement_comp
 	if not mv.variable_jump_height:
 		return
 		
 	mv.jump_hold_time = mv.jump_hold_time + delta if mv.pressing_jump else 0.0
 
-func _do_a_jump(_delta):
+# --------------------------------------------------------
+
+func _do_a_jump(_delta) -> void:
 	var mv = movement_comp
 	if not mv.desired_jump:
 		return
@@ -171,7 +192,9 @@ func _do_a_jump(_delta):
 	if mv.jump_buffer == 0:
 		mv.desired_jump = false
 
-func _update_physics(delta):
+# --------------------------------------------------------
+
+func _update_physics(delta) -> void:
 	var mv = movement_comp
 	var rb = physics_comp
 	
@@ -192,7 +215,9 @@ func _update_physics(delta):
 		if velocity.y > 0.01:
 			velocity.y = min(velocity.y, mv.fall_speed_limit)
 
-func _calculate_gravity(_delta):
+# --------------------------------------------------------
+
+func _calculate_gravity(_delta) -> void:
 	var mv = movement_comp
 	var rb = physics_comp
 	
@@ -218,7 +243,9 @@ func _calculate_gravity(_delta):
 				mv.jump_minimum_reached = false
 		rb.gravity_multiplier = rb.default_gravity_scale
 
-func _handle_variable_jump_height(_delta):
+# --------------------------------------------------------
+
+func _handle_variable_jump_height(_delta) -> void:
 	var mv = movement_comp
 	var rb = physics_comp
 	
@@ -250,7 +277,9 @@ func _handle_variable_jump_height(_delta):
 	if mv.enable_peak_floatiness and abs(velocity.y) < mv.peak_velocity_threshold:
 		rb.gravity_multiplier *= mv.peak_gravity_multiplier
 
-func _update_collision_state():
+# --------------------------------------------------------
+
+func _update_collision_state() -> void:
 	var mv = movement_comp
 	
 	# Update floor state
