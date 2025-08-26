@@ -1,6 +1,6 @@
 extends Control
 
-@onready var settings_menu: Control = $SettingsMenu
+@onready var settings_menu: Control = $CanvasLayer/SettingsMenu
 
 func _ready() -> void:
 	settings_menu.find_child("back").text = "QUIT"

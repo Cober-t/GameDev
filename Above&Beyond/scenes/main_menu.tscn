@@ -8,6 +8,9 @@
 script = ExtResource("1_l6cm7")
 level = ExtResource("2_ekxnf")
 
+[node name="SettingsMenu" parent="." instance=ExtResource("3_bqqt6")]
+visible = false
+
 [node name="Control" type="Control" parent="."]
 layout_mode = 3
 anchors_preset = 15
@@ -18,15 +21,13 @@ grow_vertical = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
-[node name="ColorRect" type="ColorRect" parent="Control"]
-z_index = -4096
-layout_mode = 0
-offset_left = -72.0
-offset_top = -37.0
-offset_right = 2005.0
-offset_bottom = 1131.0
-mouse_filter = 2
-color = Color(1, 0.556863, 0.321569, 1)
+[node name="TextureRect" type="TextureRect" parent="Control"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 
 [node name="MarginContainer" type="MarginContainer" parent="Control"]
 layout_mode = 1
@@ -36,7 +37,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_constants/margin_left = 32
-theme_override_constants/margin_top = 32
+theme_override_constants/margin_top = 150
 theme_override_constants/margin_right = 32
 theme_override_constants/margin_bottom = 32
 
@@ -44,7 +45,7 @@ theme_override_constants/margin_bottom = 32
 layout_mode = 2
 size_flags_horizontal = 4
 size_flags_vertical = 0
-theme_override_font_sizes/font_size = 300
+theme_override_font_sizes/font_size = 200
 text = "Game Name"
 horizontal_alignment = 1
 vertical_alignment = 1
@@ -99,10 +100,6 @@ focus_previous = NodePath("../credits")
 theme_override_font_sizes/font_size = 75
 text = "QUIT"
 
-[node name="SettingsMenu" parent="Control/MarginContainer" instance=ExtResource("3_bqqt6")]
-visible = false
-layout_mode = 2
-
 [node name="CreditsMenu" type="VBoxContainer" parent="Control/MarginContainer"]
 visible = false
 layout_mode = 2
@@ -126,9 +123,9 @@ theme_override_font_sizes/font_size = 75
 text = "BACK"
 
 [connection signal="visibility_changed" from="." to="." method="_on_visibility_changed"]
+[connection signal="back_or_quit" from="SettingsMenu" to="." method="_on_settings_menu_back_or_quit"]
 [connection signal="pressed" from="Control/MarginContainer/MainButtons/play" to="." method="_on_play_pressed"]
 [connection signal="pressed" from="Control/MarginContainer/MainButtons/settings" to="." method="_on_settings_pressed"]
 [connection signal="pressed" from="Control/MarginContainer/MainButtons/credits" to="." method="_on_credits_pressed"]
 [connection signal="pressed" from="Control/MarginContainer/MainButtons/quit" to="." method="_on_quit_pressed"]
-[connection signal="back_or_quit" from="Control/MarginContainer/SettingsMenu" to="." method="_on_settings_menu_back_or_quit"]
 [connection signal="pressed" from="Control/MarginContainer/CreditsMenu/back" to="." method="_on_back_pressed"]

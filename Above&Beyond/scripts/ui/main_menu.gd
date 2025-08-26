@@ -1,10 +1,11 @@
 extends CanvasLayer
+class_name MainMenu
 
 @export var level: PackedScene
 @onready var main_buttons: VBoxContainer = $Control/MarginContainer/MainButtons
 @onready var credits_menu: VBoxContainer = $Control/MarginContainer/CreditsMenu
 @onready var title: Label = $Control/MarginContainer/Title
-@onready var settings_menu: Control = $Control/MarginContainer/SettingsMenu
+@onready var settings_menu: Control = $SettingsMenu
 
 var default_button :Button
 var back_button :Button
@@ -23,7 +24,8 @@ func focus_button() -> void:
 			button.grab_focus()
 
 func _on_play_pressed() -> void:
-	get_tree().change_scene_to_packed(level)
+	if level:
+		get_tree().change_scene_to_packed(level)
 
 func _on_settings_pressed() -> void:
 	settings_menu.visible = true

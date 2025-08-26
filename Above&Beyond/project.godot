@@ -15,16 +15,15 @@ run/main_scene="res://scenes/main.tscn"
 config/features=PackedStringArray("4.4", "GL Compatibility")
 run/flush_stdout_on_print.debug=false
 config/icon="res://icon.svg"
+run/stdout/print_fps=false
+run/physics_jitter_fix=0.0
+run/physics_interpolation=true
 
 [autoload]
 
 Refs="*res://scripts/globals/refs.gd"
 Util="*res://scripts/globals/util.gd"
 Global="*res://scripts/globals/global.gd"
-
-[debug]
-
-settings/stdout/print_fps=true
 
 [display]
 

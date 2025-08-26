@@ -8,7 +8,7 @@ class_name PlayerJump
 # --------------------------------------------------------
 
 func Enter() -> void:
-	print("PLAYER ENTER JUMP STATE")
+	#print("PLAYER ENTER JUMP STATE")
 	if not player:
 		return
 
@@ -20,7 +20,8 @@ func Enter() -> void:
 # --------------------------------------------------------
 
 func Exit() -> void:
-	print("PLAYER EXIT JUMP STATE")
+	#print("PLAYER EXIT JUMP STATE")
+	pass
 	
 # --------------------------------------------------------
 
@@ -31,7 +32,7 @@ func Update(_delta: float) -> void:
 # --------------------------------------------------------
 
 func PhysicsUpdate(_delta: float) -> void:
-	print("PLAYER JUMP PHYSICS UPDATE STATE")
+	#print("PLAYER JUMP PHYSICS UPDATE STATE")
 	if not mv:
 		return
 

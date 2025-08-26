@@ -8,7 +8,7 @@ class_name PlayerIdle
 # --------------------------------------------------------
 
 func Enter() -> void:
-	print("PLAYER ENTER IDLE STATE")
+	#print("PLAYER ENTER IDLE STATE")
 	if not player:
 		return
 
@@ -20,7 +20,7 @@ func Enter() -> void:
 # --------------------------------------------------------
 
 func Exit() -> void:
-	print("PLAYER EXIT IDLE STATE")
+	#print("PLAYER EXIT IDLE STATE")
 	pass
 	
 # --------------------------------------------------------

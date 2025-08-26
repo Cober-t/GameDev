@@ -15,9 +15,10 @@ size_flags_horizontal = 4
 size_flags_vertical = 4
 script = ExtResource("1_jyhfs")
 
-[node name="SettingsMenu" parent="." instance=ExtResource("2_jyhfs")]
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="SettingsMenu" parent="CanvasLayer" instance=ExtResource("2_jyhfs")]
 visible = false
-layout_mode = 1
 size_flags_horizontal = 1
 size_flags_vertical = 1
 
@@ -25,4 +26,4 @@ size_flags_vertical = 1
 texture_filter = 1
 script = null
 
-[connection signal="back_or_quit" from="SettingsMenu" to="." method="_on_settings_menu_back_or_quit"]
+[connection signal="back_or_quit" from="CanvasLayer/SettingsMenu" to="." method="_on_settings_menu_back_or_quit"]

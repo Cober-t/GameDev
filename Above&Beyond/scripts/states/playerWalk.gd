@@ -8,7 +8,7 @@ class_name PlayerWalk
 # --------------------------------------------------------
 
 func Enter() -> void:
-	print("PLAYER ENTER WALK STATE")
+	#print("PLAYER ENTER WALK STATE")
 	if not player:
 		return
 	if player.has_node("MovementComponent"):
@@ -19,7 +19,7 @@ func Enter() -> void:
 # --------------------------------------------------------
 
 func Exit() -> void:
-	print("PLAYER EXIT WALK STATE")
+	#print("PLAYER EXIT WALK STATE")
 	pass
 	
 # --------------------------------------------------------
@@ -31,7 +31,7 @@ func Update(_delta: float) -> void:
 # --------------------------------------------------------
 
 func PhysicsUpdate(_delta: float) -> void:
-	print("PLAYER PHYSICS WALK STATE")
+	#print("PLAYER PHYSICS WALK STATE")
 	if not mv:
 		return
 

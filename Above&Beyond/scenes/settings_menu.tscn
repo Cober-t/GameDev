@@ -1571,7 +1571,7 @@ RemapButton/styles/hover = SubResource("StyleBoxFlat_75x6d")
 RemapButton/styles/normal = SubResource("StyleBoxFlat_75x6d")
 RemapButton/styles/pressed = SubResource("StyleBoxFlat_75x6d")
 
-[node name="Control" type="Control"]
+[node name="SettingsMenu" type="Control"]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -1611,6 +1611,7 @@ theme_override_constants/margin_bottom = 32
 [node name="SettingsMenu" type="VBoxContainer" parent="MarginContainer"]
 layout_mode = 2
 size_flags_vertical = 3
+theme_override_constants/separation = -48
 
 [node name="Tabs" type="HBoxContainer" parent="MarginContainer/SettingsMenu"]
 layout_mode = 2
@@ -1626,7 +1627,7 @@ size_flags_vertical = 8
 focus_neighbor_left = NodePath("../../CommonOptions/back")
 focus_neighbor_top = NodePath("../../CommonOptions/back")
 focus_neighbor_right = NodePath("../CONTROLLS")
-focus_neighbor_bottom = NodePath("../CONTROLLS")
+focus_neighbor_bottom = NodePath("../../CommonOptions/default")
 focus_next = NodePath("../CONTROLLS")
 focus_previous = NodePath("../../CommonOptions/back")
 theme_override_font_sizes/font_size = 75
@@ -1638,9 +1639,9 @@ layout_mode = 2
 size_flags_horizontal = 8
 size_flags_vertical = 8
 focus_neighbor_left = NodePath("../MUSIC")
-focus_neighbor_top = NodePath("../MUSIC")
+focus_neighbor_top = NodePath("../../CommonOptions/back")
 focus_neighbor_right = NodePath("../GRAPHICS")
-focus_neighbor_bottom = NodePath("../GRAPHICS")
+focus_neighbor_bottom = NodePath("../../CommonOptions/default")
 focus_next = NodePath("../GRAPHICS")
 focus_previous = NodePath("../MUSIC")
 theme_override_font_sizes/font_size = 75
@@ -1652,7 +1653,7 @@ layout_mode = 2
 size_flags_horizontal = 8
 size_flags_vertical = 8
 focus_neighbor_left = NodePath("../CONTROLLS")
-focus_neighbor_top = NodePath("../CONTROLLS")
+focus_neighbor_top = NodePath("../../CommonOptions/back")
 focus_neighbor_right = NodePath("../../CommonOptions/default")
 focus_neighbor_bottom = NodePath("../../CommonOptions/default")
 focus_next = NodePath("../../CommonOptions/default")
